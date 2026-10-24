@@ -6,10 +6,10 @@
 
 ## 2.1 Functional Requirements
 
-**Objective:** State what the application must do for its users, where each capability comes from, and what observable result counts as acceptance.
+**Objective:** State what the application must do for its users, where each capability comes from, and what observable result counts as acceptance. what the system does
 
 | ID | Description | Priority | Source | Acceptance criteria |
-| --- | --- | --- | --- | --- |
+| :--- | --- | :---: | --- | --- |
 | F-000 | [Observable capability] | [High/Medium/Low] | [Approved task / stakeholder request / feedback] | [Observable result] |
 | F-001 | Users can authenticate via OAuth 2.0 (external provider such as Google). | High | Approved project scope | After successful OAuth 2.0 authentication, the user is redirected to the home screen and the navigation bar shows the user's display name. If the user cancels at the provider's consent screen, the login screen is shown and no session is created. |
 | F-002 | Pet Owners can create, view, edit, and delete pet profiles with photos and notes. | High | Approved project scope | After saving a new pet profile (name, species, breed, age, notes, photo), the pet appears in the owner's pet list. Edited values are shown after saving. A deleted pet no longer appears in the list. |
@@ -29,44 +29,30 @@
 | F-016 | Administrators can resolve disputes by reviewing booking history and chat records. | High | Approved project scope | For an open dispute, the admin panel shows the booking history and the chat messages of the related booking. After the administrator records an outcome (account warning, suspension, or note), the dispute status changes to Resolved and the outcome is stored with the dispute. |
 | F-017 | Both parties can exchange text messages within a booking. | Medium | Approved project scope | A text message sent by one party of a booking appears in the booking's message thread of the other party. The thread is accessible only to the two parties of that booking and, during a dispute, to the administrator. |
 
-High - core booking flow and to anything that makes the platform trustworthy
-Medium - features that support the flow but aren’t needed for it to work
+**High** - core booking flow and to anything that makes the platform trustworthy
+
+**Medium** - features that support the flow but aren’t needed for it to work
 	
 
 ---
 
 ## 2.2 Non-Functional Requirements
 
-**Objective:** Specify the important quality properties and operating conditions of the approved application in a way the team can reasonably check.
+**Objective:** Specify the important quality properties and operating conditions of the approved application in a way the team can reasonably check. how well it does it and under what conditions
 
 | ID | Description | Priority | Source |
-| --- | --- | --- | --- |
-|  |  |  |  |
+| :--- | --- | :---: | --- |
+| NF-01 | Search results are returned within 3 seconds under normal conditions. Check: measure the response time of a set of sample searches on the deployed application with a test data set (100 helpers). | High | Team decision |
+| NF-02 | A map with up to 100 helper markers loads all markers and stays responsive to panning and zooming. Check: load a test data set of 100 markers and pan and zoom the map. | Medium | Team decision; ToolShare assignment (map display) |
+| NF-03 | All client-server traffic uses HTTPS. Any stored passwords are hashed, and stored OAuth tokens are encrypted. Check: inspect the deployed configuration and the database contents. | High | Team decision |
+| NF-04 | Authentication uses OAuth 2.0, and a session expires after a period of inactivity (30 min). Check: remain inactive beyond the timeout and attempt a protected action. | High | ToolShare assignment (OAuth 2.0 login); team decision |
+| NF-05 | The mobile application is usable on common Android screen sizes, and the admin panel is usable in desktop browsers. Check: run the application on several emulated Android screen sizes and in at least two desktop browsers. | Medium | Team decision |
+| NF-06 | If creating a Google Calendar event fails, the system retries three times, and the booking stays Approved. Check: simulate a failed API call and observe the retry and the booking status. | Medium | ToolShare assignment (Google Calendar integration); team decision |
+| NF-07 | Deleting an account removes the user’s personal data (GDPR-aligned); booking records shared with other users are kept in anonymized form. Check: delete a test account and verify that no personal data remains in the database. | High | GDPR (right to erasure); team decision |
+| NF-08 | External APIs (Google Maps, Google Calendar, QR Code API) are accessed only through service-layer abstractions. Check: code review of the service layer. | Medium | Team decision |
 
-<details>
-<summary><strong>Choosing verifiable non-functional requirements</strong></summary>
+Performance, Security, Usability, Reliability, Privacy, Maintainability
 
-Relevant properties may concern usability, accessibility, security, performance, or reliability. Choose project-specific properties and describe how they can be checked. The requirement says what is expected; actual observations and evidence belong with the tests, not in a second result column here.
-
-**Example — non-functional requirements for the disaster information application:**
-
-| ID | Description | Priority | Source |
-| --- | --- | --- | --- |
-| NF-1.1 | The system must support 1,000 concurrent users with a response time under 1 s. | High | SLA |
-| NF-1.2 | All sensitive data must be encrypted using AES-256. | High | Security policy |
-| NF-1.3 | The system's UI must support both English and Spanish. | Medium | Stakeholder feedback |
-| NF-1.4 | System uptime must be at least 99.5% per month. | High | SLA |
-| NF-3.1.7 | The system should have adequate documentation. | High | Documentation policy |
-| NF-3.1.7.1 | The system code should be documented according to “Code Conventions for the Java Programming Language.” | High | Documentation policy |
-| NF-3.1.7.2 | The system should be described via a design document/SRS. | High | Documentation policy |
-| NF-3.1.7.3 | The system should be accompanied by an “Operational Manual” describing its proper use. | High | Documentation policy |
-| NF-3.1.7.4 | The system should have an “Implementation Plan” for proper deployment. | High | Deployment guidelines |
-
-**Verifiability and scope:** It introduces performance, security, localization, availability, and documentation, including a hierarchical requirement ID. Its sources are examples of provenance, not evidence that a real SLA or security policy exists for the student project. Values such as 1,000 users, 99.5% monthly uptime, and AES-256 must have an approved source and a feasible way to verify them before they can become the team's requirements. The documentation group illustrates decomposition, but requirements to produce *this course documentation* normally belong in assignment instructions rather than in the web application's quality requirements.
-
-**Example adaptation:** If the approved map task requires a fallback when browser geolocation is denied, a project-specific non-functional requirement might be: “NF-01: A citizen can still choose a report location manually after denying geolocation access.” Verification: deny browser permission, choose a map point, and try to submit a report. This is a concrete check, not a measured result or an additional universal obligation.
-
-</details>
 
 ## 2.3 Stakeholders and Actors
 
