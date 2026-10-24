@@ -59,23 +59,15 @@ Performance, Security, Usability, Reliability, Privacy, Maintainability
 **Objective:** Identify roles that affect requirements and distinguish stakeholders from actors who interact with the application.
 
 | Role or actor ID | Relation to the system | Relevant requirements |
-| --- | --- | --- |
-|  |  |  |
+|---|---|---|
+| A-01 | **Pet Owner**: needs care for a pet; uses the mobile application to manage pet profiles, search for helpers, book services, confirm service steps, message the helper, and review the helper. | F-001, F-002, F-003, F-004, F-005, F-007, F-008, F-009, F-010, F-017 |
+| A-02 | **Pet Helper**: offers pet care services; uses the mobile application to manage listings and availability, handle booking requests, confirm service steps, message the owner, view history and earnings, and review the owner. | F-001, F-006, F-007, F-008, F-009, F-010, F-011, F-012, F-013, F-017 |
+| A-03 | **Administrator**: oversees the platform; uses the web admin panel only to verify users, moderate listings, and resolve disputes. | F-001, F-014, F-015, F-016 |
+| A-04 | External systems (Google Maps, Google Calendar, QR Code API, OAuth provider): supporting systems used by the application; not primary actors. | F-001, F-004, F-007, F-008, F-009 |
+| Course staff | Stakeholders who review the project and its documentation; not actors in the application. | None |
 
-<details>
-<summary><strong>Connecting actors to requirements</strong></summary>
 
-**Example — actors for the disaster information application:**
 
-| Actor ID | Role | Functional requirements covered |
-| --- | --- | --- |
-| A-01 | Disaster Manager | F-003: View resources; F-004: Submit disaster reports. |
-| A-02 | Citizen | F-001: Create account; F-005: Receive notifications. |
-| A-03 | System Administrator | NF-1.2: Enforce security standards; manage users. |
-| A-04 | Visitor | F-007: View reports on map.|
-**Actor responsibilities:** An actor's role should connect to an interaction, not merely to a label. Check whether the Disaster Manager actually submits reports in the approved task. The administrator's link to NF-1.2 names a security concern, but does not by itself describe a use case; specify the administrator's real action or omit the role if it has none. Course staff interested in the result may be stakeholders without being actors in the application. The table is a starting point for reasoning, not a verified account of Crisis Guard's permissions.
-
-</details>
 
 ---
 
