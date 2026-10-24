@@ -11,7 +11,7 @@
 | ID | Description | Priority | Source | Acceptance criteria |
 | :--- | --- | :---: | --- | --- |
 | F-000 | [Observable capability] | [High/Medium/Low] | [Approved task / stakeholder request / feedback] | [Observable result] |
-| F-001 | Users can authenticate via OAuth 2.0 (external provider such as Google). | High | Approved project scope | After successful OAuth 2.0 authentication, the user is redirected to the home screen and the navigation bar shows the user's display name. If the user cancels at the provider's consent screen, the login screen is shown and no session is created. |
+| F-001 | Users can authenticate via OAuth 2.0 (external provider such as Google). | High | Approved project scope | After successful OAuth 2.0 authentication, their display name is shown in the application. If the user cancels at the provider's consent screen, the login screen is shown and no session is created. |
 | F-002 | Pet Owners can create, view, edit, and delete pet profiles with photos and notes. | High | Approved project scope | After saving a new pet profile (name, species, breed, age, notes, photo), the pet appears in the owner's pet list. Edited values are shown after saving. A deleted pet no longer appears in the list. |
 | F-003 | Pet Owners can search for helpers by location, service type, price range, and availability. | High | Approved project scope | After the owner enters search criteria, the result list contains only helpers that match all entered criteria. If no helper matches, a message stating that no results were found is shown. |
 | F-004 | Search results are displayed on an interactive map showing nearby helpers. | High | Approved project scope | Each helper in the result list is shown as a marker on the map. Selecting a marker displays the helper's name, service type, and rate. |
@@ -29,10 +29,11 @@
 | F-016 | Administrators can resolve disputes by reviewing booking history and chat records. | High | Approved project scope | For an open dispute, the admin panel shows the booking history and the chat messages of the related booking. After the administrator records an outcome (account warning, suspension, or note), the dispute status changes to Resolved and the outcome is stored with the dispute. |
 | F-017 | Both parties can exchange text messages within a booking. | Medium | Approved project scope | A text message sent by one party of a booking appears in the booking's message thread of the other party. The thread is accessible only to the two parties of that booking and, during a dispute, to the administrator. |
 
-**High** - core booking flow and to anything that makes the platform trustworthy
+**High** - the core booking flow and anything that makes the platform trustworthy
 
 **Medium** - features that support the flow but aren’t needed for it to work
 	
+Low - not used
 
 ---
 
@@ -64,7 +65,7 @@ Performance, Security, Usability, Reliability, Privacy, Maintainability
 | A-02 | **Pet Helper**: offers pet care services; uses the mobile application to manage listings and availability, handle booking requests, confirm service steps, message the owner, view history and earnings, and review the owner. | F-001, F-006, F-007, F-008, F-009, F-010, F-011, F-012, F-013, F-017 |
 | A-03 | **Administrator**: oversees the platform; uses the web admin panel only to verify users, moderate listings, and resolve disputes. | F-001, F-014, F-015, F-016 |
 | A-04 | External systems (Google Maps, Google Calendar, QR Code API, OAuth provider): supporting systems used by the application; not primary actors. | F-001, F-004, F-007, F-008, F-009 |
-| Course staff | Stakeholders who review the project and its documentation; not actors in the application. | None |
+| Course staff | Stakeholders who review the project and its documentation; not actors in the application. | No application requirements |
 
 
 
@@ -76,24 +77,17 @@ Performance, Security, Usability, Reliability, Privacy, Maintainability
 **Objective:** Record project-specific boundaries and assumptions that affect requirements or design, including their source and practical consequence. This is their authoritative location.
 
 | ID | Constraint or assumption | Source | Consequence or way to verify |
-| --- | --- | --- | --- |
-|  |  |  |  |
+| :--- | --- | --- | --- |
+| C-01 | The technical scope matches the assigned ToolShare topic: every ToolShare capability has a PetPals equivalent, and no capability beyond it is added. | Course assignment (ToolShare) | Requirements and use cases are limited to F-001 to F-017 and UC-001 to UC-014; any addition is flagged for team review. |
+| C-02 | Out of scope: real-time location tracking, in-app payment processing (wallets, deposits, escrow), machine learning or recommendation, image analysis, push notification services, and social features beyond reviews. | Approved project scope | Reminders are provided by Google Calendar; a Confirm button replaces live tracking. Payment between owner and helper takes place outside the platform, listed rates are informational, and the earnings summary (F-013) is not a financial record. Dispute outcomes are recorded as notes and sanctions without payment handling. |
+| C-03 | The booking flow is one-directional: pet owners send requests to helpers; helpers do not browse owner-posted jobs. | Approved project scope | No job-posting or application features are designed; verify against the use case list. |
+| C-04 | Four external systems are used: Google Maps API, Google Calendar API, QR Code API (the third API, in place of ToolShare's YouTube Data API), and OAuth 2.0. | Approved project scope | Each integration sits behind a service layer (NF-08); no further external services are introduced. |
+| C-05 | Pet owners and pet helpers use a mobile application; administrators use a web admin panel only. | Approved project scope | Two clients are developed; the administrator role has no mobile client. |
+| AS-01 | Users have a Google account and grant calendar access so that events can be created. | Team assumption | Test sign-in and event creation with test accounts. If access is denied, the booking stays Approved, no event is created, and the user is informed. |
+| AS-02 | Each helper listing has a location that can be shown on the map. | Team assumption | Test listings with and without a valid location. A listing cannot be saved without a valid location. |
+| AS-03 | A booking has a start time and an end time within the requested date range, so that calendar events (F-007) carry exact times. | Team assumption (F-005 specifies a date range, F-007 specifies times) | Check how the booking request captures times. <!-- TODO: team to decide --> |
+| AS-04 | The free usage tiers of the Google Maps and Google Calendar APIs are sufficient for development and demonstration. | Team assumption | Monitor API usage in the provider console during testing and check the current quota and billing terms before relying on it. |
 
-<details>
-<summary><strong>Constraints versus assumptions</strong></summary>
-
-A constraint is a restriction the team must respect; an assumption is a condition it relies on and should revisit.
-
-**Example — Crisis Guard design context:**
-
-| ID | Constraint or assumption | Source | Consequence or way to verify |
-| --- | --- | --- | --- |
-| C-01 | Approved task requires OAuth sign-in for editing a user's own reports. | Approved task **in this example scenario** | Design protected editing around the chosen provider; verify both authorized and unauthorized requests. |
-| AS-01 | Reports used for the map have usable coordinates. | Data assumption **in this example scenario** | Inspect sample and imported reports; plan how to display reports without valid coordinates. |
-
-**Constraint versus assumption:** C-01 identifies a binding decision and its architectural effect; AS-01 is testable and may prove false. Do not copy C-01 if OAuth is absent from the actual approved task. Explain the design response in the architecture without copying this table.
-
-</details>
 
 ---
 
@@ -126,23 +120,27 @@ A constraint is a restriction the team must respect; an assumption is a conditio
 
 | Requirement ID | Use case or design location | Test or verification location |
 | --- | --- | --- |
-| F-001 | [UC-001] | [ST-001, CT-001] | [Passed / Failed / Pending – reason] |
-|  |  |  |
+| F-000 | [UC-000] | [ST-001, CT-001] | [Passed / Failed / Pending – reason] |
+| F-001 | UC-001 | Pending: tests to be written after week 7 |
+| F-002 | UC-002 | Pending |
+| F-003 | UC-003 | Pending |
+| F-004 | UC-003 | Pending |
+| F-005 | UC-004 | Pending |
+| F-006 | UC-005 | Pending |
+| F-007 | UC-005 (system step) | Pending |
+| F-008 | UC-006 | Pending |
+| F-009 | UC-007 | Pending |
+| F-010 | UC-008 | Pending |
+| F-011 | UC-009 | Pending |
+| F-012 | UC-009 | Pending |
+| F-013 | UC-010 | Pending |
+| F-014 | UC-011 | Pending |
+| F-015 | UC-012 | Pending |
+| F-016 | UC-013 | Pending |
+| F-017 | UC-014 | Pending |
+| NF-01 to NF-08 | Not use-case based (see checks in 2.2) | Pending |
 
-<details>
-<summary><strong>Linking requirements, use cases, and tests</strong></summary>
 
-**Example — Crisis Guard requirement links:**
-
-| Requirement ID | Use case or design location | Test or verification location |
-| --- | --- | --- |
-| F-001 | UC-001 Register account | T-04 Valid registration; T-05 Existing email |
-| F-004 | UC-002 Submit disaster report | T-01 Valid report; T-02 Missing location |
-| NF-01 | Report location fallback | T-03 Denied geolocation permission |
-
-**Coverage and evidence:** F-004 leads to a user interaction and two concrete checks. NF-01 refers to the **adapted example requirement above**, not to the nine original NF rows; it leads to a check without inventing a separate use case. UC-002 and T-01–T-03 are example identifiers, not existing Crisis Guard documents or executed tests. In your project, link the actual use cases and checks here, and mark a missing link *pending* with a reason. Record observed test results with the tests; this table identifies where to find them.
-
-</details>
 
 ---
 
