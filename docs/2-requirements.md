@@ -2,13 +2,6 @@
 
 **Objective:** Derive identifiable, prioritized, and verifiable requirements from the approved project scope. The requirements may evolve; by the final submission, they must reflect the agreed application. Sources, decisions and links in course examples are teaching scenarios, not project records.
 
-<details>
-<summary><strong>Keeping requirements current</strong></summary>
-
-The examples use the Crisis Guard project topic. Some have useful imperfections for discussion. Sources, decisions, and verification links in these examples are **teaching scenarios**, not records of that student team's work. Replace them with the requirements and evidence of your approved project. Record significant changes in §2.5.
-
-</details>
-
 ---
 
 ## 2.1 Functional Requirements
@@ -17,34 +10,28 @@ The examples use the Crisis Guard project topic. Some have useful imperfections 
 
 | ID | Description | Priority | Source | Acceptance criteria |
 | --- | --- | --- | --- | --- |
-| F-001 | [Observable capability] | [High/Medium/Low] | [Approved task / stakeholder request / feedback] | [Observable result] |
-|  |  |  |  |  |
+| F-000 | [Observable capability] | [High/Medium/Low] | [Approved task / stakeholder request / feedback] | [Observable result] |
+| F-001 | Users can authenticate via OAuth 2.0 (external provider such as Google). | High | Approved project scope | After successful OAuth 2.0 authentication, the user is redirected to the home screen and the navigation bar shows the user's display name. If the user cancels at the provider's consent screen, the login screen is shown and no session is created. |
+| F-002 | Pet Owners can create, view, edit, and delete pet profiles with photos and notes. | High | Approved project scope | After saving a new pet profile (name, species, breed, age, notes, photo), the pet appears in the owner's pet list. Edited values are shown after saving. A deleted pet no longer appears in the list. |
+| F-003 | Pet Owners can search for helpers by location, service type, price range, and availability. | High | Approved project scope | After the owner enters search criteria, the result list contains only helpers that match all entered criteria. If no helper matches, a message stating that no results were found is shown. |
+| F-004 | Search results are displayed on an interactive map showing nearby helpers. | High | Approved project scope | Each helper in the result list is shown as a marker on the map. Selecting a marker displays the helper's name, service type, and rate. |
+| F-005 | Pet Owners can view a helper's availability calendar and send a booking request for a specific date range. | High | Approved project scope | The calendar shows available and blocked dates. After the owner selects an available date range and a service type and submits the request, the booking appears in the owner's booking list with the status Pending. Blocked dates cannot be selected. |
+| F-006 | Pet Helpers can accept or decline booking requests after reviewing the owner's profile and ratings. | High | Approved project scope | The request view shows the owner's profile and past ratings. After Accept, the booking status is Approved for both parties and the requested dates are marked unavailable in the helper's calendar. After Decline, the status is Declined, the dates remain available, and the owner sees the new status. |
+| F-007 | On booking approval, the system creates Google Calendar events for both parties with reminders before start and end. | High | Approved project scope | After approval, an event containing the start time, end time, and handover address appears in the Google Calendar of both users, with a reminder before the start and a reminder before the end. |
+| F-008 | Both parties confirm the start of service, either via QR code scan or a Confirm button (helper chooses method). | High | Approved project scope | The helper selects QR code or Confirm button when initiating the step. With QR, one party displays the code and the other scans it. The booking status changes from Approved to In Progress only after both parties have confirmed; until then it remains Approved. |
+| F-009 | Both parties confirm the completion of service, either via QR code scan or a Confirm button (helper chooses method). | High | Approved project scope | The helper selects QR code or Confirm button when initiating the step. The booking status changes from In Progress to Completed only after both parties have confirmed; until then it remains In Progress. |
+| F-010 | After completion, both parties rate and review each other. | Medium | Approved project scope | After submission, a rating from 1 to 5 stars and the review text appear on the reviewed user’s profile. The rating form is available only for bookings with the status Completed, and each party can submit one review per booking. |
+| F-011 | Pet Helpers can create and manage service listings with photos, description, rate, and availability. | High | Approved project scope | After saving a listing with service type (sitting, walking, or feeding), description, photos, rate, and availability, it appears in owner search results matching its data. Edits are visible after saving. A deleted listing no longer appears in search results. |
+| F-012 | Pet Helpers can block specific dates on their availability calendar. | High | Approved project scope | Dates blocked by the helper are shown as unavailable in the helper's calendar and in the owner's view of that calendar, and cannot be selected in a booking request. Unblocking a date makes it selectable again. |
+| F-013 | Pet Helpers can view their booking history and a summary of total earnings from completed bookings. | Medium | Approved project scope | The history lists each booking with date range, owner, service type, and status. The earnings summary shows the sum of the rates of bookings with the status Completed; Pending, Declined, and In Progress bookings are not included. |
+| F-014 | Administrators can verify new user profiles (approve or reject). | High | Approved project scope | The admin panel lists profiles awaiting verification. After Approve, the profile is shown as verified; after Reject, it is shown as rejected. The affected user can see the resulting status. |
+| F-015 | Administrators can moderate service listings. | High | Approved project scope | The admin panel lists service listings. After an administrator removes a listing, it no longer appears in search results and the helper sees that it has been removed. |
+| F-016 | Administrators can resolve disputes by reviewing booking history and chat records. | High | Approved project scope | For an open dispute, the admin panel shows the booking history and the chat messages of the related booking. After the administrator records an outcome (account warning, suspension, or note), the dispute status changes to Resolved and the outcome is stored with the dispute. |
+| F-017 | Both parties can exchange text messages within a booking. | Medium | Approved project scope | A text message sent by one party of a booking appears in the booking's message thread of the other party. The thread is accessible only to the two parties of that booking and, during a dispute, to the administrator. |
 
-<details>
-<summary><strong>Requirement sources and acceptance criteria</strong></summary>
-
-Each requirement needs a stable ID. **Source means where this requirement came from**, such as the approved project task, a stakeholder request, or feedback that changed the requirement. Describe observable behavior instead of naming a screen or framework. Use the same priority scale throughout. Explain a complex user interaction in its use case rather than copying its full flow into this table.
-
-**Example — functional requirements for a disaster information application:**
-
-The source categories show different ways a requirement might arise. These rows are teaching material; they do not establish that the published project received those requests or delivered these features.
-
-| ID | Description | Priority | Source | Acceptance criteria |
-| --- | --- | --- | --- | --- |
-| F-001 | The system allows users to register an account using an email address. | High | Stakeholder requirement | The user can register via email, receive a confirmation email, and activate the account by following the link. |
-| F-002 | The system allows password recovery via email. | Medium | Stakeholder requirement | The user can request a password reset, receive a reset link, and reset the password successfully. |
-| F-003 | The system provides a list of available resources for disasters. | High | Existing system | The user can view an updated list of resources relevant to the disaster type, location, and availability. |
-| F-004 | The system allows users to submit disaster reports with location details. | High | Requirement document | The user can submit a report detailing the disaster type, severity, and location and receive confirmation. |
-| F-005 | The system sends notifications to users about updates in their vicinity. | High | User feedback | Users receive notifications within one minute of a relevant update for their location. |
-| F-006 | Display disaster resources based on location. | High | Document analysis | Updated resource lists tailored to disaster type, location, and availability are shown. |
-
-**Acceptance criteria and provenance:** It shows registration, recovery, disaster resources, reporting, and notifications, with several kinds of sources and observable criteria. It also offers useful questions: Do F-003 and F-006 describe the same resource feature? Is the one-minute promise in F-005 agreed and testable? Does a real OAuth-only application need F-001 and F-002? Keep the original rows as material to examine, **not six features every team must implement**. A real team's source column records where *its* requirements actually came from.
-
-**Example adaptation when the approved task uses OAuth and a map:** Instead of copying email account creation and password recovery, formulate the relevant sign-in requirement, for example: “F-001: Users sign in through the approved OAuth provider; successful sign-in allows access to the actions reserved for signed-in users, while cancelling leaves those actions unavailable.” A separate map requirement could say: “F-007: Reports with locations appear as map markers; selecting a marker opens the corresponding report.” Their source would be the actual approved task or agreed stakeholder request. This adaptation is an alternative to mismatched rows, not another table every team must fill in.
-
-For a complex interaction, a short *Given / When / Then* scenario may clarify a criterion. For example: *Given* a report without a location, *when* the citizen submits it, *then* the system explains the missing location and stores no report. Do not repeat a simple criterion in both prose and Gherkin or write Gherkin for every requirement.
-
-</details>
+High - core booking flow and to anything that makes the platform trustworthy
+Medium - features that support the flow but aren’t needed for it to work
+	
 
 ---
 
