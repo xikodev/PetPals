@@ -6,55 +6,31 @@
 
 **Objective:** Keep a brief record of project meetings and weekly coordination: who participated, what was decided, and which action followed. Record a discussion that produced no decision only if it left an important issue open.
 
-**Team member abbreviations, if used below:** [Unique short code = full name. Define each code once, before its first use. Omit this line if you write full names throughout.]
+**Team member abbreviations:** MC = Marta Cekić; BK = Borna Krpan; MM = Mato Marunović; TM = Tomislav Miletić; FI = Fran Ivanković; OO = Oluwafemi Olabinjo.
 
 | Date and participants | Main topic | Decision, action, or open question | Link to task or resulting work, if available |
 | --- | --- | --- | --- |
-|  |  |  |  |
+| 12 October 2026; MC, BK, MM, TM, FI, OO ([lab 1]) | Initial ideas and choice of topic | All members get acquainted with GitHub. [MC] writes the proposal for the team's custom topic (PetPals). |  |
+| 22 October 2026; MC, BK, MM, TM, FI, OO ([WhatsApp]) | Documentation approach | [MC] writes the detailed document describing the topic. The documentation files are divided among members: [BK - database plan, MM - README, TM - 1, FI - 3, MC - 2, A]. All members join Trello and learn to work with GitHub. |  |
 
-Write one concise row per relevant meeting or weekly coordination entry. An assignment should name its owner; an unresolved point should say who will follow up. A meeting title alone does not show what changed. Do not copy the complete issue list or the transcript of a conversation into this log.
 
-<details>
-<summary><strong>From a meeting topic to an actionable record</strong></summary>
-
-**Example — Crisis Guard:**
-
-**Team member abbreviations:** AK = Ana Kovač; LM = Luka Marić; EP = Ema Petrović; NK = Nika Kralj.
-
-| Date and participants | Main topic | Decision, action, or open question | Link to task or resulting work, if available |
-| --- | --- | --- | --- |
-| 15 November 2025; AK, LM, EP | Location when browser permission is denied | Add manual map-position selection to the report form. AK handles the form; LM checks location validation. | Example issues #21 and #23. |
-| 22 November 2025; AK, EP | Map position and submitted coordinates | Client and backend currently use different location formats. EP will align the request format and show a saved report at the next internal review. | Example issue #25. |
-
-**Outcome and ownership:** “Discussed location handling” would conceal whether anyone committed to a change. These rows identify a decision or an open action, its owner, and the work to inspect. They do not create additional course checkpoints.
-
-</details>
 
 ## A.2 Work Plan
 
 **Objective:** Make the team's intended order of work and responsibility visible. Show the project weeks or other short periods used by the team, including preparation for the two formal reviews.
 
-**Current plan:** [Link to the maintained project board, Gantt view, or a brief table below. Choose one main representation and name who keeps it current.]
+**Current plan:** The live plan is the team's Trello board, kept current by team members. The table below is a weekly summary of it.
+
 
 | Period | Principal planned work | Responsible member(s) | Link to tasks, if used |
 | --- | --- | --- | --- |
-|  |  |  |  |
+| Project weeks 3-4 | Project scope, requirements, and use case documents; preparation of the 10-minute presentation for the TA | [MC, BK, MM, TM, FI, OO] |  |
+| --- | --- | --- | --- |
+| --- | --- | --- | --- |
 
 Keep the plan at a useful weekly level when a table is used; revise it when priorities change. If you use member abbreviations, define them in A.1 and use them consistently here; extend a code if two members share the same initials. The plan is not evidence that planned work was completed. Only the 8th and 14th weeks are formal course checkpoints; ordinary meetings and internal plans are not additional hand-ins.
 
-<details>
-<summary><strong>Planning the first public report flow</strong></summary>
 
-**Example — Crisis Guard:** A team can put reporting, map interaction, and deployment tasks on its existing GitHub board. The short member codes in this compact plan are defined in the A.1 example.
-
-| Period | Principal planned work | Responsible member(s) | Link to tasks, if used |
-| --- | --- | --- | --- |
-| Project week 6 | Report form and location validation | AK, LM | Example issues #21 and #23. |
-| Project week 7 | Connect the form to the report API | EP | Example issue #25. |
-
-**Reading the plan:** The short codes save space in the compact plan; their definitions at the start of A.1 apply throughout this example. When work slips, update the actual task and the plan's expectation; do not claim an unfinished feature was completed merely because its week has passed.
-
-</details>
 
 ## A.3 Activity Table
 
