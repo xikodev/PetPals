@@ -1,83 +1,31 @@
 # 1. Project Scope
 
-**Objective:** Explain the approved project task in the team's own words. A reader should understand the problem, intended users, project objective, and boundaries without first reading the detailed requirements.
-
 ## 1.1 Problem and Project Objective
 
-**Objective:** State the problem, what the approved application aims to enable, and the expected benefit for its intended users.
+Pet owners who travel or work long hours may need someone trustworthy to look after their pet for a short period. When this is arranged informally, details such as dates, handover place and whether the service actually started and finished live only in chat messages, so there is no shared record if something goes wrong.
 
-[Problem, objective, and expected benefit in the team's own words; link to the approved task if available.]
+PetPals is a peer-to-peer mobile application that lets a pet owner find verified, nearby helpers who offer pet sitting, walking or feeding. The whole interaction (discovery, booking, on-service confirmation, completion and rating) is structured around a single shared object, the booking, so neither party has to negotiate details informally. A web administration panel gives administrators the records they need to verify users, moderate listings and resolve disputes.
 
-<details>
-<summary><strong>Expected benefits and supporting evidence</strong></summary>
-
-**Example — Crisis Guard:** “During severe weather, a citizen may need to find reports relevant to their location. Crisis Guard aims to present location-specific disaster reports on a map so that the citizen can find them in one place.” This names the problem, intended user, proposed capability, and expected benefit. It does **not** claim a measured reduction in response time or integration with an emergency dispatch service. A team still needs to describe the scope approved for its own project.
-
- “The application reduces disaster response time by 30% based on simulations.” The number makes the proposed benefit vivid, but it also calls for a check: **where is the simulation and how was the percentage calculated?** If there is no such evidence, state the expected benefit without a numeric result.
-
-</details>
+The expected benefit is that owners can find and book a suitable helper in one place, both parties have a clear record of what was agreed and confirmed, and administrators can decide disputes from recorded evidence instead of conflicting accounts. We do not claim a measured improvement; the benefit is a clearer and more traceable process.
 
 ## 1.2 Intended Users and Stakeholders
 
-**Objective:** Identify the people or organizations whose needs define the task.
-
 | User or stakeholder group | Need or interest relevant to this project |
 | --- | --- |
-|  |  |
+| Pet Owner | Find a trustworthy helper near a chosen location for a specific care period, check availability, send a booking request, confirm the service at each step, and rate the helper afterwards. |
+| Pet Helper | Offer services (sitting, walking, feeding) with their own rates and availability, review incoming requests before accepting, confirm the service with the owner, and build a reputation through ratings. |
+| Administrator | Maintain trust and safety: verify new users, remove inappropriate or misclassified listings, and resolve disputes using the platform's records. Uses the web administration panel only. |
 
-<details>
-<summary><strong>Users, stakeholders, and an optional persona</strong></summary>
-
-**Example — Crisis Guard:**
-
-| User or stakeholder group | Need or interest relevant to this project |
-| --- | --- |
-| Citizen | Find nearby disaster information and submit a report with a location. |
-| Organization coordinating assistance | See reports relevant to the area and available resources, if coordination is within the approved scope. |
-
-These are distinct needs, not two fictional biographies. An actor interacts with the application; a course demonstrator interested in the result need not be an application actor. Use the roles and permissions from your approved task. A persona is optional when it helps resolve a specific design question.
-
-**Optional persona example:** Jane, a disaster management officer, needs current resource information to allocate assistance. This can help when the team must decide what a manager needs to see first. Write a persona only if it explains a design choice; a list of fictional biographies is not a course deliverable.
-
-</details>
+**Verification rule:** Pet Owners may browse and prepare booking requests, but cannot submit them until an Administrator approves their account. Pet Helpers may prepare service listings, but cannot receive booking requests until approved.
 
 ## 1.3 Project Boundaries
 
-**Objective:** State the principal capabilities within the approved task, important exclusions, and indispensable external dependencies.
+**Included:** Mobile application for Pet Owners and Pet Helpers: OAuth 2.0 sign-in, profiles, pet profiles, service listings with availability calendars that block unavailable or already-booked time slots, map-based search with service type, date and price filters, booking requests with approval or decline by the helper, confirmation of service start and completion by both parties (QR code or in-app button), with both confirmations required at each milestone, messaging scoped to a booking, mutual 1-5 ratings with short reviews, and a helper view of completed bookings and recorded earnings. Web administration panel for Administrators: user verification queue, listing moderation, dispute review with a recorded decision, platform statistics, and management of service types and basic settings.
 
-**Included:** [Principal capabilities.]  
-**Excluded or deferred:** [Important excluded capabilities and a brief reason.]  
-**External dependencies:** [Essential services or information sources, if any.]
+**Excluded or deferred:** Payment processing. Earnings are only a display of recorded totals and an administrator's dispute decision is recorded, not financially executed. Administrators do not use the mobile application, manage booking calendars, list services or take part in ratings. The settings area is a lightweight configuration feature, not a general-purpose settings system. Automated background checks and insurance or guarantee schemes are not part of the project; verification is an administrator's review of the submitted identity information.
 
-<details>
-<summary><strong>Defining the first project boundary</strong></summary>
-
-**Example — Crisis Guard:**  
-**Included:** Submitting a located disaster report and viewing reports on a map.  
-**Excluded:** Dispatching emergency services automatically; showing a report does not authorize or initiate an official dispatch.  
-**External dependency:** A map provider supplies the map view; the application retains responsibility for its own report data.
-
-This is a concrete boundary because it separates presenting information from official emergency response and identifies which system supplies the map. The exclusion and dependency are part of the **teaching scenario**, not a claim about what the published application implements; the team's approved scope and application determine those facts.
-
-**Another example of useful boundary:** Start with flood response coordination for the first implementation. Name the types of incidents or users covered by the approved project rather than promising every emergency workflow. Mention speculative AI prediction or VR training as future work only when they are meaningful next steps, not as presumed first-release features.
-
-An assertion such as “modular architecture enables rapid deployment in new regions” needs an actual design basis. Do not promise adaptability here solely because it sounds like a project benefit.
-
-Keep this overview at the level of scope: identify the main capability and its boundary without listing every requirement or design detail. Report what was actually completed and what remains unfinished in the final results, not in this initial description.
-
-</details>
+**External dependencies:** Google Maps API (map, search markers, route to the handover location), Google Calendar API (events and reminders for both parties once a booking is approved), a QR Code API (unique QR image per booking for start and completion confirmation) and OAuth 2.0 with an external provider such as Google (authentication). The application keeps responsibility for its own booking, listing, review and dispute data.
 
 ## 1.4 Existing Approaches and Project Rationale
 
-**Objective:** Explain how users currently address the problem and which remaining need motivates the approved project.
-
-[In two to four sentences, describe one current process or relevant solution, what it already provides, and the specific need motivating this project. Cite factual claims about external products or practices.]
-
-<details>
-<summary><strong>Existing approaches and project rationale</strong></summary>
-
-**Example — Crisis Guard project rationale:** “A citizen following a severe-weather event may need to consult a weather-warning source and a separate source of local reports. Crisis Guard's proposed map view brings disaster reports relevant to a selected location together. It does not replace official warnings or emergency services.” This explains the need and the project's intended boundary without claiming that all existing channels are ineffective. The first sentence is an **example user scenario**, not a measured finding about real users. If a team names a particular warning service or competing product, it should link a source. A competitor survey and screenshots are not required.
-
-If an existing solution truly influenced the project, compare only the relevant feature, such as map clarity or a needed integration. Avoid a fixed number of products or a table of criteria unrelated to the approved task.
-
-</details>
+An owner can already use an established marketplace such as [Rover](https://www.rover.com/), which lists sitting, drop-in visits and dog walking, lets owners search by address, read ratings and message sitters, processes payments through its platform and states that sitters pass a third-party background check. Rover also takes a service fee on each booking ([NerdWallet comparison of Rover and Wag](https://www.nerdwallet.com/article/finance/rover-vs-wag)). PetPals is motivated by a narrower, booking-centred workflow in which both parties confirm the start and the end of every service and an administrator can review the full record of a disputed booking. It deliberately leaves payments out of scope and is a student project with a much smaller scope than such a marketplace; it does not aim to replace it.
