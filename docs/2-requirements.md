@@ -2,107 +2,73 @@
 
 **Objective:** Derive identifiable, prioritized, and verifiable requirements from the approved project scope. The requirements may evolve; by the final submission, they must reflect the agreed application. Sources, decisions and links in course examples are teaching scenarios, not project records.
 
-<details>
-<summary><strong>Keeping requirements current</strong></summary>
-
-The examples use the Crisis Guard project topic. Some have useful imperfections for discussion. Sources, decisions, and verification links in these examples are **teaching scenarios**, not records of that student team's work. Replace them with the requirements and evidence of your approved project. Record significant changes in §2.5.
-
-</details>
-
 ---
 
 ## 2.1 Functional Requirements
 
-**Objective:** State what the application must do for its users, where each capability comes from, and what observable result counts as acceptance.
+**Objective:** State what the application must do for its users, where each capability comes from, and what observable result counts as acceptance. what the system does
 
 | ID | Description | Priority | Source | Acceptance criteria |
-| --- | --- | --- | --- | --- |
-| F-001 | [Observable capability] | [High/Medium/Low] | [Approved task / stakeholder request / feedback] | [Observable result] |
-|  |  |  |  |  |
+| :--- | --- | :---: | --- | --- |
+| F-000 | [Observable capability] | [High/Medium/Low] | [Approved task / stakeholder request / feedback] | [Observable result] |
+| F-001 | Users can authenticate via OAuth 2.0 (external provider such as Google). | High | Approved project scope | After successful OAuth 2.0 authentication, their display name is shown in the application. If the user cancels at the provider's consent screen, the login screen is shown and no session is created. |
+| F-002 | Pet Owners can create, view, edit, and delete pet profiles with photos and notes. | High | Approved project scope | After saving a new pet profile (name, species, breed, age, notes, photo), the pet appears in the owner's pet list. Edited values are shown after saving. A deleted pet no longer appears in the list. |
+| F-003 | Pet Owners can search for helpers by location, service type, price range, and availability. | High | Approved project scope | After the owner enters search criteria, the result list contains only helpers that match all entered criteria. If no helper matches, a message stating that no results were found is shown. |
+| F-004 | Search results are displayed on an interactive map showing nearby helpers. | High | Approved project scope | Each helper in the result list is shown as a marker on the map. Selecting a marker displays the helper's name, service type, and rate. |
+| F-005 | Pet Owners can view a helper's availability calendar and send a booking request for a specific date range. | High | Approved project scope | The calendar shows available and blocked dates. After the owner selects an available date range and a service type and submits the request, the booking appears in the owner's booking list with the status Pending. Blocked dates cannot be selected. |
+| F-006 | Pet Helpers can accept or decline booking requests after reviewing the owner's profile and ratings. | High | Approved project scope | The request view shows the owner's profile and past ratings. After Accept, the booking status is Approved for both parties and the requested dates are marked unavailable in the helper's calendar. After Decline, the status is Declined, the dates remain available, and the owner sees the new status. |
+| F-007 | On booking approval, the system creates Google Calendar events for both parties with reminders before start and end. | High | Approved project scope | After approval, an event containing the start time, end time, and handover address appears in the Google Calendar of both users, with a reminder before the start and a reminder before the end. |
+| F-008 | Both parties confirm the start of service, either via QR code scan or a Confirm button (helper chooses method). | High | Approved project scope | The helper selects QR code or Confirm button when initiating the step. With QR, one party displays the code and the other scans it. The booking status changes from Approved to In Progress only after both parties have confirmed; until then it remains Approved. |
+| F-009 | Both parties confirm the completion of service, either via QR code scan or a Confirm button (helper chooses method). | High | Approved project scope | The helper selects QR code or Confirm button when initiating the step. The booking status changes from In Progress to Completed only after both parties have confirmed; until then it remains In Progress. |
+| F-010 | After completion, both parties rate and review each other. | Medium | Approved project scope | After submission, a rating from 1 to 5 stars and the review text appear on the reviewed user’s profile. The rating form is available only for bookings with the status Completed, and each party can submit one review per booking. |
+| F-011 | Pet Helpers can create and manage service listings with photos, description, rate, and availability. | High | Approved project scope | After saving a listing with service type (sitting, walking, or feeding), description, photos, rate, and availability, it appears in owner search results matching its data. Edits are visible after saving. A deleted listing no longer appears in search results. |
+| F-012 | Pet Helpers can block specific dates on their availability calendar. | High | Approved project scope | Dates blocked by the helper are shown as unavailable in the helper's calendar and in the owner's view of that calendar, and cannot be selected in a booking request. Unblocking a date makes it selectable again. |
+| F-013 | Pet Helpers can view their booking history and a summary of total earnings from completed bookings. | Medium | Approved project scope | The history lists each booking with date range, owner, service type, and status. The earnings summary shows the sum of the rates of bookings with the status Completed; Pending, Declined, and In Progress bookings are not included. |
+| F-014 | Administrators can verify new user profiles (approve or reject). | High | Approved project scope | The admin panel lists profiles awaiting verification. After Approve, the profile is shown as verified; after Reject, it is shown as rejected. The affected user can see the resulting status. |
+| F-015 | Administrators can moderate service listings. | High | Approved project scope | The admin panel lists service listings. After an administrator removes a listing, it no longer appears in search results and the helper sees that it has been removed. |
+| F-016 | Administrators can resolve disputes by reviewing booking history and chat records. | High | Approved project scope | For an open dispute, the admin panel shows the booking history and the chat messages of the related booking. After the administrator records an outcome (account warning, suspension, or note), the dispute status changes to Resolved and the outcome is stored with the dispute. |
+| F-017 | Both parties can exchange text messages within a booking. | Medium | Approved project scope | A text message sent by one party of a booking appears in the booking's message thread of the other party. The thread is accessible only to the two parties of that booking and, during a dispute, to the administrator. |
 
-<details>
-<summary><strong>Requirement sources and acceptance criteria</strong></summary>
+**High** - the core booking flow and anything that makes the platform trustworthy
 
-Each requirement needs a stable ID. **Source means where this requirement came from**, such as the approved project task, a stakeholder request, or feedback that changed the requirement. Describe observable behavior instead of naming a screen or framework. Use the same priority scale throughout. Explain a complex user interaction in its use case rather than copying its full flow into this table.
-
-**Example — functional requirements for a disaster information application:**
-
-The source categories show different ways a requirement might arise. These rows are teaching material; they do not establish that the published project received those requests or delivered these features.
-
-| ID | Description | Priority | Source | Acceptance criteria |
-| --- | --- | --- | --- | --- |
-| F-001 | The system allows users to register an account using an email address. | High | Stakeholder requirement | The user can register via email, receive a confirmation email, and activate the account by following the link. |
-| F-002 | The system allows password recovery via email. | Medium | Stakeholder requirement | The user can request a password reset, receive a reset link, and reset the password successfully. |
-| F-003 | The system provides a list of available resources for disasters. | High | Existing system | The user can view an updated list of resources relevant to the disaster type, location, and availability. |
-| F-004 | The system allows users to submit disaster reports with location details. | High | Requirement document | The user can submit a report detailing the disaster type, severity, and location and receive confirmation. |
-| F-005 | The system sends notifications to users about updates in their vicinity. | High | User feedback | Users receive notifications within one minute of a relevant update for their location. |
-| F-006 | Display disaster resources based on location. | High | Document analysis | Updated resource lists tailored to disaster type, location, and availability are shown. |
-
-**Acceptance criteria and provenance:** It shows registration, recovery, disaster resources, reporting, and notifications, with several kinds of sources and observable criteria. It also offers useful questions: Do F-003 and F-006 describe the same resource feature? Is the one-minute promise in F-005 agreed and testable? Does a real OAuth-only application need F-001 and F-002? Keep the original rows as material to examine, **not six features every team must implement**. A real team's source column records where *its* requirements actually came from.
-
-**Example adaptation when the approved task uses OAuth and a map:** Instead of copying email account creation and password recovery, formulate the relevant sign-in requirement, for example: “F-001: Users sign in through the approved OAuth provider; successful sign-in allows access to the actions reserved for signed-in users, while cancelling leaves those actions unavailable.” A separate map requirement could say: “F-007: Reports with locations appear as map markers; selecting a marker opens the corresponding report.” Their source would be the actual approved task or agreed stakeholder request. This adaptation is an alternative to mismatched rows, not another table every team must fill in.
-
-For a complex interaction, a short *Given / When / Then* scenario may clarify a criterion. For example: *Given* a report without a location, *when* the citizen submits it, *then* the system explains the missing location and stores no report. Do not repeat a simple criterion in both prose and Gherkin or write Gherkin for every requirement.
-
-</details>
+**Medium** - features that support the flow but aren’t needed for it to work
+	
+Low - not used
 
 ---
 
 ## 2.2 Non-Functional Requirements
 
-**Objective:** Specify the important quality properties and operating conditions of the approved application in a way the team can reasonably check.
+**Objective:** Specify the important quality properties and operating conditions of the approved application in a way the team can reasonably check. how well it does it and under what conditions
 
 | ID | Description | Priority | Source |
-| --- | --- | --- | --- |
-|  |  |  |  |
+| :--- | --- | :---: | --- |
+| NF-01 | Search results are returned within 3 seconds under normal conditions. Check: measure the response time of a set of sample searches on the deployed application with a test data set (100 helpers). | High | Team decision |
+| NF-02 | A map with up to 100 helper markers loads all markers and stays responsive to panning and zooming. Check: load a test data set of 100 markers and pan and zoom the map. | Medium | Team decision; ToolShare assignment (map display) |
+| NF-03 | All client-server traffic uses HTTPS. Any stored passwords are hashed, and stored OAuth tokens are encrypted. Check: inspect the deployed configuration and the database contents. | High | Team decision |
+| NF-04 | Authentication uses OAuth 2.0, and a session expires after a period of inactivity (30 min). Check: remain inactive beyond the timeout and attempt a protected action. | High | ToolShare assignment (OAuth 2.0 login); team decision |
+| NF-05 | The mobile application is usable on common Android screen sizes, and the admin panel is usable in desktop browsers. Check: run the application on several emulated Android screen sizes and in at least two desktop browsers. | Medium | Team decision |
+| NF-06 | If creating a Google Calendar event fails, the system retries three times, and the booking stays Approved. Check: simulate a failed API call and observe the retry and the booking status. | Medium | ToolShare assignment (Google Calendar integration); team decision |
+| NF-07 | Deleting an account removes the user’s personal data (GDPR-aligned); booking records shared with other users are kept in anonymized form. Check: delete a test account and verify that no personal data remains in the database. | High | GDPR (right to erasure); team decision |
+| NF-08 | External APIs (Google Maps, Google Calendar, QR Code API) are accessed only through service-layer abstractions. Check: code review of the service layer. | Medium | Team decision |
 
-<details>
-<summary><strong>Choosing verifiable non-functional requirements</strong></summary>
+Performance, Security, Usability, Reliability, Privacy, Maintainability
 
-Relevant properties may concern usability, accessibility, security, performance, or reliability. Choose project-specific properties and describe how they can be checked. The requirement says what is expected; actual observations and evidence belong with the tests, not in a second result column here.
-
-**Example — non-functional requirements for the disaster information application:**
-
-| ID | Description | Priority | Source |
-| --- | --- | --- | --- |
-| NF-1.1 | The system must support 1,000 concurrent users with a response time under 1 s. | High | SLA |
-| NF-1.2 | All sensitive data must be encrypted using AES-256. | High | Security policy |
-| NF-1.3 | The system's UI must support both English and Spanish. | Medium | Stakeholder feedback |
-| NF-1.4 | System uptime must be at least 99.5% per month. | High | SLA |
-| NF-3.1.7 | The system should have adequate documentation. | High | Documentation policy |
-| NF-3.1.7.1 | The system code should be documented according to “Code Conventions for the Java Programming Language.” | High | Documentation policy |
-| NF-3.1.7.2 | The system should be described via a design document/SRS. | High | Documentation policy |
-| NF-3.1.7.3 | The system should be accompanied by an “Operational Manual” describing its proper use. | High | Documentation policy |
-| NF-3.1.7.4 | The system should have an “Implementation Plan” for proper deployment. | High | Deployment guidelines |
-
-**Verifiability and scope:** It introduces performance, security, localization, availability, and documentation, including a hierarchical requirement ID. Its sources are examples of provenance, not evidence that a real SLA or security policy exists for the student project. Values such as 1,000 users, 99.5% monthly uptime, and AES-256 must have an approved source and a feasible way to verify them before they can become the team's requirements. The documentation group illustrates decomposition, but requirements to produce *this course documentation* normally belong in assignment instructions rather than in the web application's quality requirements.
-
-**Example adaptation:** If the approved map task requires a fallback when browser geolocation is denied, a project-specific non-functional requirement might be: “NF-01: A citizen can still choose a report location manually after denying geolocation access.” Verification: deny browser permission, choose a map point, and try to submit a report. This is a concrete check, not a measured result or an additional universal obligation.
-
-</details>
 
 ## 2.3 Stakeholders and Actors
 
 **Objective:** Identify roles that affect requirements and distinguish stakeholders from actors who interact with the application.
 
 | Role or actor ID | Relation to the system | Relevant requirements |
-| --- | --- | --- |
-|  |  |  |
+|---|---|---|
+| A-01 | **Pet Owner**: needs care for a pet; uses the mobile application to manage pet profiles, search for helpers, book services, confirm service steps, message the helper, and review the helper. | F-001, F-002, F-003, F-004, F-005, F-007, F-008, F-009, F-010, F-017 |
+| A-02 | **Pet Helper**: offers pet care services; uses the mobile application to manage listings and availability, handle booking requests, confirm service steps, message the owner, view history and earnings, and review the owner. | F-001, F-006, F-007, F-008, F-009, F-010, F-011, F-012, F-013, F-017 |
+| A-03 | **Administrator**: oversees the platform; uses the web admin panel only to verify users, moderate listings, and resolve disputes. | F-001, F-014, F-015, F-016 |
+| A-04 | External systems (Google Maps, Google Calendar, QR Code API, OAuth provider): supporting systems used by the application; not primary actors. | F-001, F-004, F-007, F-008, F-009 |
+| Course staff | Stakeholders who review the project and its documentation; not actors in the application. | No application requirements |
 
-<details>
-<summary><strong>Connecting actors to requirements</strong></summary>
 
-**Example — actors for the disaster information application:**
 
-| Actor ID | Role | Functional requirements covered |
-| --- | --- | --- |
-| A-01 | Disaster Manager | F-003: View resources; F-004: Submit disaster reports. |
-| A-02 | Citizen | F-001: Create account; F-005: Receive notifications. |
-| A-03 | System Administrator | NF-1.2: Enforce security standards; manage users. |
-| A-04 | Visitor | F-007: View reports on map.|
-**Actor responsibilities:** An actor's role should connect to an interaction, not merely to a label. Check whether the Disaster Manager actually submits reports in the approved task. The administrator's link to NF-1.2 names a security concern, but does not by itself describe a use case; specify the administrator's real action or omit the role if it has none. Course staff interested in the result may be stakeholders without being actors in the application. The table is a starting point for reasoning, not a verified account of Crisis Guard's permissions.
-
-</details>
 
 ---
 
@@ -111,24 +77,17 @@ Relevant properties may concern usability, accessibility, security, performance,
 **Objective:** Record project-specific boundaries and assumptions that affect requirements or design, including their source and practical consequence. This is their authoritative location.
 
 | ID | Constraint or assumption | Source | Consequence or way to verify |
-| --- | --- | --- | --- |
-|  |  |  |  |
+| :--- | --- | --- | --- |
+| C-01 | The technical scope matches the assigned ToolShare topic: every ToolShare capability has a PetPals equivalent, and no capability beyond it is added. | Course assignment (ToolShare) | Requirements and use cases are limited to F-001 to F-017 and UC-001 to UC-014; any addition is flagged for team review. |
+| C-02 | Out of scope: real-time location tracking, in-app payment processing (wallets, deposits, escrow), machine learning or recommendation, image analysis, push notification services, and social features beyond reviews. | Approved project scope | Reminders are provided by Google Calendar; a Confirm button replaces live tracking. Payment between owner and helper takes place outside the platform, listed rates are informational, and the earnings summary (F-013) is not a financial record. Dispute outcomes are recorded as notes and sanctions without payment handling. |
+| C-03 | The booking flow is one-directional: pet owners send requests to helpers; helpers do not browse owner-posted jobs. | Approved project scope | No job-posting or application features are designed; verify against the use case list. |
+| C-04 | Four external systems are used: Google Maps API, Google Calendar API, QR Code API (the third API, in place of ToolShare's YouTube Data API), and OAuth 2.0. | Approved project scope | Each integration sits behind a service layer (NF-08); no further external services are introduced. |
+| C-05 | Pet owners and pet helpers use a mobile application; administrators use a web admin panel only. | Approved project scope | Two clients are developed; the administrator role has no mobile client. |
+| AS-01 | Users have a Google account and grant calendar access so that events can be created. | Team assumption | Test sign-in and event creation with test accounts. If access is denied, the booking stays Approved, no event is created, and the user is informed. |
+| AS-02 | Each helper listing has a location that can be shown on the map. | Team assumption | Test listings with and without a valid location. A listing cannot be saved without a valid location. |
+| AS-03 | A booking has a start time and an end time within the requested date range, so that calendar events (F-007) carry exact times. | Team assumption (F-005 specifies a date range, F-007 specifies times) | Check how the booking request captures times. <!-- TODO: team to decide --> |
+| AS-04 | The free usage tiers of the Google Maps and Google Calendar APIs are sufficient for development and demonstration. | Team assumption | Monitor API usage in the provider console during testing and check the current quota and billing terms before relying on it. |
 
-<details>
-<summary><strong>Constraints versus assumptions</strong></summary>
-
-A constraint is a restriction the team must respect; an assumption is a condition it relies on and should revisit.
-
-**Example — Crisis Guard design context:**
-
-| ID | Constraint or assumption | Source | Consequence or way to verify |
-| --- | --- | --- | --- |
-| C-01 | Approved task requires OAuth sign-in for editing a user's own reports. | Approved task **in this example scenario** | Design protected editing around the chosen provider; verify both authorized and unauthorized requests. |
-| AS-01 | Reports used for the map have usable coordinates. | Data assumption **in this example scenario** | Inspect sample and imported reports; plan how to display reports without valid coordinates. |
-
-**Constraint versus assumption:** C-01 identifies a binding decision and its architectural effect; AS-01 is testable and may prove false. Do not copy C-01 if OAuth is absent from the actual approved task. Explain the design response in the architecture without copying this table.
-
-</details>
 
 ---
 
@@ -161,23 +120,27 @@ A constraint is a restriction the team must respect; an assumption is a conditio
 
 | Requirement ID | Use case or design location | Test or verification location |
 | --- | --- | --- |
-| F-001 | [UC-001] | [ST-001, CT-001] | [Passed / Failed / Pending – reason] |
-|  |  |  |
+| F-000 | [UC-000] | [ST-001, CT-001] | [Passed / Failed / Pending – reason] |
+| F-001 | UC-001 | Pending: tests to be written after week 7 |
+| F-002 | UC-002 | Pending |
+| F-003 | UC-003 | Pending |
+| F-004 | UC-003 | Pending |
+| F-005 | UC-004 | Pending |
+| F-006 | UC-005 | Pending |
+| F-007 | UC-005 (system step) | Pending |
+| F-008 | UC-006 | Pending |
+| F-009 | UC-007 | Pending |
+| F-010 | UC-008 | Pending |
+| F-011 | UC-009 | Pending |
+| F-012 | UC-009 | Pending |
+| F-013 | UC-010 | Pending |
+| F-014 | UC-011 | Pending |
+| F-015 | UC-012 | Pending |
+| F-016 | UC-013 | Pending |
+| F-017 | UC-014 | Pending |
+| NF-01 to NF-08 | Not use-case based (see checks in 2.2) | Pending |
 
-<details>
-<summary><strong>Linking requirements, use cases, and tests</strong></summary>
 
-**Example — Crisis Guard requirement links:**
-
-| Requirement ID | Use case or design location | Test or verification location |
-| --- | --- | --- |
-| F-001 | UC-001 Register account | T-04 Valid registration; T-05 Existing email |
-| F-004 | UC-002 Submit disaster report | T-01 Valid report; T-02 Missing location |
-| NF-01 | Report location fallback | T-03 Denied geolocation permission |
-
-**Coverage and evidence:** F-004 leads to a user interaction and two concrete checks. NF-01 refers to the **adapted example requirement above**, not to the nine original NF rows; it leads to a check without inventing a separate use case. UC-002 and T-01–T-03 are example identifiers, not existing Crisis Guard documents or executed tests. In your project, link the actual use cases and checks here, and mark a missing link *pending* with a reason. Record observed test results with the tests; this table identifies where to find them.
-
-</details>
 
 ---
 
