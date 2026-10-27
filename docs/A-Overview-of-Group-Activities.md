@@ -6,55 +6,38 @@
 
 **Objective:** Keep a brief record of project meetings and weekly coordination: who participated, what was decided, and which action followed. Record a discussion that produced no decision only if it left an important issue open.
 
-**Team member abbreviations, if used below:** [Unique short code = full name. Define each code once, before its first use. Omit this line if you write full names throughout.]
+**Team member abbreviations:** MC = Marta Cekić; BK = Borna Krpan; MM = Mato Marunović; TM = Tomislav Miletić; FI = Fran Ivanković; OO = Oluwafemi Olabinjo.
 
 | Date and participants | Main topic | Decision, action, or open question | Link to task or resulting work, if available |
 | --- | --- | --- | --- |
-|  |  |  |  |
+| 12 October 2026; MC, BK, MM, TM, FI, OO | Initial ideas and choice of topic | All members got acquainted with GitHub. The team co-wrote the proposal for the team's custom topic (PetPals). |  |
+| 22 October 2026; MC, BK, MM, TM, FI | Documentation approach | Written the detailed document describing the topic. The documentation files are divided among members: [BK - database plan, MM - README, TM - 1-Project-Scope.md, FI - 3-use-cases.md, MC - 2-requirements.md]. All members join Trello and learn to work with GitHub. |  |
+| 27 October 2026; MC, BK, MM, TM, FI | Application Architecture | Decided on which technologies will be used to implement the project: Node.js, PostgreSQL, React. Decided to create a progressive web app. | --- |
+| week 5 | Development | --- | --- |
+| week 6 | Testing and final checks | --- | --- |
 
-Write one concise row per relevant meeting or weekly coordination entry. An assignment should name its owner; an unresolved point should say who will follow up. A meeting title alone does not show what changed. Do not copy the complete issue list or the transcript of a conversation into this log.
 
-<details>
-<summary><strong>From a meeting topic to an actionable record</strong></summary>
 
-**Example — Crisis Guard:**
-
-**Team member abbreviations:** AK = Ana Kovač; LM = Luka Marić; EP = Ema Petrović; NK = Nika Kralj.
-
-| Date and participants | Main topic | Decision, action, or open question | Link to task or resulting work, if available |
-| --- | --- | --- | --- |
-| 15 November 2025; AK, LM, EP | Location when browser permission is denied | Add manual map-position selection to the report form. AK handles the form; LM checks location validation. | Example issues #21 and #23. |
-| 22 November 2025; AK, EP | Map position and submitted coordinates | Client and backend currently use different location formats. EP will align the request format and show a saved report at the next internal review. | Example issue #25. |
-
-**Outcome and ownership:** “Discussed location handling” would conceal whether anyone committed to a change. These rows identify a decision or an open action, its owner, and the work to inspect. They do not create additional course checkpoints.
-
-</details>
 
 ## A.2 Work Plan
 
 **Objective:** Make the team's intended order of work and responsibility visible. Show the project weeks or other short periods used by the team, including preparation for the two formal reviews.
 
-**Current plan:** [Link to the maintained project board, Gantt view, or a brief table below. Choose one main representation and name who keeps it current.]
+**Current plan:** The live plan is the team's Trello board, kept current by team members. The table below is a weekly summary of it.
 
-| Period | Principal planned work | Responsible member(s) | Link to tasks, if used |
-| --- | --- | --- | --- |
-|  |  |  |  |
+
+| Period | Principal planned work | Responsible member(s) |
+| --- | --- | --- |
+| Project week 2 | All team members to join GitHub and Trello board | [MC, BK, MM, TM, FI, OO] |
+| Project week 3 | Project scope, requirements, and use case documents; README.md | [MC, BK, MM, TM, FI, OO] |
+| Project week 4 | Decide on technologies and fill out document 4 | [MC, BK, MM, TM, FI] |
+| Project week 5 | Start creating the first versions and features | [MC, BK, MM, TM, FI] |
+| Project week 6 | Finish up testing the product and features, prepare for the first project-cycle submission. | [MC, BK, MM, TM, FI] |
+
 
 Keep the plan at a useful weekly level when a table is used; revise it when priorities change. If you use member abbreviations, define them in A.1 and use them consistently here; extend a code if two members share the same initials. The plan is not evidence that planned work was completed. Only the 8th and 14th weeks are formal course checkpoints; ordinary meetings and internal plans are not additional hand-ins.
 
-<details>
-<summary><strong>Planning the first public report flow</strong></summary>
 
-**Example — Crisis Guard:** A team can put reporting, map interaction, and deployment tasks on its existing GitHub board. The short member codes in this compact plan are defined in the A.1 example.
-
-| Period | Principal planned work | Responsible member(s) | Link to tasks, if used |
-| --- | --- | --- | --- |
-| Project week 6 | Report form and location validation | AK, LM | Example issues #21 and #23. |
-| Project week 7 | Connect the form to the report API | EP | Example issue #25. |
-
-**Reading the plan:** The short codes save space in the compact plan; their definitions at the start of A.1 apply throughout this example. When work slips, update the actual task and the plan's expectation; do not claim an unfinished feature was completed merely because its week has passed.
-
-</details>
 
 ## A.3 Activity Table
 
@@ -62,25 +45,20 @@ Keep the plan at a useful weekly level when a table is used; revise it when prio
 
 | Activity or deliverable | Member | Reported hours | Representative result or link |
 | --- | --- | --- | --- |
-|  |  |  |  |
+| Project proposal and topic selection | all | 2 |  |
+| Requirements Analysis (Doc 2) | MC | 4 | --- |
+| Use Cases (Doc 3) | FI | 4 | --- |
+| Project Scope (Doc 1) | TM | 3 | --- |
+| README | MM | 2.5 | --- |
+| Repository Setup | BK | 1 | --- |
+| Database Design Draft | BK | 4 | --- |
+| Architecture & Design (Doc 4) | all | 6 | --- |
+| Mutual PR Review | all | 4 | --- |
+| --- | --- | --- | --- |
+| --- | --- | --- | --- |
 
 Use project-specific activities rather than a mandatory row for every Wiki chapter or every UML diagram. The team should record hours consistently and avoid double-counting joint work; the representative result explains what the reported effort produced. Hours are self-reported effort, not a measure of quality or a substitute for examining code and artefacts.
 
-<details>
-<summary><strong>Recording feature, integration, and documentation work</strong></summary>
-
-**Example — Crisis Guard:** The table distinguishes implementation, integration, and documentation work and links each activity to a result.
-
-| Activity or deliverable | Member | Reported hours | Representative result or link |
-| --- | --- | --- | --- |
-| Manual map-position input | Ana | 8 | Example issue #21; frontend change. |
-| Report validation and persistence | Luka | 10 | Example issue #23; backend change and test. |
-| Client–API integration and public deployment | Ema | 7 | Example issue #25; deployment revision. |
-| Report-submission use case and permission-denied check | Nika | 5 | Example UC-002 revision and test ST-03. |
-
-**Effort and result:** The final column makes it possible to discuss a contribution without treating a high hour count as proof of delivery. A team can report a genuinely time-consuming unresolved integration problem as work and describe its outcome honestly.
-
-</details>
 
 ## A.4 Change Overview Diagram
 
@@ -96,7 +74,10 @@ The graph can show when commits were made and by whom, but it does not reveal al
 
 | Challenge | Action taken | Outcome or remaining limit |
 | --- | --- | --- |
-|  |  |  |
+| The team had varying levels of experience with Git and GitHub, and most members were unfamiliar with pull requests, branches, and merge conflicts. | BK guided the team through the initial repository setup and demonstrated the branching and PR workflow. | All team members successfully created branches, opened pull requests, and merged code without corrupting the main branch. |
+| --- | --- | --- |
+| --- | --- | --- |
+| --- | --- | --- |
 
 <details>
 <summary><strong>Resolving a location-format mismatch</strong></summary>
