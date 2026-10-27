@@ -10,9 +10,9 @@
 
 | Date and participants | Main topic | Decision, action, or open question | Link to task or resulting work, if available |
 | --- | --- | --- | --- |
-| 12 October 2026; MC, BK, MM, TM, FI, OO | Initial ideas and choice of topic | All members get acquainted with GitHub. Team writes the proposal for the team's custom topic (PetPals). |  |
+| 12 October 2026; MC, BK, MM, TM, FI, OO | Initial ideas and choice of topic | All members got acquainted with GitHub. The team co-wrote the proposal for the team's custom topic (PetPals). |  |
 | 22 October 2026; MC, BK, MM, TM, FI | Documentation approach | Written the detailed document describing the topic. The documentation files are divided among members: [BK - database plan, MM - README, TM - 1-Project-Scope.md, FI - 3-use-cases.md, MC - 2-requirements.md]. All members join Trello and learn to work with GitHub. |  |
-| 27 October 2026; MC, BK, MM, TM, FI | Application Architecture | Decided on which technologies will be used to implement the project: Node.js, Postgre SQL, React. Decided to create a progressive web app. | --- |
+| 27 October 2026; MC, BK, MM, TM, FI | Application Architecture | Decided on which technologies will be used to implement the project: Node.js, PostgreSQL, React. Decided to create a progressive web app. | --- |
 | week 5 | Development | --- | --- |
 | week 6 | Testing and final checks | --- | --- |
 
@@ -53,7 +53,7 @@ Keep the plan at a useful weekly level when a table is used; revise it when prio
 | Repository Setup | BK | 1 | --- |
 | Database Design Draft | BK | 4 | --- |
 | Architecture & Design (Doc 4) | all | 6 | --- |
-| --- | --- | --- | --- |
+| Mutual PR Review | all | 4 | --- |
 | --- | --- | --- | --- |
 | --- | --- | --- | --- |
 
@@ -74,7 +74,10 @@ The graph can show when commits were made and by whom, but it does not reveal al
 
 | Challenge | Action taken | Outcome or remaining limit |
 | --- | --- | --- |
-|  |  |  |
+| The team had varying levels of experience with Git and GitHub, and most members were unfamiliar with pull requests, branches, and merge conflicts. | BK guided the team through the initial repository setup and demonstrated the branching and PR workflow. | All team members successfully created branches, opened pull requests, and merged code without corrupting the main branch. |
+| --- | --- | --- |
+| --- | --- | --- |
+| --- | --- | --- |
 
 <details>
 <summary><strong>Resolving a location-format mismatch</strong></summary>
