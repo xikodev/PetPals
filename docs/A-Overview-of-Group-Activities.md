@@ -10,8 +10,9 @@
 
 | Date and participants | Main topic | Decision, action, or open question | Link to task or resulting work, if available |
 | --- | --- | --- | --- |
-| 12 October 2026; MC, BK, MM, TM, FI, OO ([lab 1]) | Initial ideas and choice of topic | All members get acquainted with GitHub. [MC] writes the proposal for the team's custom topic (PetPals). |  |
-| 22 October 2026; MC, BK, MM, TM, FI, OO ([WhatsApp]) | Documentation approach | [MC] writes the detailed document describing the topic. The documentation files are divided among members: [BK - database plan, MM - README, TM - 1, FI - 3, MC - 2, A]. All members join Trello and learn to work with GitHub. |  |
+| 12 October 2026; MC, BK, MM, TM, FI, OO ([lab 1]) | Initial ideas and choice of topic | All members get acquainted with GitHub. Team writes the proposal for the team's custom topic (PetPals). |  |
+| 22 October 2026; MC, BK, MM, TM, FI,([WhatsApp]) | Documentation approach | Written the detailed document describing the topic. The documentation files are divided among members: [BK - database plan, MM - README, TM - 1, FI - 3, MC - 2]. All members join Trello and learn to work with GitHub. |  |
+| 27 October 2026; MC, BK, MM, TM, FI | Application Architecture | Decided on which technologies will be used to implement the project: Node.js, Postgre SQL, React. Decided to create a progressive web app. | --- |
 
 
 
@@ -24,9 +25,12 @@
 
 | Period | Principal planned work | Responsible member(s) | Link to tasks, if used |
 | --- | --- | --- | --- |
-| Project weeks 3-4 | Project scope, requirements, and use case documents; preparation of the 10-minute presentation for the TA | [MC, BK, MM, TM, FI, OO] |  |
-| --- | --- | --- | --- |
-| --- | --- | --- | --- |
+| Project week 2 | All team members to join GitHub and Trello board | [MC, BK, MM, TM, FI, OO] | --- |
+| Project week 3 | Project scope, requirements, and use case documents; README.md | [MC, BK, MM, TM, FI, OO] | --- |
+| Project week 4 | Decide on technologies and fill out document 4 | [MC, BK, MM, TM, FI] | --- |
+| Project week 5 | --- | --- | --- |
+| Project week 6 | --- | --- | --- |
+
 
 Keep the plan at a useful weekly level when a table is used; revise it when priorities change. If you use member abbreviations, define them in A.1 and use them consistently here; extend a code if two members share the same initials. The plan is not evidence that planned work was completed. Only the 8th and 14th weeks are formal course checkpoints; ordinary meetings and internal plans are not additional hand-ins.
 
