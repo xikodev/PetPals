@@ -45,25 +45,20 @@ Keep the plan at a useful weekly level when a table is used; revise it when prio
 
 | Activity or deliverable | Member | Reported hours | Representative result or link |
 | --- | --- | --- | --- |
-|  |  |  |  |
+| Project proposal and topic selection | all | 2 |  |
+| Requirements Analysis (Doc 2) | MC | 4 | --- |
+| Use Cases (Doc 3) | FI | 4 | --- |
+| Project Scope (Doc 1) | TM | 3 | --- |
+| README | MM | 2.5 | --- |
+| Repository Setup | BK | 1 | --- |
+| Database Design Draft | BK | 4 | --- |
+| Architecture & Design (Doc 4) | all | 6 | --- |
+| --- | --- | --- | --- |
+| --- | --- | --- | --- |
+| --- | --- | --- | --- |
 
 Use project-specific activities rather than a mandatory row for every Wiki chapter or every UML diagram. The team should record hours consistently and avoid double-counting joint work; the representative result explains what the reported effort produced. Hours are self-reported effort, not a measure of quality or a substitute for examining code and artefacts.
 
-<details>
-<summary><strong>Recording feature, integration, and documentation work</strong></summary>
-
-**Example — Crisis Guard:** The table distinguishes implementation, integration, and documentation work and links each activity to a result.
-
-| Activity or deliverable | Member | Reported hours | Representative result or link |
-| --- | --- | --- | --- |
-| Manual map-position input | Ana | 8 | Example issue #21; frontend change. |
-| Report validation and persistence | Luka | 10 | Example issue #23; backend change and test. |
-| Client–API integration and public deployment | Ema | 7 | Example issue #25; deployment revision. |
-| Report-submission use case and permission-denied check | Nika | 5 | Example UC-002 revision and test ST-03. |
-
-**Effort and result:** The final column makes it possible to discuss a contribution without treating a high hour count as proof of delivery. A team can report a genuinely time-consuming unresolved integration problem as work and describe its outcome honestly.
-
-</details>
 
 ## A.4 Change Overview Diagram
 
