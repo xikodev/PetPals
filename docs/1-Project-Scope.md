@@ -1,6 +1,8 @@
 # 1. Project Scope
+**Objective:** Explain the approved project task in the team's own words. A reader should understand the problem, intended users, project objective, and boundaries without first reading the detailed requirements.
 
 ## 1.1 Problem and Project Objective
+**Objective:** State the problem, what the approved application aims to enable, and the expected benefit for its intended users.
 
 Pet owners who travel or work long hours may need someone trustworthy to look after their pet for a short period. When this is arranged informally, details such as dates, handover place and whether the service actually started and finished live only in chat messages, so there is no shared record if something goes wrong.
 
@@ -9,6 +11,7 @@ PetPals is a peer-to-peer mobile application that lets a pet owner find verified
 The expected benefit is that owners can find and book a suitable helper in one place, both parties have a clear record of what was agreed and confirmed, and administrators can decide disputes from recorded evidence instead of conflicting accounts. We do not claim a measured improvement; the benefit is a clearer and more traceable process.
 
 ## 1.2 Intended Users and Stakeholders
+**Objective:** Identify the people or organizations whose needs define the task.
 
 | User or stakeholder group | Need or interest relevant to this project |
 | --- | --- |
@@ -19,6 +22,7 @@ The expected benefit is that owners can find and book a suitable helper in one p
 **Verification rule:** Pet Owners may browse and prepare booking requests, but cannot submit them until an Administrator approves their account. Pet Helpers may prepare service listings, but cannot receive booking requests until approved.
 
 ## 1.3 Project Boundaries
+**Objective:** State the principal capabilities within the approved task, important exclusions, and indispensable external dependencies.
 
 **Included:** Mobile application for Pet Owners and Pet Helpers: OAuth 2.0 sign-in, profiles, pet profiles, service listings with availability calendars that block unavailable or already-booked time slots, map-based search with service type, date and price filters, booking requests with approval or decline by the helper, confirmation of service start and completion by both parties (QR code or in-app button), with both confirmations required at each milestone, messaging scoped to a booking, reporting a problem with a booking, mutual 1-5 ratings with short reviews, and a helper view of completed bookings and recorded earnings. Web administration panel for Administrators: user verification queue, listing moderation, and dispute review with a recorded decision.
 
