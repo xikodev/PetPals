@@ -38,13 +38,10 @@ skinparam usecase {
 ' Primary actors
 ' ==============================================================================
 
-actor "Registered User" as User
 actor "Pet Owner" as Owner
 actor "Pet Helper" as Helper
 actor "Administrator" as Admin
 
-Owner -|> User
-Helper -|> User
 
 ' Layout-only relationships.
 Owner -[hidden]down-> Helper
@@ -89,19 +86,22 @@ rectangle "PetPals System" as PetPals {
     (Verify users) as UC_Verify
     (Moderate listings) as UC_Moderate
     (Resolve dispute) as UC_Dispute
-    (View platform statistics) as UC_Stats
-    (Manage service types and settings) as UC_Settings
 }
 
 ' ==============================================================================
 ' Actor-to-use-case associations
 ' ==============================================================================
 
-User -- UC_SignIn
-User -- UC_Confirm
-User -- UC_Msg
-User -- UC_Rate
-User -- UC_Report
+Owner -- UC_SignIn
+Helper -- UC_SignIn
+Owner -- UC_Confirm
+Helper -- UC_Confirm
+Owner -- UC_Msg
+Helper -- UC_Msg
+Owner -- UC_Rate
+Helper -- UC_Rate
+Owner -- UC_Report
+Helper -- UC_Report
 
 Owner -- UC_Pets
 Owner -- UC_Search
@@ -116,8 +116,6 @@ Helper -- UC_History
 Admin -- UC_Verify
 Admin -- UC_Moderate
 Admin -- UC_Dispute
-Admin -- UC_Stats
-Admin -- UC_Settings
 
 ' ==============================================================================
 ' UML relationships

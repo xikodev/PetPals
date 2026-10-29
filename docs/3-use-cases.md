@@ -3,15 +3,21 @@
 **Objective:** Show the principal interactions between the application's actors and the system. Describe how an actor achieves a goal and what happens when an important step fails. Base the interactions on the approved requirements and revise them as the application develops.
 
 ## 3.1 Use Case Diagram
+
 **Objective:** Show the system boundary, its relevant actors, and their main goals in **one readable UML use case diagram**. Add a focused second diagram only if the complete view cannot remain clear; a third requires a distinct project-specific reason.
+
 **Rendered use case diagram:** ![Use case diagram](./assets/diagrams/3-1-petpals-system-UC.svg)  
+
 **Versioned PlantUML source:** [`Source puml`](./puml/3-1-petpals-system-UC.puml)
 
-The diagram shows the three roles that interact with PetPals. Pet Owner and Pet Helper use the mobile application and share a generalized actor, Registered User, for goals both can perform (signing in, confirming a service, messaging, rating, reporting a problem). The Administrator uses the web administration panel only. External systems appear as secondary actors where they take part in a user goal: the OAuth 2.0 provider during sign-in, Google Maps during search and route display, Google Calendar when a helper approves a request, and the QR Code API when a service is confirmed by QR code. QR confirmation is modelled as an `<<extend>>` of the general confirmation use case because the helper chooses between QR code and button for each confirmation.
+The diagram shows the three roles that interact with PetPals. Pet Owner and Pet Helper use the mobile application and both take part in the goals they share (signing in, confirming a service, messaging, rating, reporting a problem). The Administrator uses the web administration panel only. External systems appear as secondary actors where they take part in a user goal: the OAuth 2.0 provider during sign-in, Google Maps during search and route display, Google Calendar when a helper approves a request, and the QR Code API when a service is confirmed by QR code. QR confirmation is modelled as an `<<extend>>` of the general confirmation use case because the helper chooses between QR code and button for each confirmation.
+
 **Consistency check:** Show the identified roles that **interact with the application**, not stakeholders who have no interaction. Each main user goal must have an associated actor; an included use case can be reached through another use case without its own direct actor association. Use `<<include>>` and `<<extend>>` only when the relationship expresses actual behavior.
+
 ---
 
 ## 3.2 Use Case Descriptions
+
 **Objective:** For each use case in the diagram, explain the actor's goal, the normal interaction with the application, and meaningful alternatives. Describe straightforward use cases briefly; expand those whose alternatives, external dependencies, or consequences require more explanation.
 
 ### UC-001: Sign in and set up profile
@@ -205,7 +211,9 @@ The diagram shows the three roles that interact with PetPals. Pet Owner and Pet 
 ---
 
 ## 3.3 Use Case Consistency Check
+
 **Objective:** Check that use cases, actors, and requirements agree with one another and with the application the team demonstrates.
+
 | Check | Question for the team |
 | --- | --- |
 | Requirement | Does each important use case link to an existing requirement? |
