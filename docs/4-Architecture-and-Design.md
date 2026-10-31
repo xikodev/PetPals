@@ -17,27 +17,16 @@ The expandable Crisis Guard examples illustrate a proposed design. Use your proj
 
 ## 4.1 Solution Strategy
 
-**Objective:** Explain the few architectural choices that most affect the solution and their project-specific reasons.
+PetPals uses a React web application with Progressive Web App (PWA) capabilities, a Node.js backend, and a PostgreSQL database. The architecture is designed to support a five-person student team working within a limited development timeline.
+
+The frontend communicates with a single backend API, which applies business rules and accesses the database. The following decisions guide the implementation.
 
 | Decision | Alternative considered | Project-specific rationale and trade-off |
 | --- | --- | --- |
-|  |  |  |
-
-Explain the main architectural choices without repeating the technologies list. If an important choice has an ADR, its ID in the table is enough.
-
-<details>
-<summary><strong>Explaining a choice </strong></summary>
-
-**Example — Crisis Guard:**
-
-| Decision | Alternative considered | Project-specific rationale and trade-off |
-| --- | --- | --- |
-| Browser client and one backend API | Several separately deployed backend services | The client displays the map while the backend validates and stores reports. One backend is manageable for this scope; its failure may interrupt report operations. See ADR-01 for the reasoning. |
-| Relational storage for reports | Document-oriented storage | Reports have identifiable links to users and locations. A relational schema makes these relationships explicit but requires migrations when the schema changes. |
-
-**Analysis of the example:** Both decisions state a reason tied to the reporting application and acknowledge a trade-off. The backend choice links to ADR-01 rather than repeating the full comparison. Modules within one deployable backend are not separate microservices. In your own table, include alternatives that the team genuinely considered.
-
-</details>
+| React web application with PWA capabilities (ADR-01). | Native mobile applications with a separate web client. | A shared frontend codebase supports mobile and desktop use, reducing implementation and maintenance effort for a five-person team. On supported browsers and devices, users can install the PWA on their home screen and access an app-like interface without app store approval. The trade-off is that installation behavior and access to device features depend on browser and platform support. |
+| Node.js backend. | A backend implemented in another language, such as Java or Python. | Using JavaScript across the frontend and backend reduces language switching and makes it easier for team members to contribute across application layers. It also simplifies coordination of API data formats. The trade-off is that using the same language does not remove the need for explicit API contracts, server-side validation, and careful handling of asynchronous operations. |
+| PostgreSQL for persistent application data (ADR-02). | A document-oriented database such as MongoDB. | Users, pets, bookings, and reviews have clear relationships. Foreign keys, constraints, and transactions support consistent data and reliable booking operations. Preventing double-bookings requires availability checks combined with suitable database constraints or transaction-level concurrency control. The trade-off is the need to maintain a structured schema and database migrations. |
+| A modular monolithic backend. | Independently deployed microservices. | A single backend application is easier to develop, test, deploy, and manage within the team's size and course timeline. Internal modules separate responsibilities without introducing communication between independently deployed services. The trade-off is that backend modules are deployed and scaled together. |
 
 ## 4.2 Building Blocks and UML Component Diagram
 
@@ -160,50 +149,32 @@ Start by drawing the boundary around the proposed system. Inside it, identify pa
 
 ## 4.5 Architecture Decision Records
 
-**Objective:** Preserve the reasons for consequential architectural choices so a future developer can understand what was decided, what alternative was considered, and which trade-off the team accepted.
-
-**Decision index:** [List important architectural decisions in one place. A short row is sufficient for a straightforward decision.]
+The following records document the architectural choices agreed for PetPals, including the alternatives and their consequences.
 
 | ID | Date | Decision | Alternative considered | Rationale and trade-off | Status |
 | --- | --- | --- | --- | --- | --- |
-|  |  |  |  |  |  |
+| ADR-01 | 2026-10-31 | Use a React web application with PWA capabilities. | Native mobile applications and a separate web client. | One frontend codebase supports mobile and desktop use and reduces development effort. Installation and device capabilities depend on browser and platform support. | Accepted |
+| ADR-02 | 2026-10-31 | Use PostgreSQL for relational data storage. | A document-oriented database such as MongoDB. | Relationships, constraints, and transactions support data integrity and consistent booking operations. Schema changes require migrations, and concurrent booking requests require explicit safeguards. | Accepted |
 
-**Detailed ADR, when the decision needs more explanation:**
-
-### ADR-[ID]: [Decision title]
-
-| Field | Record of the decision |
-| --- | --- |
-| Context and goal | [Which architectural problem made this decision necessary?] |
-| Decision criteria | [What actually mattered to the team?] |
-| Alternatives considered | [Realistic options the team weighed, briefly.] |
-| Decision and rationale | [Chosen option, why it won, and what is given up.] |
-| Status | [Proposed, accepted, or superseded; link to the replacement when applicable.] |
-
-Write an ADR only for a choice whose rationale will matter after the implementation changes. A significant change of decision can be recorded as a new ADR that supersedes the old one; routine tool choices do not need detailed records. Changes to agreed scope belong with requirements and their change history; feedback on a task stays with its issue.
-
-<details>
-<summary><strong>Choosing one backend instead of separately deployed services</strong></summary>
-
-**Example — Crisis Guard, ADR-01:**
-
-| ID | Date | Decision | Alternative considered | Rationale and trade-off | Status |
-| --- | --- | --- | --- | --- | --- |
-| ADR-01 | [Date of decision] | One backend API for report handling | Separate deployable report and resource services | Lower deployment and integration effort for the approved scope; a failure of the backend can affect both features. | Accepted |
-
-### ADR-01: One backend API for report handling
+### ADR-01: Choosing React PWA over Native Mobile
 
 | Field | Record of the decision |
 | --- | --- |
-| Context and goal | The team must deliver and publicly deploy reporting and a map-oriented view during one semester. |
-| Decision criteria | The team can build, integrate, deploy, and explain the solution; components still have identifiable responsibilities. |
-| Alternatives considered | **One backend:** modules share a deployable application. **Separate services:** each can run independently, but they require additional integration and deployment work. |
-| Decision and rationale | Choose one backend, with distinguishable report responsibilities inside it. This limits deployment work but accepts that a failure of this backend may affect report operations together. |
+| Context and goal | PetPals must provide convenient access for pet owners and helpers on mobile devices and support desktop access, including administration. The five-person team must deliver the application within the course timeline. |
+| Decision criteria | Development time, maintenance effort, mobile and desktop accessibility, and distribution simplicity. |
+| Alternatives considered | Native mobile applications with a separate web client; a React web application enhanced with PWA capabilities. |
+| Decision and rationale | Use React with PWA capabilities to maintain a shared frontend codebase for mobile and desktop. Responsive layouts adapt the interface to different screen sizes. On supported devices and browsers, users can install the application on their home screen without app store approval. This reduces separate platform development and release work. The accepted trade-off is that PWA installation and device integration vary across platforms and may provide fewer capabilities than a native application. |
 | Status | Accepted. |
 
-**Analysis of the example:** The solution strategy states the current approach; ADR-01 preserves the alternatives and criteria that led to it. The component and deployment diagrams should reflect the chosen approach as it develops. A separate ADR is useful for a consequential decision, not for every tool choice.
+### ADR-02: Choosing PostgreSQL for Relational Data Integrity
 
-</details>
+| Field | Record of the decision |
+| --- | --- |
+| Context and goal | PetPals stores related information about users, pets, service listings, bookings, and reviews. Booking operations must preserve these relationships and handle concurrent requests consistently. |
+| Decision criteria | Referential integrity, transactional consistency, support for relational queries, and reliable enforcement of booking rules. |
+| Alternatives considered | PostgreSQL as a relational database; a document-oriented database such as MongoDB. |
+| Decision and rationale | Use PostgreSQL because the application's core entities have explicit relationships that can be represented using foreign keys and constraints. Transactions allow related changes to succeed or fail together. When accepting a booking, the backend must check availability and use appropriate database constraints or concurrency control to prevent conflicting bookings from being accepted simultaneously. The accepted trade-off is the need to design and maintain the schema, migrations, and concurrency safeguards. |
+| Status | Accepted. |
 
 ## 4.6 Crosscutting Concepts
 
