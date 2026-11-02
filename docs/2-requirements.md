@@ -85,7 +85,7 @@ Performance, Security, Usability, Reliability, Privacy, Maintainability
 | C-05 | Pet owners and pet helpers use a mobile application; administrators use a web admin panel only. | Approved project scope | Two clients are developed; the administrator role has no mobile client. |
 | AS-01 | Users have a Google account and grant calendar access so that events can be created. | Team assumption | Test sign-in and event creation with test accounts. If access is denied, the booking stays Approved, no event is created, and the user is informed. |
 | AS-02 | Each helper listing has a location that can be shown on the map. | Team assumption | Test listings with and without a valid location. A listing cannot be saved without a valid location. |
-| AS-03 | A booking has a start time and an end time within the requested date range, so that calendar events (F-007) carry exact times. | Team assumption (F-005 specifies a date range, F-007 specifies times) | Check how the booking request captures times. <!-- TODO: team to decide --> |
+| AS-03 | A booking request captures a start and an end date and time inside an available period, so that calendar events (F-007) carry exact times. | Team assumption | Check the booking request form and the resulting calendar event. |
 | AS-04 | The free usage tiers of the Google Maps and Google Calendar APIs are sufficient for development and demonstration. | Team assumption | Monitor API usage in the provider console during testing and check the current quota and billing terms before relying on it. |
 
 
