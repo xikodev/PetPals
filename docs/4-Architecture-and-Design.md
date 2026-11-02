@@ -82,17 +82,7 @@ Start by drawing the boundary around the proposed system. Inside it, identify pa
 **Diagram source:** [Link to its versioned source.]  
 **Implementation:** [Indicate where the corresponding data model is defined in the project.]
 
-<details>
-<summary><strong>One flood report and its related data</strong></summary>
 
-**Example — Crisis Guard:** Ana submits flood report `R-104` using her citizen account. She selects a location on the map and records the severity as high. A citizen may submit several reports; each report belongs to one disaster category, such as *Flood*. The application stores the report and its coordinates. Map tiles come from an external provider and are not entities in the application's data model.
-
-![Crisis Guard data ER diagram](./assets/diagrams/4-2-crisis-guard-data-ERD.svg)  
-[PlantUML source](./puml/4-2-crisis-guard-data-ERD.puml)
-
-**Analysis of the example:** `R-104` has one author and one category; Ana and the *Flood* category can each be linked to more reports. The diagram shows relationships without copying a database's columns or writing a second table description for every entity. If your application also accepts **anonymous** reports, represent that possibility in the relationship to `Citizen`. If categories are fixed values rather than stored records, do not invent a category table. Compare the final ER diagram with the persistence model and explain only differences that matter to understanding the project.
-
-</details>
 
 ### 4.3.2 Representative UML Class Diagram
 
@@ -102,17 +92,7 @@ Start by drawing the boundary around the proposed system. Inside it, identify pa
 **PlantUML source:** [Link to the matching versioned `.puml` file.]  
 **Code reference at the final review:** [Link to the corresponding implementation.]
 
-<details>
-<summary><strong>Designing report responsibilities and allowed changes</strong></summary>
 
-**Example — Crisis Guard:** A report owns the rules for changing its status. A workflow class coordinates submission and review, while a repository interface describes the persistence operations it needs. The diagram proposes these responsibilities before implementation.
-
-![Crisis Guard domain class diagram](./assets/diagrams/4-3-crisis-guard-domain-CD.svg)  
-[PlantUML source](./puml/4-3-crisis-guard-domain-CD.puml)
-
-**Analysis of the example:** `DisasterReport` owns its allowed state changes, so the workflow cannot silently approve a rejected report. `ReportWorkflow` coordinates an operation without owning the report's transition rules; `ReportRepository` defines the storage operations it needs. The `Location` composition and selected types show relationships useful to the design. The diagram intentionally omits database columns and unrelated classes: the ER model explains stored data, while this diagram assigns program responsibilities and operations. These classes are a design choice, not required layers for every team. Compare the finished implementation with the original design and revise the diagram where decisions changed; generating a diagram from code at the end cannot substitute for this initial modeling.
-
-</details>
 
 ## 4.4 Runtime Behavior
 
@@ -237,28 +217,23 @@ Patterns such as Dependency Injection or Repository belong here only when the co
 
 | Risk or compromise | Consequence | Current treatment |
 | --- | --- | --- |
-|  |  |  |
+| One Node.js API instance and one PostgreSQL database serve all users and roles. | A hosting or database failure stops all operations at once, and the traffic of all roles shares one instance. | Accepted within the course project (ADR-01, ADR-02 and the modular monolith in 4.1); the team does not claim automatic failover. The hosting is described in the deployment guide once chosen. |
+| PWA installation and device features depend on the browser and platform (ADR-01). | The installed experience may differ between phones, and a browser may not allow camera access for scanning the QR code. | The QR scan is only one method: the Confirm button method (UC-009) works without the camera. The team tests on the browsers named in NF-05 and does not claim native-app behavior. |
+| Two accepted requests could overlap if the slot reservation is not atomic. | A helper could be double-booked, which would undermine the booking record the application is built around. | The reservation runs in one transaction with a database constraint or lock (4.4.1, 4.6) and is tested with concurrent acceptances. |
+| The booking lifecycle has no cancellation, no-show or rescheduling state. | A booking that is accepted but never started keeps the time slot reserved, and neither party can release it in the application. | Accepted compromise for the approved scope. Either participant can report a problem for an accepted booking (F-018) and an administrator records the decision (UC-017); the missing states are listed as known limitations in 4.4.2 and are not claimed as features. |
+| Calendar events depend on Google Calendar and on the user's consent (AS-01). | Events may be missing when the call fails or access is denied. | The booking stays accepted, a failed call is retried three times and recorded as `failed` (NF-06), and the user is informed. There is no manual resynchronization in the current scope. |
+| Google Maps and Google Calendar free usage limits (AS-04). | Search or calendar creation may stop when a quota is exceeded during testing or the demonstration. | The team monitors usage in the provider console, uses test data for the demonstration and checks the current limits before relying on them. |
+| The rule for turning an hourly or daily rate into the recorded total price is not yet defined. | Totals and the helper's earnings summary (F-013) could be calculated inconsistently. | One rule for rounding is agreed before the price calculation is implemented and then documented here and in the database design. |
+| Deleting an account must remove personal data while bookings, messages and reviews of other users keep their references (NF-07). | Rows cannot simply be deleted because other records refer to them. | Personal fields are anonymized instead of deleting the user row; the procedure is defined in the data model before implementation and checked with a test account. |
 
 **Business or domain risks, if significant**
 
 | Risk | Consequence | Current treatment |
 | --- | --- | --- |
-|  |  |  |
+| Verification checks only an administrator's review of name and email; there is no background check. | Users may read "approved" as a guarantee that a helper is safe and trustworthy. | The interface and documentation describe the status as approved by an administrator after a name and email check, and the application makes no claim of background checks or guarantees (Scope 1.3). |
+| Payment between owner and helper takes place outside the platform (C-02). | The platform cannot enforce or verify payment, and a disagreement about money cannot be resolved by it. | Rates and the earnings summary are described as recorded values, not financial records. A dispute decision is recorded and is not financially executed. |
+| A dispute is decided from recorded data only. | Evidence outside the application, such as what happened at the handover, may be missing or contradictory. | Confirmations, messages and booking details are kept as the record (4.6), and the administrator's decision is limited to a warning, a suspension, a listing removal or a recorded note. |
 
-<details>
-<summary><strong>Identifying a limitation without inventing production infrastructure</strong></summary>
 
-**Example — Crisis Guard, technical risks:**
-
-| Risk or compromise | Consequence | Current treatment |
-| --- | --- | --- |
-| One application instance handles report submissions. | Hosting failure temporarily prevents new reports. | Accepted within the course project; the team does not claim automatic failover. |
-| External map tiles are unavailable. | The map view may fail even when stored reports remain available. | Explain the visible error or fallback that the implemented application actually provides. |
-
-**Example — Crisis Guard, domain risk:** Readers may mistake an unverified citizen report for an official warning. The team can distinguish the report's verification status in the interface and direct readers to official channels.
-
-**Analysis of the example:** The first technical risk accepts a realistic course-scope limitation; the domain risk concerns how a reader interprets a report. Record a limitation and a realistic response that belong to your own project. A missing mandatory feature is unfinished scope, not technical debt.
-
-</details>
 
 **Final consistency check:** Compare the component, data, class, sequence and state views with the implemented code, application behavior, and actual deployment. Update outdated design descriptions and explain any important difference that remains; links to relevant code or tests help when they resolve a concrete question.
