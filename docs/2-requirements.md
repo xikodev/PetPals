@@ -28,7 +28,7 @@
 | F-015 | Administrators can moderate service listings. | High | Approved project scope | The admin panel lists service listings. After an administrator removes a listing, it no longer appears in search results and the helper sees that it has been removed. |
 | F-016 | Administrators can resolve disputes by reviewing booking history and chat records. | High | Approved project scope | For an open dispute, the admin panel shows the booking history and the chat messages of the related booking. After the administrator records an outcome (account warning, suspension, or note), the dispute status changes to Resolved and the outcome is stored with the dispute. |
 | F-017 | Both parties can exchange text messages within a booking. | Medium | Approved project scope | A text message sent by one party of a booking appears in the booking's message thread of the other party. The thread is accessible only to the two parties of that booking and, during a dispute, to the administrator. |
-
+| F-018 | Pet Owners and Pet Helpers can report a problem with a booking. | High | Approved project scope | After the user describes the problem and submits, a dispute with the status Open appears in the administrator's dispute list. A problem can be reported only for bookings with the status Approved, In Progress, or Completed. |
 **High** - the core booking flow and anything that makes the platform trustworthy
 
 **Medium** - features that support the flow but aren’t needed for it to work
