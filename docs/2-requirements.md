@@ -121,23 +121,24 @@ Performance, Security, Usability, Reliability, Privacy, Maintainability
 | Requirement ID | Use case or design location | Test or verification location |
 | --- | --- | --- |
 | F-000 | [UC-000] | [ST-001, CT-001] | [Passed / Failed / Pending – reason] |
-| F-001 | UC-001 | Pending: tests to be written after week 7 |
+| F-001 | UC-001 | Pending |
 | F-002 | UC-002 | Pending |
-| F-003 | UC-003 | Pending |
-| F-004 | UC-003 | Pending |
-| F-005 | UC-004 | Pending |
-| F-006 | UC-005 | Pending |
-| F-007 | UC-005 (system step) | Pending |
-| F-008 | UC-006 | Pending |
-| F-009 | UC-007 | Pending |
-| F-010 | UC-008 | Pending |
-| F-011 | UC-009 | Pending |
-| F-012 | UC-009 | Pending |
-| F-013 | UC-010 | Pending |
-| F-014 | UC-011 | Pending |
-| F-015 | UC-012 | Pending |
-| F-016 | UC-013 | Pending |
-| F-017 | UC-014 | Pending |
+| F-003 | UC-005 | Pending |
+| F-004 | UC-005 | Pending |
+| F-005 | UC-006, UC-008 | Pending |
+| F-006 | UC-007 | Pending |
+| F-007 | UC-007 (calendar step) | Pending |
+| F-008 | UC-009, UC-010 | Pending |
+| F-009 | UC-009, UC-010 | Pending |
+| F-010 | UC-012 | Pending |
+| F-011 | UC-003 | Pending |
+| F-012 | UC-004 | Pending |
+| F-013 | UC-014 | Pending |
+| F-014 | UC-015 | Pending |
+| F-015 | UC-016 | Pending |
+| F-016 | UC-017 | Pending |
+| F-017 | UC-011 | Pending |
+| F-018 | UC-013 | Pending |
 | NF-01 to NF-08 | Not use-case based (see checks in 2.2) | Pending |
 
 
