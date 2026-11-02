@@ -191,23 +191,13 @@ Write an ADR only for a choice whose rationale will matter after the implementat
 
 | Concern | Mechanism and where it applies | Evidence in the final implementation |
 | --- | --- | --- |
-|  |  |  |
+| System rule: authentication and authorization | Users sign in with Google through OAuth 2.0 (NF-04); a session expires after a period of inactivity. On every protected request the Node.js API checks the user's role (owner, helper or administrator), that the account is approved and not suspended, and that the user is a participant of the booking concerned. Administrator functions are available only to the administrator role. Hiding a button in the React PWA is not protection. | At the final review, show the permission check in the API and tests of unauthorized access: an unverified owner sending a booking request, an owner calling an administrator function, and a user reading the messages of a booking they do not take part in. |
+| Shared rule: booking status changes | Only the Bookings & Confirmations module changes `bookings.status`, and only through the transitions of the state diagram (4.4.2): the helper's decision, and confirmation of both participants on the same unexpired attempt for the start and for the completion. Requests are validated at the API boundary before anything is saved (approved and unsuspended users, the pet belongs to the owner, start before end, available time). | At the final review, show the `Booking` transition operations and tests that an invalid transition is rejected (for example completing a booking that was never started) and that a one-sided or expired confirmation does not advance the booking. |
+| System rule: no overlapping reservations | When the helper accepts a request, the API checks and reserves the time slot in one database transaction, supported by a constraint or lock in PostgreSQL (ADR-02), so two simultaneous acceptances cannot both succeed for one listing. The same availability data is used by search and by the booking request. | At the final review, show the reservation code or constraint and a test with two concurrent acceptances of overlapping requests. |
+| Shared rule: access to external services | Google Calendar and the QR Code API are called only through the External Service Adapters (NF-08, C-04), and Google Maps is used only through one map component in the client. A failure of an external call does not break the booking: a failed Calendar call is retried three times and recorded as `failed` in `calendar_events` while the booking stays `accepted` (NF-06); if the QR image cannot be created, the helper can retry or use the button method (UC-010). | At the final review, show the adapters, the retry and the recorded status, and a test with a simulated failing Calendar call that leaves the booking accepted. |
+| System rule: protection of personal data | All client-server traffic uses HTTPS (NF-03). The application stores no passwords; stored Google calendar credentials are encrypted or kept as a reference, and QR tokens are stored only as hashes with an expiry time. Messages and booking details are visible only to the two participants and, during a dispute, to the administrator (F-017). Deleting an account removes personal data, and booking records shared with others remain in anonymized form (NF-07). | At the final review, show the deployed HTTPS configuration, the stored token and credential fields, and a test that deleting an account removes personal data but keeps the booking record. |
+| Shared rule: records kept for disputes | Confirmation attempts (also expired ones), messages, reviews and administrator actions are kept and are not overwritten. Listings removed by an administrator are hidden instead of deleted, and prices and notes are copied into the booking when it is created. An administrator decides a dispute from these records (UC-017). | At the final review, show the schema and a test that editing a listing or pet profile does not change an existing booking and that a removed listing keeps its bookings. |
 
-<details>
-<summary><strong>Describing a shared rule through its implementation</strong></summary>
-
-**Example — Crisis Guard:**
-
-| Concern | Mechanism and where it applies | Code or configuration reference |
-| --- | --- | --- |
-| System rule: authorization of report moderation | The backend checks the moderator's permissions before approving or rejecting a report; a login button in the client is insufficient protection. | At the final review, show the backend permission check and a test of unauthorized access. |
-| Shared implementation rule: location validation | The report-submission boundary rejects missing or invalid coordinates before saving a report. | At the final review, show the validation rule and a test with invalid coordinates. |
-
-**Analysis of the example:** The first row describes protection across the system boundary; the second describes a rule shared by report-submission paths. Choose concerns that actually affect your project.
-
-Patterns such as Dependency Injection or Repository belong here only when the code uses them and they explain a shared design rule. “The system uses authentication” alone does not tell a reader where the check occurs or what it protects. Security, logging, and error handling need not each receive a subsection by default.
-
-</details>
 
 ## 4.7 Architectural Risks and Technical Debt
 
