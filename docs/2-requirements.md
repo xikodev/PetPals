@@ -87,7 +87,7 @@ Performance, Security, Usability, Reliability, Privacy, Maintainability
 | AS-02 | Each helper listing has a location that can be shown on the map. | Team assumption | Test listings with and without a valid location. A listing cannot be saved without a valid location. |
 | AS-03 | A booking request captures a start and an end date and time inside an available period, so that calendar events (F-007) carry exact times. | Team assumption | Check the booking request form and the resulting calendar event. |
 | AS-04 | The free usage tiers of the Google Maps and Google Calendar APIs are sufficient for development and demonstration. | Team assumption | Monitor API usage in the provider console during testing and check the current quota and billing terms before relying on it. |
-
+| AS-05 | Administrator accounts are created by the team directly in the database; administrators sign in through the same OAuth provider. | Team assumption | No registration flow for administrators is designed; verify that an administrator can sign in to the web admin panel. |
 
 ---
 
