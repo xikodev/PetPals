@@ -1,15 +1,24 @@
-const http = require("http");
-const port = process.env.PORT || 10000;
+const express = require("express");
+const exampleRoutes = require("./modules/example/example.routes");
 
-const server = http.createServer((req, res) => {
-  if (req.url === "/health") {
-    res.writeHead(200, { "Content-Type": "application/json" });
-    return res.end(JSON.stringify({ status: "healthy" }));
-  }
-  res.writeHead(200, { "Content-Type": "text/plain" });
-  res.end("API running");
+const app = express();
+
+// Parse incoming JSON request bodies.
+app.use(express.json());
+
+app.get("/health", (req, res) => {
+  res.json({ status: "healthy" });
 });
 
-server.listen(port, "0.0.0.0", () => {
-  console.log(`Server listening on 0.0.0.0:${port}`);
+app.get("/", (req, res) => {
+  res.send("API running");
 });
+
+app.use("/api/examples", exampleRoutes);
+
+// Return 404 for endpoints that don't exist.
+app.use((req, res) => {
+  res.status(404).json({ error: "Not found" });
+});
+
+module.exports = app;

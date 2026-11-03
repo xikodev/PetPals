@@ -13,4 +13,4 @@ COPY package*.json ./
 RUN npm ci --only=production
 COPY --from=builder /app/src ./src
 EXPOSE 10000
-CMD ["node", "src/app.js"]
+CMD ["npm", "start"]
