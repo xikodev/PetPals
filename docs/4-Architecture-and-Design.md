@@ -78,19 +78,32 @@ Start by drawing the boundary around the proposed system. Inside it, identify pa
 
 **Objective:** Show the important stored entities, their identifiers and relationships, and enough attributes to explain the application's data. The ER diagram is separate from the representative UML class diagram below.
 
-**ER diagram:** [Embed the project's readable diagram.]  
-**Diagram source:** [Link to its versioned source.]  
-**Implementation:** [Indicate where the corresponding data model is defined in the project.]
+**ER diagram:**
 
+![PetPals data ER diagram](./assets/diagrams/4-3-1-petpals-data-ERD.svg)    
+**Diagram source:** [4-3-1-petpals-data-ERD.puml](./puml/4-3-1-petpals-data-ERD.puml)    
+**Implementation:** The columns, types and rules of every table are described in the [database design](./database.md). The schema definition and migrations will be linked here once the implementation exists.
+
+A booking is the central record. It links one service listing, one pet owner and one pet; the helper is reached through the listing. Confirmations of the service start and completion, messages, reviews, disputes and calendar event references each belong to one booking. Users of all three roles share one users table with a role column. Administrative actions (admin_actions) refer to the affected user and, where relevant, to a dispute or a listing. A dispute has its own status and does not change the booking status. Records that bookings refer to are not deleted: a removed listing is hidden and a deleted account is anonymized (NF-07).
+
+The diagram shows keys and the attributes needed to understand the relationships. All columns, types and rules are in the database design; optional links to the reviewing administrator are omitted.
 
 
 ### 4.3.2 Representative UML Class Diagram
 
 **Objective:** Before implementing a representative part of the system, model the classes or interfaces needed to assign responsibilities, operations, and relationships. Revise the design when those choices change.
 
-**Class diagram:** [Embed a readable UML class diagram for a representative part of the design.]  
-**PlantUML source:** [Link to the matching versioned `.puml` file.]  
-**Code reference at the final review:** [Link to the corresponding implementation.]
+**Class diagram:**
+
+![PetPals booking class diagram](./assets/diagrams/4-3-2-petpals-booking-CD.svg)  
+**PlantUML source:** [4-3-2-petpals-booking-CD.puml](./puml/4-3-2-petpals-booking-CD.puml)    
+**Code reference at the final review:** team to add the link to the implementation of the booking module
+
+The representative part is the booking lifecycle (requesting, the helper's decision and the two-sided confirmation of start and completion). It is the same flow as in 4.4.1 and 4.4.2 and lies in the Bookings & Confirmations module of 4.2.
+ 
+`Booking` owns the rules for changing its status, so a declined booking cannot be accepted and a booking that never started cannot be completed. `BookingConfirmation` models one confirmation attempt and reports whether both participants have confirmed. `BookingService` coordinates the use cases (UC-006, UC-007, UC-009) without owning those rules: it checks permissions, asks `BookingRepository` to reserve the time slot atomically (ADR-02), saves the booking, and uses the calendar and QR code interfaces. These interfaces keep Google Calendar and the QR Code API behind the service layer (NF-06, NF-08). The stored status value is `accepted`; the interface shows it as "Approved".
+ 
+The diagram omits database columns and unrelated classes; the ER diagram covers the stored data. It is a design made before implementation and is revised if the code differs.
 
 
 
