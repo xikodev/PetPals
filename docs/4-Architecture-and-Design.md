@@ -235,7 +235,7 @@ Write an ADR only for a choice whose rationale will matter after the implementat
 | --- | --- | --- |
 | Verification checks only an administrator's review of name and email; there is no background check. | Users may read "approved" as a guarantee that a helper is safe and trustworthy. | The interface and documentation describe the status as approved by an administrator after a name and email check, and the application makes no claim of background checks or guarantees (Scope 1.3). |
 | Payment between owner and helper takes place outside the platform (C-02). | The platform cannot enforce or verify payment, and a disagreement about money cannot be resolved by it. | Rates and the earnings summary are described as recorded values, not financial records. A dispute decision is recorded and is not financially executed. |
-| A dispute is decided from recorded data only. | Evidence outside the application, such as what happened at the handover, may be missing or contradictory. | Confirmations, messages and booking details are kept as the record (4.6), and the administrator's decision is limited to a warning, a suspension, a listing removal or a recorded note. |
+| A dispute is decided from recorded data only. | Evidence outside the application, such as what happened at the handover, may be missing or contradictory. | Confirmations, messages and booking details are kept as the record (4.6), and the administrator's decision is limited to an account warning, a suspension or a recorded note (F-016). |
 
 
 
