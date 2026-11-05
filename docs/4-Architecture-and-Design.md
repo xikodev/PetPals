@@ -118,45 +118,221 @@ Start by drawing the boundary around the proposed system. Inside it, identify pa
 
 **Objective:** Explain one important interaction among running parts and the lifecycle of one meaningful object. Choose cases that expose decisions or failure paths instead of making a diagram for every CRUD action.
 
+PetPals uses a booking-centered workflow to coordinate interactions between Pet Owners and Pet Helpers. The following UML diagrams describe the proposed runtime behavior of the system, based on the functional requirements, use cases, and database design.
+
+The Sequence Diagram illustrates the communication between the React Progressive Web Application (PWA), Node.js backend, PostgreSQL database, and Google Calendar API during a representative booking scenario.
+
+The State Diagram describes the lifecycle of a booking, including the conditions required for each state transition and the handling of incomplete or unsuccessful operations.
+
+These diagrams represent the planned system architecture and may be updated as implementation decisions are finalized.
+
 ### 4.4.1 Representative UML Sequence Diagram
 
-**Objective:** Show the order of messages for one representative scenario and the responses to a meaningful alternative.
+**Objective:** Show the order of messages for one representative scenario and the responses to meaningful alternatives.
 
-**Scenario:** [Name the interaction; add the UC ID if one exists.]  
-**Sequence diagram:** [Embed a readable UML sequence diagram.]  
-**PlantUML source:** [Link to the matching versioned `.puml` file.]
+**Selected scenario:** Booking request, helper acceptance or rejection, Google Calendar synchronization, and two-sided service start confirmation.
 
-<details>
-<summary><strong>Location selection, validation, and report submission</strong></summary>
+The selected scenario covers the following use cases:
 
-**Example — Crisis Guard:** A citizen submits a disaster report after choosing a location manually or requesting the device's position. The interaction also shows what happens when location permission is denied, report data is invalid, or storage fails.
+- UC-006: Submit Booking Request
+- UC-007: Accept or Decline Booking
+- UC-009: Confirm Service Start
+- UC-010: QR Code Confirmation (alternative method)
 
-![Crisis Guard report submission sequence diagram](./assets/diagrams/4-4-crisis-guard-report-submission-SD.svg)  
-[PlantUML source](./puml/4-4-crisis-guard-report-submission-SD.puml)
+**Sequence Diagram:**
 
-**Analysis of the example:** The two location paths and the validation and storage alternatives have different consequences for the user; compare them with the matching use case and its alternative flows. The browser location API is a browser capability; the web client, API, service, and store correspond to the component view. Select branches that help explain your project's scenario, and revise the final diagram to match the implemented interaction.
+![PetPals Booking Lifecycle Sequence Diagram](./assets/diagrams/4-4-1-booking-lifecycle-sequence.svg)
 
-</details>
+**PlantUML source:** [4-4-1-booking-lifecycle-sequence.puml](./puml/4-4-1-booking-lifecycle-sequence.puml)
+
+#### Booking Request
+
+The booking process begins when a Pet Owner selects a service listing, a pet, the requested service period, and a handover address through the React PWA.
+
+The application submits the booking request to the Node.js API. The backend uses PostgreSQL to validate the user's approval status, pet ownership, service listing eligibility, and requested availability.
+
+If the request is invalid or the requested period is unavailable, the backend rejects it with an appropriate reason, and no booking is created.
+
+Otherwise, the system creates a new booking with the database status `requested` and returns a successful response to the application.
+
+#### Helper Decision
+
+The Pet Helper reviews the booking request and chooses whether to accept or decline it.
+
+If the helper declines, the backend verifies that the helper is authorized and that the booking is still in the `requested` state. The booking status is then updated to `declined`.
+
+If the helper accepts, the backend verifies authorization and atomically reserves the requested time slot. Atomic reservation is necessary to prevent overlapping bookings for the same helper and time period.
+
+When acceptance succeeds, the booking status changes to `accepted`. The user interface may display this status as "Approved", depending on the final terminology selected by the team.
+
+If the helper is unauthorized, the request is no longer eligible for acceptance, or the selected period conflicts with an existing reservation, the acceptance operation is rejected without committing a conflicting reservation.
+
+#### Google Calendar Synchronization
+
+After successful booking acceptance, the backend attempts to create Google Calendar events for participants who have granted calendar authorization.
+
+The events contain relevant booking information, and the backend records synchronization results or errors in the `calendar_events` table.
+
+Calendar synchronization is independent of the booking acceptance process. If event creation fails, the booking remains in the `accepted` state.
+
+Retry handling follows the agreed integration policy. The exact retry behavior must be finalized consistently with the functional and non-functional requirements.
+
+#### Service Start Confirmation
+
+The service start confirmation process begins when the booked Pet Helper initiates a Start confirmation attempt through the application.
+
+In the button-based method, the backend creates a pending confirmation attempt with an expiration time.
+
+The Pet Helper submits their confirmation, followed by the Pet Owner. The backend verifies that both confirmations belong to the same unexpired attempt.
+
+If both confirmations are valid, the confirmation attempt is marked as `confirmed`, and the booking transitions from `accepted` to `in_progress`.
+
+If a confirmation is missing, incomplete, or expired, the booking remains in the `accepted` state.
+
+QR code confirmation is an alternative method. The helper displays a QR code, and the Pet Owner scans it to participate in the confirmation process. The same two-participant confirmation requirement applies.
+
+#### Alternative and Failure Paths
+
+The Sequence Diagram includes several important alternative and failure paths:
+
+- Invalid or unavailable booking requests are rejected without creating a booking.
+- The helper can decline the booking, moving it to the `declined` state.
+- Unauthorized acceptance or reservation conflicts prevent successful booking approval.
+- Google Calendar synchronization failures do not reverse an accepted booking.
+- Incomplete or expired service start confirmations do not advance the booking to `in_progress`.
+
+The selected scenario concludes when both participants successfully confirm the service start and the booking enters the `in_progress` state.
+
+Service completion is represented in the State Diagram.
 
 ### 4.4.2 Representative UML State Diagram
 
 **Objective:** Show the meaningful states of one domain object or an explicitly managed system mode, and the events or conditions that change it.
 
-**State owner and reason for choosing it:** [Name the object or system mode, how its state is recognized, and why the transitions matter.]  
-**State diagram:** [Embed a readable UML state diagram.]  
-**PlantUML source:** [Link to the matching versioned `.puml` file.]
+**Selected domain object:** Booking
 
-<details>
-<summary><strong>Operating modes and service availability</strong></summary>
+The Booking object is central to the PetPals workflow because it connects Pet Owners, Pet Helpers, service listings, and the confirmation process.
 
-**Example — Crisis Guard:** The crisis coordination mode changes as an disaster is assessed and resolved. At the same time, the user-visible availability of the application may change independently when the map provider or backend becomes unavailable.
+The persistent booking state is stored in the `bookings.status` field. It determines which operations are permitted at each stage of the service lifecycle.
 
-![Crisis Guard report state machine diagram](./assets/diagrams/4-5-crisis-guard-report-SM.svg)  
-[PlantUML source](./puml/4-5-crisis-guard-report-SM.puml)
+The State Diagram illustrates the five defined booking states and the conditions required to transition between them.
 
-**Analysis of the example:** The two regions describe independent aspects of the modeled system: its crisis coordination mode and observed service availability. They run in parallel; an active crisis may coincide with normal or limited service. The branches after backend recovery account for a map provider that may still be unavailable. State transitions have named triggers or guards rather than being a list of screens. Use this form only if your application actually maintains or reliably derives both kinds of state. A project whose meaningful lifecycle belongs to a report, reservation, or order should model that object instead; diagram complexity is not an assessment criterion. At the final review, check the state model against the behavior the running application supports.
+**State Diagram:**
 
-</details>
+![PetPals Booking Lifecycle State Diagram](./assets/diagrams/4-4-2-booking-lifecycle-state.svg)
+
+**PlantUML source:** [4-4-2-booking-lifecycle-state.puml](./puml/4-4-2-booking-lifecycle-state.puml)
+
+#### Booking States
+
+The booking lifecycle contains five persistent states:
+
+| State | Description |
+| --- | --- |
+| `requested` | A valid booking request has been submitted and is awaiting the Pet Helper's decision. |
+| `accepted` | The Pet Helper accepted the request, and the requested service time slot was successfully reserved. |
+| `declined` | The Pet Helper rejected the booking request. This is a terminal state. |
+| `in_progress` | Both participants successfully confirmed the start of the service. |
+| `completed` | Both participants successfully confirmed service completion. This is a terminal state. |
+
+The `declined` and `completed` states are terminal because no additional booking state transitions are defined after reaching them.
+
+#### State Transitions
+
+**Requested to Accepted**
+
+The Pet Helper accepts a pending booking request.
+
+The backend verifies that the decision comes from the authorized helper and that the booking can still be accepted.
+
+The requested time slot must be reserved atomically to prevent overlapping reservations.
+
+The transition succeeds only when all required conditions are satisfied.
+
+**Requested to Declined**
+
+The authorized Pet Helper rejects the booking request.
+
+The booking enters the `declined` state and cannot proceed to service start or completion confirmation.
+
+**Accepted to In Progress**
+
+The booked Pet Helper initiates a Start confirmation attempt using either the QR code method or in-app buttons.
+
+Both the Pet Owner and Pet Helper must confirm the same unexpired attempt.
+
+Once both confirmations are valid, the booking transitions from `accepted` to `in_progress`.
+
+A one-sided, incomplete, or expired attempt does not advance the booking.
+
+**In Progress to Completed**
+
+The Pet Helper initiates the service completion confirmation process using either QR codes or in-app buttons.
+
+Both participants must confirm the same unexpired Completion attempt.
+
+After successful validation, the booking status changes from `in_progress` to `completed`.
+
+Incomplete or expired confirmation attempts leave the booking in the `in_progress` state.
+
+#### Validation and Business Rules
+
+The booking lifecycle is subject to several important validation and business rules.
+
+Only approved and unsuspended users may submit valid booking requests.
+
+The selected pet must belong to the requesting Pet Owner, and the requested service listing and time period must be valid and available.
+
+Invalid requests are rejected before creating a booking.
+
+The acceptance operation requires atomic time-slot reservation to prevent conflicting bookings for the same helper.
+
+Google Calendar synchronization occurs after booking acceptance and does not control the booking state. A failed synchronization attempt does not reverse acceptance.
+
+Both service start and service completion require valid confirmations from both participants on the same unexpired confirmation attempt.
+
+Reviews are permitted only after the booking reaches the `completed` state. Both participants may leave a review according to the system's review rules.
+
+#### Independent Status Fields
+
+PetPals manages several related processes using status fields that are independent of the booking lifecycle.
+
+**Booking confirmations**
+
+The `booking_confirmations.status` field tracks the state of individual confirmation attempts:
+
+- `pending`
+- `confirmed`
+- `expired`
+
+**Google Calendar synchronization**
+
+The `calendar_events.sync_status` field tracks calendar event synchronization:
+
+- `pending`
+- `synced`
+- `failed`
+
+**Dispute management**
+
+The `disputes.status` field tracks dispute resolution:
+
+- `open`
+- `resolved`
+
+These statuses are not additional booking lifecycle states.
+
+For example, a booking can remain `accepted` even if its Google Calendar synchronization fails. Similarly, an expired Start confirmation attempt does not automatically change the booking status.
+
+Disputes are managed independently and do not directly introduce new booking states.
+
+#### Known Limitations
+
+Cancellation, no-show handling, and rescheduling transitions are not currently defined in the database draft and are therefore not represented as booking states in this diagram.
+
+Any future changes to these workflows should be reflected consistently in the database model, application logic, and UML diagrams.
+
+The diagrams document the proposed architecture rather than a completed or fully tested implementation.
 
 ## 4.5 Architecture Decision Records
 
