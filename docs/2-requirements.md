@@ -51,7 +51,7 @@ Low - not used
 | NF-05 | The PWA is usable on common Android screen sizes for owners and helpers, and the administrator views are usable in desktop browsers. Check: run the application on several emulated Android screen sizes and in at least two desktop browsers. | Medium | Team decision |
 | NF-06 | If creating a Google Calendar event fails, the system retries three times, and the booking stays Approved. Check: simulate a failed API call and observe the retry and the booking status. | Medium | ToolShare assignment (Google Calendar integration); team decision |
 | NF-07 | Deleting an account removes the user’s personal data (GDPR-aligned); booking records shared with other users are kept in anonymized form. Check: delete a test account and verify that no personal data remains in the database. | High | GDPR (right to erasure); team decision |
-| NF-08 | External APIs (Google Maps, Google Calendar, QR Code API) are accessed only through service-layer abstractions. Check: code review of the service layer. | Medium | Team decision |
+| NF-08 | External APIs are accessed only through abstractions: Google Calendar and the QR Code API through the backend service layer, and Google Maps through one map component in the client. Check: code review of the service layer and the map component. | Medium | Team decision |
 
 Performance, Security, Usability, Reliability, Privacy, Maintainability
 
