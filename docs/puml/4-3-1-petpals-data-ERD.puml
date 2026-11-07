@@ -1,0 +1,176 @@
+' ==============================================================================
+' @file 4-3-1-petpals-data-ERD.puml
+' @brief ER diagram (important entities, keys and relationships) of PetPals.
+'
+' @details
+' Shows the entities of database.md with their primary and foreign keys and only
+' the attributes needed to understand the relationships. The remaining columns
+' are described in database.md. Optional links from users to the administrator
+' who reviewed, created or resolved something (reviewed_by, created_by,
+' resolved_by) are omitted for readability.
+'
+' Diagram level: Data
+' Diagram type:  Entity-Relationship Diagram (PlantUML entity notation)
+' ==============================================================================
+
+@startuml
+title PetPals - Data ER Diagram
+
+skinparam shadowing false
+skinparam defaultFontName Arial
+hide circle
+
+entity "users" as users {
+  * id : INTEGER <<PK>>
+  --
+  first_name : TEXT
+  last_name : TEXT
+  email : TEXT
+  role : TEXT
+  google_subject : TEXT
+  verification_status : TEXT
+  suspended_until : TIMESTAMPTZ
+  calendar_id : TEXT
+}
+
+entity "pets" as pets {
+  * id : INTEGER <<PK>>
+  --
+  * owner_id : INTEGER <<FK>>
+  name : TEXT
+  species : TEXT
+  birth_date : DATE
+}
+
+entity "service_types" as service_types {
+  * id : INTEGER <<PK>>
+  --
+  name : TEXT
+  is_active : BOOLEAN
+}
+
+entity "service_listings" as service_listings {
+  * id : INTEGER <<PK>>
+  --
+  * helper_id : INTEGER <<FK>>
+  * service_type_id : INTEGER <<FK>>
+  rate : DECIMAL
+  rate_unit : TEXT
+  latitude : DECIMAL
+  longitude : DECIMAL
+  status : TEXT
+}
+
+entity "listing_availability" as listing_availability {
+  * id : INTEGER <<PK>>
+  --
+  * listing_id : INTEGER <<FK>>
+  starts_at : TIMESTAMPTZ
+  ends_at : TIMESTAMPTZ
+  kind : TEXT
+}
+
+entity "bookings" as bookings {
+  * id : INTEGER <<PK>>
+  --
+  * listing_id : INTEGER <<FK>>
+  * owner_id : INTEGER <<FK>>
+  * pet_id : INTEGER <<FK>>
+  starts_at : TIMESTAMPTZ
+  ends_at : TIMESTAMPTZ
+  status : TEXT
+  agreed_rate : DECIMAL
+  total_price : DECIMAL
+}
+
+entity "booking_confirmations" as booking_confirmations {
+  * id : INTEGER <<PK>>
+  --
+  * booking_id : INTEGER <<FK>>
+  stage : TEXT
+  method : TEXT
+  status : TEXT
+  expires_at : TIMESTAMPTZ
+  owner_confirmed_at : TIMESTAMPTZ
+  helper_confirmed_at : TIMESTAMPTZ
+}
+
+entity "booking_messages" as booking_messages {
+  * id : INTEGER <<PK>>
+  --
+  * booking_id : INTEGER <<FK>>
+  * sender_id : INTEGER <<FK>>
+  message : TEXT
+  sent_at : TIMESTAMPTZ
+}
+
+entity "reviews" as reviews {
+  * id : INTEGER <<PK>>
+  --
+  * booking_id : INTEGER <<FK>>
+  * reviewer_id : INTEGER <<FK>>
+  rating : SMALLINT
+  review_text : TEXT
+}
+
+entity "disputes" as disputes {
+  * id : INTEGER <<PK>>
+  --
+  * booking_id : INTEGER <<FK>>
+  * opened_by : INTEGER <<FK>>
+  status : TEXT
+  resolution : TEXT
+}
+
+entity "admin_actions" as admin_actions {
+  * id : INTEGER <<PK>>
+  --
+  * admin_id : INTEGER <<FK>>
+  * user_id : INTEGER <<FK>>
+  listing_id : INTEGER <<FK>>
+  dispute_id : INTEGER <<FK>>
+  action : TEXT
+  reason : TEXT
+}
+
+entity "calendar_events" as calendar_events {
+  * id : INTEGER <<PK>>
+  --
+  * booking_id : INTEGER <<FK>>
+  * user_id : INTEGER <<FK>>
+  external_event_id : TEXT
+  sync_status : TEXT
+}
+
+entity "notifications" as notifications {
+  * id : INTEGER <<PK>>
+  --
+  * user_id : INTEGER <<FK>>
+  message : TEXT
+  read_at : TIMESTAMPTZ
+}
+
+users ||--o{ pets : owns
+users ||--o{ service_listings : offers
+service_types ||--o{ service_listings : categorizes
+service_listings ||--o{ listing_availability : has
+service_listings ||--o{ bookings : receives
+users ||--o{ bookings : requests
+pets ||--o{ bookings : "is cared for in"
+
+bookings ||--o{ booking_confirmations : records
+bookings ||--o{ booking_messages : contains
+users ||--o{ booking_messages : sends
+bookings ||--o{ reviews : receives
+users ||--o{ reviews : writes
+bookings ||--o{ disputes : has
+users ||--o{ disputes : opens
+bookings ||--o{ calendar_events : creates
+users ||--o{ calendar_events : receives
+
+users ||--o{ notifications : receives
+users ||--o{ admin_actions : performs
+users ||--o{ admin_actions : "is subject of"
+disputes |o--o{ admin_actions : prompts
+service_listings |o--o{ admin_actions : "is removed by"
+@enduml

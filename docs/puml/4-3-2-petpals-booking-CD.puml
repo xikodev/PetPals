@@ -1,0 +1,150 @@
+' ==============================================================================
+' @file 4-3-2-petpals-booking-CD.puml
+' @brief Representative class diagram: the booking lifecycle of PetPals.
+'
+' @details
+' Designed before implementation. Booking owns the rules for changing its status
+' (the transitions of the state diagram 4.4.2). BookingService coordinates the
+' use cases UC-006, UC-007 and UC-009 (sequence diagram 4.4.1) without owning
+' those rules. BookingRepository, CalendarService and QrCodeService are
+' interfaces; their implementations belong to the "Bookings & Confirmations"
+' module and the "External Service Adapters" module of the component
+' diagram 4.2. Database columns are intentionally omitted (see the ER diagram).
+' The stored status value is "accepted"; the user interface shows "Approved".
+'
+' Diagram level: Detailed design
+' Diagram type:  Class Diagram
+' ==============================================================================
+
+@startuml
+
+title PetPals - Booking Domain Class Diagram
+
+hide empty members
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam classAttributeIconSize 0
+
+enum BookingStatus {
+  REQUESTED
+  ACCEPTED
+  DECLINED
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum ConfirmationStage {
+  START
+  COMPLETE
+}
+
+enum ConfirmationMethod {
+  QR
+  BUTTON
+}
+
+enum ConfirmationStatus {
+  PENDING
+  CONFIRMED
+  EXPIRED
+}
+
+class User {
+  id
+  role
+  verificationStatus
+  suspendedUntil
+  +canUseBookings() : boolean
+}
+
+class Pet {
+  id
+}
+
+class ServiceListing {
+  id
+  rate
+  rateUnit
+  status
+}
+
+class Booking {
+  id
+  startsAt
+  endsAt
+  status : BookingStatus
+  agreedRate
+  totalPrice
+  +accept(helper : User)
+  +decline(helper : User)
+  +start(attempt : BookingConfirmation)
+  +complete(attempt : BookingConfirmation)
+  +canBeDisputed() : boolean
+}
+
+class BookingConfirmation {
+  stage : ConfirmationStage
+  method : ConfirmationMethod
+  status : ConfirmationStatus
+  expiresAt
+  ownerConfirmedAt
+  helperConfirmedAt
+  +confirmBy(user : User)
+  +isFullyConfirmed() : boolean
+  +isExpired() : boolean
+}
+
+class BookingService {
+  +requestBooking(owner, listing, pet, period, address)
+  +decideRequest(bookingId, helper, accept)
+  +initiateConfirmation(bookingId, helper, stage, method)
+  +confirm(attemptId, user)
+}
+
+interface BookingRepository {
+  +save(booking)
+  +findById(id)
+  +reserveSlot(booking) : boolean
+}
+
+interface CalendarService {
+  +createEvent(booking, user)
+}
+
+interface QrCodeService {
+  +generateImage(token)
+}
+
+class GoogleCalendarAdapter
+class QrCodeApiAdapter
+
+Booking --> BookingStatus
+BookingConfirmation --> ConfirmationStage
+BookingConfirmation --> ConfirmationMethod
+BookingConfirmation --> ConfirmationStatus
+
+ServiceListing "*" --> "1" User : helper
+Booking "*" --> "1" ServiceListing
+Booking "*" --> "1" User : owner
+Booking "*" --> "1" Pet
+Booking "1" *-- "0..*" BookingConfirmation : confirmations
+
+BookingService ..> Booking : coordinates
+BookingService --> BookingRepository
+BookingService --> CalendarService
+BookingService --> QrCodeService
+
+GoogleCalendarAdapter ..|> CalendarService
+QrCodeApiAdapter ..|> QrCodeService
+
+note right of CalendarService
+  A failed call never changes the
+  booking status (NF-06: three attempts).
+end note
+
+note right of BookingRepository
+  reserveSlot is atomic: it prevents
+  overlapping reservations of a listing.
+end note
+
+@enduml
