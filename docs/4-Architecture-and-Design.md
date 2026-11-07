@@ -43,32 +43,31 @@ Explain the main architectural choices without repeating the technologies list. 
 
 **Objective:** Propose the principal parts of the application, assign their responsibilities, and show their dependencies without diagramming every file or class. Revise this view as the system takes shape.
 
-**Component diagram:** [Embed a readable UML component diagram.]  
-**PlantUML source:** [Link to the matching versioned `.puml` file.]
+PetPals consists of one React PWA client, one Node.js API and one PostgreSQL database. The client serves all three roles (Pet Owner, Pet Helper and Administrator) and shows different views depending on the signed-in user's role. The API applies the business rules and is the only part that accesses the database. Four external systems (Google OAuth 2.0, Google Maps API, Google Calendar API and the QR Code API) lie outside the system boundary.
+
+**Component diagram:**
+
+![PetPals system component diagram](./assets/diagrams/4-2-petpals-system-CMP.svg)  
+**PlantUML source:** [4-2-petpals-system-CMP.puml](./puml/4-2-petpals-system-CMP.puml)
 
 | Component | Responsibility | Reason for this boundary |
 | --- | --- | --- |
-|  |  |  |
+| React PWA | Shows the interface for all three roles: sign-in, pet profiles, listings, map search, booking requests and confirmations, messages, reviews and the administrator views. Displays the map and sends all requests to the API. | User interaction and map display run in the browser, while the rules that must not be bypassed stay on the server. One installable client serves all roles and reduces effort for the team (ADR-01). |
+| Node.js API | Receives HTTPS requests from the client, checks the user's role and verification status, applies the business rules and reads and writes the database. | Rules such as who may send a booking request or confirm a service are enforced in one place and cannot be bypassed from the client. A single modular application is simpler to develop and deploy for the team than separate services. |
+| Users & Verification | Signs users in through Google, keeps profiles and pet profiles, and records the administrators' approval or rejection and suspensions. | Account status decides what every other module may do, so it has a clear owner. |
+| Listings & Search | Stores service listings and availability, including blocked dates, and finds helpers by location, service type, price and dates. | Search and availability have their own rules (location, service type, price and dates) and are a distinct responsibility from handling bookings. |
+| Bookings & Confirmations | Creates booking requests, applies the helper's decision, reserves the time slot so that bookings do not overlap, and records the two-sided start and completion confirmation (QR code or button). | The booking lifecycle (see the state diagram in 4.4.2) and the overlap check belong together, because both change the booking status. |
+| Messages & Reviews | Stores the messages of a booking and the ratings and reviews after completion. | Both belong to one booking and only its two participants may create them. |
+| Disputes & Moderation | Records disputes, lets administrators review the booking records, record decisions and remove listings. | Administrator actions are separate from the everyday user flows and need wider access to booking data. |
+| External Service Adapters | Contains the clients for Google OAuth, Google Calendar and the QR Code API and hides their details from the other modules. | External integrations sit behind one service layer (NF-08, C-04). A failure of an external call, such as a Calendar event that cannot be created, must not break the booking (NF-06). |
+| PostgreSQL | Stores users, pets, listings, availability, bookings, confirmations, messages, reviews, disputes and calendar event records. | The data is highly relational, and constraints and transactions help to keep it consistent, for example to prevent double bookings (ADR-02). Only the API accesses it. |
+| Google OAuth 2.0 | Authenticates users with their Google account. | The application does not need to store passwords. Identity is provided by an external system outside the boundary. |
+| Google Maps API | Supplies the map, markers and routes shown in the client. | The map is rendered in the browser, so the client calls Google Maps directly. The Node.js API only stores the coordinates. |
+| Google Calendar API | Creates calendar events with reminders for both participants once a booking is accepted. | A user's calendar is outside the application. Access needs the user's separate consent. |
+| QR Code API | Creates the QR image for a booking's start or completion confirmation. | Image generation is an external service. The API keeps the confirmation attempt and its token record. |
 
-Start by drawing the boundary around the proposed system. Inside it, identify parts with distinct responsibilities; put a planned application database inside this boundary and third-party services outside it. Label important connections with what crosses them. A logical component may be a module within one backend application: a separate box does not imply a separately deployed service. As you implement, update the diagram when responsibilities or connections change. In the final version, readers should be able to relate its parts to the code. The deployment diagram answers where those parts actually run.
+The outer boundary separates the PetPals system from the four external systems. The Node.js API is one application: the modules inside it are logical modules with separate responsibilities, not separately deployed services. The arrows summarize dependencies and are not the order of a transaction. The order of messages for a booking is shown in the sequence diagram in 4.4.1.
 
-<details>
-<summary><strong>System boundary, responsibilities, and external dependencies</strong></summary>
-
-**Example — Crisis Guard:** The proposed architecture supports report submission, a map view, and notifications about confirmed reports.
-
-![Crisis Guard system component diagram](./assets/diagrams/4-1-crisis-guard-system-CMP.svg)  
-[PlantUML source](./puml/4-1-crisis-guard-system-CMP.puml)
-
-| Part | Responsibility | Reason for this boundary |
-| --- | --- | --- |
-| Web client | Shows reports and collects a new report. | User interaction is separated from report rules and persistence. |
-| Report API | Accepts report requests and returns responses. | HTTP-facing responsibilities are separated from report processing. |
-| Report service | Applies report rules and accesses stored reports. | Report validation and storage rules have a clear owner. |
-| Notification worker | Identifies eligible recipients and asks an external provider to send an alert. | Notification work is separate from answering a user's report request. |
-
-**Analysis of the example:** The outer boundary distinguishes the proposed system from the map provider and the notification provider. The inner boundary groups the Report API, Report service, and Notification worker within one backend application; their separate symbols express proposed responsibilities, not independently deployed services. PostgreSQL stores application data, while the map provider supplies map tiles. The arrows summarize dependencies, not the order of a transaction; the sequence diagram covers that order. Omit the Notification worker and Firebase Cloud Messaging if notifications are outside the approved scope. If separating the Report API from the Report service does not help explain the design, show one backend component. Include a sign-in provider only if the approved task calls for it. As implementation progresses, revise any proposed boundary that proves inaccurate; the final diagram must correspond to what the team built. One coherent component view is more useful than several near-identical versions with conflicting connections.
-</details>
 
 ## 4.3 Data and Detailed Design
 
