@@ -175,7 +175,7 @@ The events contain relevant booking information, and the backend records synchro
 
 Calendar synchronization is independent of the booking acceptance process. If event creation fails, the booking remains in the `accepted` state.
 
-Retry handling follows the agreed integration policy. The exact retry behavior must be finalized consistently with the functional and non-functional requirements.
+A failed event creation is retried three times and then recorded as `failed` (NF-06).
 
 #### Service Start Confirmation
 
