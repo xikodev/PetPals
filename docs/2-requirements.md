@@ -98,7 +98,11 @@ Performance, Security, Usability, Reliability, Privacy, Maintainability
 
 | Date | Requirement ID | Change and reason | Agreed with / evidence |
 | --- | --- | --- | --- |
-|  |  |  |  |
+| Date | Requirement ID | Change and reason | Agreed with / evidence |
+| --- | --- | --- | --- |
+| 30.10.2026. | C-05, NF-05 | Two clients (mobile application and web administration panel) replaced by one React PWA for all roles; administrators use it in a desktop browser. Reason: one codebase for mobile and desktop (ADR-01). |  |
+| 30.10.2026. | UC-008 | Route display to the handover address removed from scope; the map shows helper markers only. Reason: Out of the scope of this project | --- |
+| --- | --- | --- | --- |
 
 <details>
 <summary><strong>Recording a significant change</strong></summary>
