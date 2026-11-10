@@ -1,4 +1,7 @@
 export async function getCurrentUser() {
+    if (import.meta.env.DEV && import.meta.env.VITE_MOCK_GUEST === 'true') {
+  return null
+}
   const response = await fetch('/api/me')
 
   if (response.status === 401) {
