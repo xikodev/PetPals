@@ -1,5 +1,8 @@
 # Backend workflow
 
+Google sign-in setup, migration, endpoints and session behavior are documented in
+[Google sign-in](docs/google-auth.md). Authentication is API-only; no frontend is served.
+
 The backend uses Node.js and Express. Files use CommonJS: `require()` imports
 another module, and `module.exports` makes functions or objects available to it.
 
