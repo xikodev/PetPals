@@ -26,7 +26,7 @@ async function fixture(t, { role = 'owner', status = 'pending', purpose = 'authe
     },
   });
   const app = express();
-  app.use('/api/users', createUsersRouter({ loadSession: auth.loadSession, repository: {
+  app.use('/api/users', createUsersRouter({ loadSession: auth.loadSession, csrf: auth.csrf, repository: {
     async findProfile(id) {
       calls.push(['profile', id]);
       if (failProfile) throw new Error('private database connection details');
@@ -103,10 +103,9 @@ test('missing profile returns 404; session and profile failures return safe JSON
   }
 });
 
-test('there is no arbitrary-user lookup or profile mutation endpoint in step one', async (t) => {
+test('there is no arbitrary-user lookup or account deletion endpoint', async (t) => {
   const f = await fixture(t);
   assert.equal((await f.request('/999')).status, 404);
-  assert.equal((await f.request('/me', true, { method: 'PATCH' })).status, 404);
   assert.equal((await f.request('/me', true, { method: 'DELETE' })).status, 404);
   assert.deepEqual(f.calls, []);
 });
