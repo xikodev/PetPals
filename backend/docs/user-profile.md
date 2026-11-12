@@ -85,9 +85,8 @@ Cross-origin frontend integration follows the cookie/Origin constraints in
 [Google sign-in](google-auth.md). No CORS change is included here.
 
 The frontend team can render the profile and the relevant collection below it.
-No HTML, edit button or other frontend code is included. Profile editing and
-account deletion belong to the next user-settings step and are not implemented
-by this read-only endpoint. Use `/api/auth/me` for the existing CSRF token when
+No HTML, edit button or other frontend code is included. Profile editing is
+documented in [User settings API](user-settings.md). Account deletion is not implemented. Use `/api/auth/me` for the existing CSRF token when
 working with mutation endpoints.
 
 `npm test` covers access restrictions, role-specific responses, ownership-scoped

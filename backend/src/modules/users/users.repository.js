@@ -25,7 +25,32 @@ function createUsersRepository(db) {
     return result.rows;
   }
 
-  return { findProfile, findPets, findActiveListings };
+  async function updateProfile(userId, fields) {
+    // Presence flags distinguish an omitted photo from an explicit null.
+    // PostgreSQL evaluates every assignment against the existing row.
+    const result = await db.query(`UPDATE users SET
+      first_name = CASE WHEN $2 THEN $3 ELSE first_name END,
+      last_name = CASE WHEN $4 THEN $5 ELSE last_name END,
+      photo_url = CASE WHEN $6 THEN $7 ELSE photo_url END,
+      verification_status = CASE WHEN role <> 'administrator' AND
+        (($2 AND first_name IS DISTINCT FROM $3) OR ($4 AND last_name IS DISTINCT FROM $5))
+        THEN 'pending' ELSE verification_status END,
+      reviewed_by = CASE WHEN role <> 'administrator' AND
+        (($2 AND first_name IS DISTINCT FROM $3) OR ($4 AND last_name IS DISTINCT FROM $5))
+        THEN NULL ELSE reviewed_by END,
+      reviewed_at = CASE WHEN role <> 'administrator' AND
+        (($2 AND first_name IS DISTINCT FROM $3) OR ($4 AND last_name IS DISTINCT FROM $5))
+        THEN NULL ELSE reviewed_at END
+      WHERE id = $1
+      RETURNING id, first_name, last_name, email, photo_url, role,
+        verification_status, suspended_until, created_at`,
+    [userId, Object.hasOwn(fields, 'first_name'), fields.first_name ?? null,
+      Object.hasOwn(fields, 'last_name'), fields.last_name ?? null,
+      Object.hasOwn(fields, 'photo_url'), fields.photo_url ?? null]);
+    return result.rows[0] || null;
+  }
+
+  return { findProfile, findPets, findActiveListings, updateProfile };
 }
 
 module.exports = { createUsersRepository };

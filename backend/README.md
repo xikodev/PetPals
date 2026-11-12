@@ -158,3 +158,9 @@ credentials out of source files, Dockerfiles, and tracked deployment YAML.
 It does not connect to the database; use `npm run db:check` for a live connection
 check.
 
+
+## User settings
+
+`PATCH /api/users/me` updates your first name, last name and profile photo.
+See [User settings API](docs/user-settings.md) for authentication, request fields,
+responses, status codes and a browser test example. Account deletion is not included.

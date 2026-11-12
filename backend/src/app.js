@@ -37,6 +37,7 @@ app.use('/api/auth', createAuthRouter(authDependencies));
 app.use('/api/users', createUsersRouter({
   repository: createUsersRepository(database),
   loadSession: createAuthHandlers(authDependencies).loadSession,
+  csrf: createAuthHandlers(authDependencies).csrf,
 }));
 
 // Return 404 for endpoints that don't exist.
