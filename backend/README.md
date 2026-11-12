@@ -1,5 +1,11 @@
 # Backend workflow
 
+Google sign-in setup, migration, endpoints and session behavior are documented in
+[Google sign-in](docs/google-auth.md). Authentication is API-only; no frontend is served.
+
+The authenticated profile endpoint, including the user's pets or active listings,
+is documented in [User profile API](docs/user-profile.md).
+
 The backend uses Node.js and Express. Files use CommonJS: `require()` imports
 another module, and `module.exports` makes functions or objects available to it.
 
@@ -152,3 +158,9 @@ credentials out of source files, Dockerfiles, and tracked deployment YAML.
 It does not connect to the database; use `npm run db:check` for a live connection
 check.
 
+
+## User settings
+
+`PATCH /api/users/me` updates your first name, last name and profile photo.
+See [User settings API](docs/user-settings.md) for authentication, request fields,
+responses, status codes and a browser test example. Account deletion is not included.
