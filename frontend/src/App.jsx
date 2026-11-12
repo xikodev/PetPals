@@ -1,5 +1,6 @@
 import { Link, Outlet, Route, Routes } from 'react-router-dom'
 import HomePage from './pages/HomePage.jsx'
+import ProfilePage from './pages/ProfilePage.jsx'
 import RequireLogin from './components/RequireLogin.jsx'
 
 function Layout() {
@@ -27,7 +28,7 @@ export default function App() {
         <Route path="login" element={<h1>Prijava</h1>} />
 
         <Route element={<RequireLogin />}>
-          <Route path="profile" element={<h1>Moj profil</h1>} />
+          <Route path="profile" element={<ProfilePage />} />
           <Route path="my-listings" element={<h1>Moji oglasi</h1>} />
         </Route>
       </Route>
