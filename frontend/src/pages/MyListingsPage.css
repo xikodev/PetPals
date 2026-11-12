@@ -1,0 +1,46 @@
+.listings-page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 24px;
+  text-align: left;
+}
+
+.listings-empty {
+  padding: 16px;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.listings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.listing-card {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  box-shadow: var(--shadow);
+}
+
+.listing-card h2 {
+  margin: 0 0 8px;
+  font-size: 1.1em;
+}
+
+.listing-card p {
+  margin: 0 0 8px;
+}
+
+.listing-meta {
+  margin: 0;
+  font-size: 0.9em;
+  font-weight: 600;
+  color: var(--text-h);
+}

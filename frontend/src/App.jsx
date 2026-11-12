@@ -1,6 +1,7 @@
 import { Link, Outlet, Route, Routes } from 'react-router-dom'
 import HomePage from './pages/HomePage.jsx'
 import RequireLogin from './components/RequireLogin.jsx'
+import MyListingsPage from './pages/MyListingsPage.jsx'
 
 function Layout() {
   return (
@@ -28,7 +29,7 @@ export default function App() {
 
         <Route element={<RequireLogin />}>
           <Route path="profile" element={<h1>Moj profil</h1>} />
-          <Route path="my-listings" element={<h1>Moji oglasi</h1>} />
+          <Route path="my-listings" element={<MyListingsPage />} />
         </Route>
       </Route>
     </Routes>
