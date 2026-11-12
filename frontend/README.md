@@ -40,11 +40,11 @@ Open the local URL printed by Vite, usually `http://localhost:5173`. Keep the te
 
 ## Backend and mock data
 
-During local development, frontend code uses relative URLs such as `/api/me`. Vite forwards requests starting with `/api` to `http://localhost:10000`.
+During local development, frontend code uses relative URLs such as `/api/auth/me`. Vite forwards requests starting with `/api` to `http://localhost:10000`.
 
-`src/api/auth.js` calls `GET /api/me` to check the current session. A `401` response redirects a visitor from a protected page to `/login`. If the backend is unavailable, the page displays an error message.
+`src/api/auth.js` calls `GET /api/auth/me` to check the current session. A `401` response redirects a visitor from a protected page to `/login`. If the backend is unavailable, the page displays an error message.
 
-Profile and listings data are currently mocked in `src/api/`. The profile mock supports reading and updating the first and last name. Changes last until the page is reloaded. The listings mock returns an empty list.
+Profile reads use `GET /api/users/me` and return `profile`, `pets`, and `active_listings`. Profile edits use `PATCH /api/users/me` with the changed fields and the session CSRF token. The update returns the saved `profile`. The My Listings page still uses a mock that returns an empty list.
 
 ### Test guest access without the backend
 
@@ -54,7 +54,7 @@ Create `frontend/.env.local` with this line:
 VITE_MOCK_GUEST=true
 ```
 
-Restart `npm run dev`, then open `/profile` or `/my-listings` directly. Both should redirect to `/login`. To test a real session, set `VITE_MOCK_GUEST=false`, restart Vite and run the backend with `/api/me` available. Keep `.env.local` on your own machine.
+Restart `npm run dev`, then open `/profile` or `/my-listings` directly. Both should redirect to `/login`. To test a real session, set `VITE_MOCK_GUEST=false`, restart Vite and run the backend with `/api/auth/me` available. Keep `.env.local` on your own machine.
 
 ## Add a page
 

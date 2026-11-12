@@ -1,22 +1,41 @@
-let profile = {
-  id: 1,
-  first_name: 'Mato',
-  last_name: 'Primjer',
-  email: 'mato@example.com',
-}
+import { getCurrentSession } from './auth.js'
 
 export async function getMyProfile() {
-  return { ...profile }
-}
+  const response = await fetch('/api/users/me', {
+    credentials: 'same-origin',
+  })
 
-export async function updateMyProfile({ first_name, last_name }) {
-  const firstName = first_name.trim()
-  const lastName = last_name.trim()
-
-  if (!firstName || !lastName) {
-    throw new Error('First name and last name are required.')
+  if (!response.ok) {
+    throw new Error(`Učitavanje profila nije uspjelo (${response.status})`)
   }
 
-  profile = { ...profile, first_name: firstName, last_name: lastName }
-  return { ...profile }
+  return response.json()
+}
+
+export async function updateMyProfile(changes) {
+  const session = await getCurrentSession()
+
+  if (!session) {
+    throw new Error('Za izmjenu profila potrebna je prijava.')
+  }
+
+  if (!session.csrfToken) {
+    throw new Error('Nedostaje sigurnosni token za izmjenu profila.')
+  }
+
+  const response = await fetch('/api/users/me', {
+    method: 'PATCH',
+    credentials: 'same-origin',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': session.csrfToken,
+    },
+    body: JSON.stringify(changes),
+  })
+
+  if (!response.ok) {
+    throw new Error(`Spremanje profila nije uspjelo (${response.status})`)
+  }
+
+  return response.json()
 }
