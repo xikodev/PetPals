@@ -1,5 +1,6 @@
 import { Link, Outlet, Route, Routes } from 'react-router-dom'
 import HomePage from './pages/HomePage.jsx'
+import LoginPage from './pages/LoginPage.jsx'
 import RequireLogin from './components/RequireLogin.jsx'
 
 function Layout() {
@@ -24,7 +25,7 @@ export default function App() {
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<HomePage />} />
-        <Route path="login" element={<h1>Prijava</h1>} />
+        <Route path="login" element={<LoginPage />} />
 
         <Route element={<RequireLogin />}>
           <Route path="profile" element={<h1>Moj profil</h1>} />
