@@ -3,7 +3,9 @@ const exampleRoutes = require("./modules/example/example.routes");
 const { readAuthConfig } = require('./modules/auth/auth.config');
 const { createAuthRepository } = require('./modules/auth/auth.repository');
 const { createGoogleProvider } = require('./modules/auth/google.provider');
-const { createAuthRouter } = require('./modules/auth/auth.routes');
+const { createAuthRouter, createAuthHandlers } = require('./modules/auth/auth.routes');
+const { createUsersRepository } = require('./modules/users/users.repository');
+const { createUsersRouter } = require('./modules/users/users.routes');
 
 const app = express();
 
@@ -26,10 +28,15 @@ const database = {
   connect: (...args) => require('./db').connect(...args),
 };
 const authConfig = readAuthConfig();
-app.use('/api/auth', createAuthRouter({
+const authDependencies = {
   config: authConfig,
   repository: createAuthRepository(database),
   google: createGoogleProvider(authConfig),
+};
+app.use('/api/auth', createAuthRouter(authDependencies));
+app.use('/api/users', createUsersRouter({
+  repository: createUsersRepository(database),
+  loadSession: createAuthHandlers(authDependencies).loadSession,
 }));
 
 // Return 404 for endpoints that don't exist.
