@@ -62,7 +62,7 @@ PetPals consists of one React PWA client, one Node.js API and one PostgreSQL dat
 | External Service Adapters | Contains the clients for Google OAuth, Google Calendar and the QR Code API and hides their details from the other modules. | External integrations sit behind one service layer (NF-08, C-04). A failure of an external call, such as a Calendar event that cannot be created, must not break the booking (NF-06). |
 | PostgreSQL | Stores users, pets, listings, availability, bookings, confirmations, messages, reviews, disputes and calendar event records. | The data is highly relational, and constraints and transactions help to keep it consistent, for example to prevent double bookings (ADR-02). Only the API accesses it. |
 | Google OAuth 2.0 | Authenticates users with their Google account. | The application does not need to store passwords. Identity is provided by an external system outside the boundary. |
-| Google Maps API | Supplies the map, markers and routes shown in the client. | The map is rendered in the browser, so the client calls Google Maps directly. The Node.js API only stores the coordinates. |
+| Google Maps API | Supplies the map and markers shown in the client. | The map is rendered in the browser, so the client calls Google Maps directly. The Node.js API only stores the coordinates. |
 | Google Calendar API | Creates calendar events with reminders for both participants once a booking is accepted. | A user's calendar is outside the application. Access needs the user's separate consent. |
 | QR Code API | Creates the QR image for a booking's start or completion confirmation. | Image generation is an external service. The API keeps the confirmation attempt and its token record. |
 
