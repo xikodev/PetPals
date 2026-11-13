@@ -1,6 +1,7 @@
 import { Link, Outlet, Route, Routes } from 'react-router-dom'
 import HomePage from './pages/HomePage.jsx'
 import ProfilePage from './pages/ProfilePage.jsx'
+import LoginPage from './pages/LoginPage.jsx'
 import RequireLogin from './components/RequireLogin.jsx'
 
 function Layout() {
@@ -8,9 +9,9 @@ function Layout() {
     <>
       <nav>
         <Link to="/">PetPals</Link>{' | '}
-        <Link to="/login">Prijava</Link>{' | '}
-        <Link to="/profile">Moj profil</Link>{' | '}
-        <Link to="/my-listings">Moji oglasi</Link>
+        <Link to="/login">Login</Link>{' | '}
+        <Link to="/profile">My profile</Link>{' | '}
+        <Link to="/my-listings">My listings</Link>
       </nav>
 
       <main>
@@ -25,11 +26,11 @@ export default function App() {
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<HomePage />} />
-        <Route path="login" element={<h1>Prijava</h1>} />
+        <Route path="login" element={<LoginPage />} />
 
         <Route element={<RequireLogin />}>
-          <Route path="profile" element={<ProfilePage />} />
-          <Route path="my-listings" element={<h1>Moji oglasi</h1>} />
+          <Route path="profile" element={<h1>My profile</h1>} />
+          <Route path="my-listings" element={<h1>My listings</h1>} />
         </Route>
       </Route>
     </Routes>

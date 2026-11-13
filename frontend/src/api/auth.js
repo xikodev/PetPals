@@ -12,7 +12,7 @@ export async function getCurrentSession() {
   }
 
   if (!response.ok) {
-    throw new Error(`Provjera prijave nije uspjela (${response.status})`)
+    throw new Error(`Could not check your login (${response.status})`)
   }
 
   const session = await response.json()
@@ -22,7 +22,7 @@ export async function getCurrentSession() {
   }
 
   if (!session.user) {
-    throw new Error('U odgovoru nedostaje korisnik.')
+    throw new Error('The response does not contain a user.')
   }
 
   return session
