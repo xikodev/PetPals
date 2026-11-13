@@ -49,7 +49,7 @@ Low - not used
 | NF-03 | All client-server traffic uses HTTPS. Any stored passwords are hashed, and stored OAuth tokens are encrypted. Check: inspect the deployed configuration and the database contents. | High | Team decision |
 | NF-04 | Authentication uses OAuth 2.0, and a session expires after a period of inactivity (30 min). Check: remain inactive beyond the timeout and attempt a protected action. | High | ToolShare assignment (OAuth 2.0 login); team decision |
 | NF-05 | The PWA is usable on common Android screen sizes for owners and helpers, and the administrator views are usable in desktop browsers. Check: run the application on several emulated Android screen sizes and in at least two desktop browsers. | Medium | Team decision |
-| NF-06 | If creating a Google Calendar event fails, the system retries three times, and the booking stays Accepted.. Check: simulate a failed API call and observe the retry and the booking status. | Medium | ToolShare assignment (Google Calendar integration); team decision |
+| NF-06 | If creating a Google Calendar event fails, the system retries three times, and the booking stays Accepted. Check: simulate a failed API call and observe the retry and the booking status. | Medium | ToolShare assignment (Google Calendar integration); team decision |
 | NF-07 | Deleting an account removes the user’s personal data (GDPR-aligned); booking records shared with other users are kept in anonymized form. Check: delete a test account and verify that no personal data remains in the database. | High | GDPR (right to erasure); team decision |
 | NF-08 | External APIs are accessed only through abstractions: Google Calendar and the QR Code API through the backend service layer, and Google Maps through one map component in the client. Check: code review of the service layer and the map component. | Medium | Team decision |
 
@@ -62,9 +62,9 @@ Performance, Security, Usability, Reliability, Privacy, Maintainability
 
 | Role or actor ID | Relation to the system | Relevant requirements |
 |---|---|---|
-| A-01 | **Pet Owner**: needs care for a pet; uses the mobile application to manage pet profiles, search for helpers, book services, confirm service steps, message the helper, and review the helper. | F-001, F-002, F-003, F-004, F-005, F-007, F-008, F-009, F-010, F-017, F-018 |
-| A-02 | **Pet Helper**: offers pet care services; uses the mobile application to manage listings and availability, handle booking requests, confirm service steps, message the owner, view history and earnings, and review the owner. | F-001, F-006, F-007, F-008, F-009, F-010, F-011, F-012, F-013, F-017, F-018 |
-| A-03 | **Administrator**: oversees the platform; uses the web admin panel only to verify users, moderate listings, and resolve disputes. | F-001, F-014, F-015, F-016 |
+| A-01 | **Pet Owner**: needs care for a pet; uses the PWA on a mobile device to manage pet profiles, search for helpers, book services, confirm service steps, message the helper, and review the helper. | F-001, F-002, F-003, F-004, F-005, F-007, F-008, F-009, F-010, F-017, F-018 |
+| A-02 | **Pet Helper**: offers pet care services; uses the PWA on a mobile device to manage listings and availability, handle booking requests, confirm service steps, message the owner, view history and earnings, and review the owner. | F-001, F-006, F-007, F-008, F-009, F-010, F-011, F-012, F-013, F-017, F-018 |
+| A-03 | **Administrator**: oversees the platform; uses the administrator views of the PWA in a desktop browser only to verify users, moderate listings, and resolve disputes. | F-001, F-014, F-015, F-016 |
 | A-04 | External systems (Google Maps, Google Calendar, QR Code API, OAuth provider): supporting systems used by the application; not primary actors. | F-001, F-004, F-007, F-008, F-009 |
 | Course staff | Stakeholders who review the project and its documentation; not actors in the application. | No application requirements |
 
@@ -102,19 +102,6 @@ Performance, Security, Usability, Reliability, Privacy, Maintainability
 | 30.10.2026. | UC-008 | Route display to the handover address removed from scope; the map shows helper markers only. Reason: Out of the scope of this project | --- |
 | --- | --- | --- | --- |
 
-<details>
-<summary><strong>Recording a significant change</strong></summary>
-
-**Example scenario — a decision during a Crisis Guard review:**
-
-| Date | Requirement ID | Change and reason | Agreed with / evidence |
-| --- | --- | --- | --- |
-| [Date of review] | F-004, NF-01 | Add manual location selection when browser geolocation is denied; without it, a citizen cannot submit a located report. | [Link to the team's actual review note or issue] |
-
-**Reason for the change:** It names the affected records and explains the user-facing reason, then points to the decision's evidence. The review and change are **constructed examples**, not events attributed to the published project. Update the current requirements after a real decision; a wording fix needs no log entry. Keep the current task queue in the issue tracker.
-
-</details>
-
 ---
 
 ## 2.6 Requirement Traceability
@@ -124,7 +111,7 @@ Performance, Security, Usability, Reliability, Privacy, Maintainability
 | Requirement ID | Use case or design location | Test or verification location |
 | --- | --- | --- |
 | F-000 | [UC-000] | [ST-001, CT-001] | [Passed / Failed / Pending – reason] |
-| F-001 | UC-001 | Pending |
+| F-001 | UC-001 | `backend/test/auth-flow.test.js` (automated); manual sign-in on the app: pending |
 | F-002 | UC-002 | Pending |
 | F-003 | UC-005 | Pending |
 | F-004 | UC-005 | Pending |
@@ -157,15 +144,4 @@ Performance, Security, Usability, Reliability, Privacy, Maintainability
 | Checkpoint 1 (week 7) | [Feedback] | [Decision; see 2.5] |
 | Demo 2 (week 11) | [Feedback] | [Decision; see 2.5] |  |  |  |
 
-<details>
-<summary><strong>Recording decisions from a review</strong></summary>
 
-**Example scenario — review of a Crisis Guard requirement:**
-
-| Checkpoint | Feedback or finding | Resulting requirement or scope decision |
-| --- | --- | --- |
-| Week 7 (example) | The demonstration reveals that denying browser location access prevents report submission. | Agree on a manual location fallback; update F-004 and the example NF-01 and record the reason in §2.5. |
-
-**Decision linked to feedback:** It connects observed behavior to a specific requirement change and avoids minutes of the entire meeting. The entry is **not a historical Crisis Guard milestone**. Write only actual feedback and decisions for this team's two formal checkpoints, weeks 8 and 14. Consultation in another week does not create an additional required submission.
-
-</details>
