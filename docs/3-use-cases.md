@@ -10,7 +10,7 @@
 
 **Versioned PlantUML source:** [`Source puml`](./puml/3-1-petpals-system-UC.puml)
 
-The diagram shows the three roles that interact with PetPals. Pet Owner and Pet Helper use the mobile application and both take part in the goals they share (signing in, confirming a service, messaging, rating, reporting a problem). The Administrator uses the web administration panel only. External systems appear as secondary actors where they take part in a user goal: the OAuth 2.0 provider during sign-in, Google Maps during search and route display, Google Calendar when a helper approves a request, and the QR Code API when a service is confirmed by QR code. QR confirmation is modelled as an `<<extend>>` of the general confirmation use case because the helper chooses between QR code and button for each confirmation.
+The diagram shows the three roles that interact with PetPals. Pet Owner and Pet Helper use the mobile application and both take part in the goals they share (signing in, confirming a service, messaging, rating, reporting a problem). The Administrator uses the web administration panel only. External systems appear as secondary actors where they take part in a user goal: the OAuth 2.0 provider during sign-in, Google Maps during search and route display, Google Calendar when a helper accepts a request, and the QR Code API when a service is confirmed by QR code. QR confirmation is modelled as an `<<extend>>` of the general confirmation use case because the helper chooses between QR code and button for each confirmation.
 
 **Consistency check:** Show the identified roles that **interact with the application**, not stakeholders who have no interaction. Each main user goal must have an associated actor; an included use case can be reached through another use case without its own direct actor association. Use `<<include>>` and `<<extend>>` only when the relationship expresses actual behavior.
 
@@ -94,8 +94,8 @@ The diagram shows the three roles that interact with PetPals. Pet Owner and Pet 
 | Requirement ID(s) | F-006, F-007 |
 | Preconditions, if any | The helper is verified and a booking request is in the "Requested" state. |
 | Main flow | 1. The helper opens the request and sees the owner's profile, the pet profile, the owner's previous ratings and the requested date range.<br>2. The helper accepts the request.<br>3. The application locks the time slot for that listing and updates the booking status for the owner.<br>4. The application creates Google Calendar events for both parties with start time, end time, handover address and automatic reminders before both boundaries. |
-| Alternative or failure flows, if any | **2a — Helper declines:** the owner sees the updated status; no slot is locked and no calendar events are created.<br>**4a — Calendar events cannot be created:** the approval stays valid; after three failed attempts (NF-06) the application reports that the events were not created. |
-| Result | The booking is approved, the slot is locked and both parties have calendar events. |
+| Alternative or failure flows, if any | **2a — Helper declines:** the owner sees the updated status; no slot is locked and no calendar events are created.<br>**4a — Calendar events cannot be created:** the acceptance stays valid; after three failed attempts (NF-06) the application reports that the events were not created. |
+| Result | The booking is accepted, the slot is locked and both parties have calendar events. |
 
 ### UC-008: Track booking and view route
 
@@ -104,7 +104,7 @@ The diagram shows the three roles that interact with PetPals. Pet Owner and Pet 
 | Primary actor | Pet Owner |
 | Requirement ID(s) | F-005 |
 | Preconditions, if any | The owner has sent at least one booking request. |
-| Main flow | 1. The owner opens their bookings list and selects a booking.<br>2. The application shows the booking status (Requested, Approved, In Progress or Completed) and the handover address. |
+| Main flow | 1. The owner opens their bookings list and selects a booking.<br>2. The application shows the booking status (Requested, Accepted, Declined, In Progress or Completed) and the handover address. |
 | Alternative or failure flows, if any | None. |
 | Result | The owner knows the current status of the booking and where the handover takes place. |
 
@@ -114,7 +114,7 @@ The diagram shows the three roles that interact with PetPals. Pet Owner and Pet 
 | --- | --- |
 | Primary actor | Pet Helper (initiates); Pet Owner (confirms) |
 | Requirement ID(s) | F-008, F-009 |
-| Preconditions, if any | The booking is Approved (to confirm the start) or In Progress (to confirm completion). |
+| Preconditions, if any | The booking is Accepted (to confirm the start) or In Progress (to confirm completion). |
 | Main flow | 1. At the agreed time the helper initiates the confirmation and chooses the method: QR code when both parties are physically together, or a "Confirm" button for drop-in services where they are not.<br>2. The helper performs their side of the confirmation in the application.<br>3. The owner performs their side with the same method.<br>4. When both sides have confirmed, the booking moves to "In Progress" (start) or "Completed" (completion). |
 | Alternative or failure flows, if any | **1a — QR method chosen:** see UC-010.<br>**3a — Only one side confirms:** the booking does not advance.<br>**3b — Confirmation is not given or is disputed:** either party can report a problem (UC-013). |
 | Result | The booking state changes only after both parties confirmed. The confirmation events are kept in the booking record. |
@@ -158,7 +158,7 @@ The diagram shows the three roles that interact with PetPals. Pet Owner and Pet 
 | --- | --- |
 | Primary actor | Pet Owner or Pet Helper |
 | Requirement ID(s) | F-018 |
-| Preconditions, if any | A booking with the status Approved, In Progress or Completed exists, for example after a no-show, a pet returned with an issue, or a disputed completion confirmation. |
+| Preconditions, if any | A booking with the status Accepted, In Progress or Completed exists, for example after a no-show, a pet returned with an issue, or a disputed completion confirmation. |
 | Main flow | 1. The user opens the booking and chooses to report a problem.<br>2. The user describes the problem and submits.<br>3. The application creates a dispute with the status Open for the booking; the booking status does not change. |
 | Alternative or failure flows, if any | None. |
 | Result | The dispute is available to the administrator (UC-017). |
