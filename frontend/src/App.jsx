@@ -1,5 +1,6 @@
 import { Link, Outlet, Route, Routes } from 'react-router-dom'
 import HomePage from './pages/HomePage.jsx'
+import ProfilePage from './pages/ProfilePage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 import RequireLogin from './components/RequireLogin.jsx'
 
