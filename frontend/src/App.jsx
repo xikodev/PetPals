@@ -30,8 +30,8 @@ export default function App() {
         <Route path="login" element={<LoginPage />} />
 
         <Route element={<RequireLogin />}>
-          <Route path="profile" element={<h1>My profile</h1>} />
-          <Route path="my-listings" element={<h1>My listings</h1>} />
+          <Route path="profile" element={<ProfilePage />} />
+          <Route path="my-listings" element={<MyListingsPage />} />
         </Route>
       </Route>
     </Routes>
