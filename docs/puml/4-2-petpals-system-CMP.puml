@@ -1,0 +1,86 @@
+' ==============================================================================
+' @file 4-2-petpals-system-CMP.puml
+' @brief Component diagram (building blocks) of the PetPals system.
+'
+' @details
+' One React PWA client serves the Pet Owner, Pet Helper and Administrator roles.
+' A single Node.js API (modular monolith) applies the business rules and is the
+' only component that accesses PostgreSQL. Google OAuth 2.0, Google Maps,
+' Google Calendar and the QR Code API are external systems outside the boundary.
+' The modules inside the Node.js API are logical modules, not separately
+' deployed services. Names match the participants of the sequence diagram 4.4.1.
+'
+' Diagram level: Architecture
+' Diagram type:  Component Diagram
+' ==============================================================================
+
+@startuml
+
+title PetPals - Component Diagram
+
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam componentStyle uml2
+skinparam ArrowColor #212529
+
+skinparam rectangle {
+    BackgroundColor #F8F9FA
+    BorderColor #212529
+}
+skinparam component {
+    BackgroundColor #E7F1FF
+    BorderColor #0D6EFD
+    BackgroundColor<<external>> #FFF3CD
+    BorderColor<<external>> #856404
+}
+skinparam database {
+    BackgroundColor #E7F1FF
+    BorderColor #0D6EFD
+}
+
+rectangle "PetPals System" as System {
+
+    component "React PWA\n(Pet Owner, Pet Helper and\nAdministrator views)" as PWA
+
+    rectangle "Node.js API (modular monolith)" as API {
+        component "Users & Verification" as MUsers
+        component "Listings & Search" as MListings
+        component "Bookings & Confirmations" as MBookings
+        component "Messages & Reviews" as MMessages
+        component "Disputes & Moderation" as MDisputes
+        component "External Service Adapters" as MAdapters
+    }
+
+    database "PostgreSQL" as DB
+}
+
+component "Google OAuth 2.0" as OAuth <<external>>
+component "Google Maps API" as Maps <<external>>
+component "Google Calendar API" as Calendar <<external>>
+component "QR Code API" as QR <<external>>
+
+' ------------------------------------------------------------------------------
+' Client and database
+' ------------------------------------------------------------------------------
+PWA --> API : HTTPS / JSON
+API --> DB : SQL queries,\ntransactions
+
+' ------------------------------------------------------------------------------
+' Dependencies between modules (not the order of a transaction)
+' ------------------------------------------------------------------------------
+MBookings ..> MListings : availability
+MMessages ..> MBookings : booking records
+MDisputes ..> MBookings : booking records
+
+' ------------------------------------------------------------------------------
+' External systems
+' ------------------------------------------------------------------------------
+PWA --> OAuth : sign-in\nredirect
+PWA --> Maps : map, markers,\nroutes
+MUsers --> MAdapters
+MBookings --> MAdapters
+MAdapters --> OAuth : token exchange
+MAdapters --> Calendar : events and\nreminders
+MAdapters --> QR : QR image for\nconfirmation token
+
+@enduml
