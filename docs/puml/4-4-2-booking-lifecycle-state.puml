@@ -1,0 +1,112 @@
+
+@startuml
+' PetPals - Section 4.4.2
+' Booking Lifecycle State Diagram
+' Based on database.md and the PetPals requirements and use cases
+
+title PetPals - Booking Lifecycle State Diagram
+
+skinparam shadowing false
+hide empty description
+
+' Booking states
+state "Requested" as Requested
+state "Accepted" as Accepted
+state "Declined" as Declined
+state "In Progress" as InProgress
+state "Completed" as Completed
+
+' Initial state
+[*] --> Requested : Valid booking request saved
+
+' Helper decision
+Requested --> Declined : Helper declines\n[authorized helper]
+
+Requested --> Accepted : Helper accepts\n[authorized helper and slot reserved atomically]
+
+' Service start confirmation
+Accepted --> InProgress : Start confirmed\n[both participants, same unexpired attempt]
+
+' Service completion confirmation
+InProgress --> Completed : Completion confirmed\n[both participants, same unexpired attempt]
+
+' Final states
+Declined --> [*]
+Completed --> [*]
+
+' Booking validation rules
+note left of Requested
+  Only approved, unsuspended users may book.
+
+  The selected pet must belong to the owner.
+
+  The listing and requested time must be valid.
+
+  Invalid requests do not create a booking.
+end note
+
+' Accepted booking rules
+note right of Accepted
+  Stored database value: accepted
+  User-facing label may be "Approved".
+
+  Google Calendar synchronization occurs
+  after acceptance. A failed synchronization
+  does not undo the accepted booking.
+
+  The booked helper initiates Start confirmation
+  using either QR code or in-app buttons.
+
+  Both participants must confirm the same
+  unexpired attempt.
+
+  A one-sided or expired confirmation
+  does not advance the booking.
+end note
+
+' Service completion rules
+note right of InProgress
+  The booked helper initiates Completion
+  using either QR code or in-app buttons.
+
+  Both participants must confirm the same
+  unexpired completion attempt.
+
+  A one-sided or expired confirmation
+  leaves the booking In Progress.
+end note
+
+' Completed booking rules
+note bottom of Completed
+  Reviews are allowed only after completion.
+
+  Both participants may leave a review.
+
+  Disputes are tracked independently
+  of the booking status.
+end note
+
+' Declined booking rules
+note bottom of Declined
+  A declined booking cannot progress
+  to service confirmation.
+end note
+
+' Other system states
+legend bottom
+  Separate status fields (not booking states):
+
+  booking_confirmations.status:
+  pending, confirmed, expired
+
+  calendar_events.sync_status:
+  pending, synced, failed
+
+  disputes.status:
+  open, resolved
+
+  Cancellation and no-show states
+  are not defined in the current draft.
+endlegend
+
+@enduml
