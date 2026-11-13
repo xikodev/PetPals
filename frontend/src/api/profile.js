@@ -6,7 +6,7 @@ export async function getMyProfile() {
   })
 
   if (!response.ok) {
-    throw new Error(`Učitavanje profila nije uspjelo (${response.status})`)
+    throw new Error(`Could not load your profile (${response.status})`)
   }
 
   return response.json()
@@ -16,11 +16,11 @@ export async function updateMyProfile(changes) {
   const session = await getCurrentSession()
 
   if (!session) {
-    throw new Error('Za izmjenu profila potrebna je prijava.')
+    throw new Error('You need to be logged in to edit your profile.')
   }
 
   if (!session.csrfToken) {
-    throw new Error('Nedostaje sigurnosni token za izmjenu profila.')
+    throw new Error('The security token for editing your profile is missing.')
   }
 
   const response = await fetch('/api/users/me', {
@@ -34,7 +34,7 @@ export async function updateMyProfile(changes) {
   })
 
   if (!response.ok) {
-    throw new Error(`Spremanje profila nije uspjelo (${response.status})`)
+    throw new Error(`Could not save your profile (${response.status})`)
   }
 
   return response.json()
