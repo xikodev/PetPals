@@ -3,6 +3,7 @@ import HomePage from './pages/HomePage.jsx'
 import ProfilePage from './pages/ProfilePage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 import RequireLogin from './components/RequireLogin.jsx'
+import MyListingsPage from './pages/MyListingsPage.jsx'
 
 function Layout() {
   return (
