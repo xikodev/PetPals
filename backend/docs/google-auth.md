@@ -48,7 +48,9 @@ general-purpose JWT utility. Token validation tests use locally signed fixtures.
 6. Open `https://YOUR-BACKEND.onrender.com/api/auth/google` (locally,
    `http://localhost:10000/api/auth/google`) in a browser to start sign-in.
    After Google authentication, the callback sets a session cookie and redirects
-   to `/api/auth/me`, which returns JSON. Authentication errors return JSON with
+   existing users to `/profile`. New users are redirected to `/api/auth/me`,
+   which returns registration JSON until a frontend registration page is added.
+   Authentication errors return JSON with
    an appropriate HTTP error status; there are no HTML pages.
 
 No separate session secret is required: session cookies carry random 256-bit
@@ -58,8 +60,8 @@ tokens whose hashes are looked up in the database, not self-contained user data.
 
 Frontend pages are owned by the frontend team. This backend provides only the
 authentication API. Begin sign-in with browser navigation to `/api/auth/google`,
-not an AJAX request. The current callback redirects to JSON at `/api/auth/me`;
-a future frontend landing URL can be agreed when integrating the client.
+not an AJAX request. The callback redirects existing users to `/profile` on the
+same origin; new users still receive registration JSON at `/api/auth/me`.
 
 The current cookie and Origin policy expects a same-origin client. Serve the
 future React client and API on the same origin or behind a same-origin proxy,

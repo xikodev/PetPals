@@ -103,6 +103,7 @@ test('existing Google subject signs into its stored role without profile changes
   const req = await begin(f);
   const res = f.res();
   await f.handlers.callback(req, res);
+  assert.equal(res.redirected, '/profile');
   assert.equal(f.sessions.get(res.token).purpose, 'authenticated');
   assert.equal(f.sessions.get(res.token).user_id, 4);
   assert.equal(f.sessions.get(res.token).data.identity, undefined);
