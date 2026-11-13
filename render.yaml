@@ -25,8 +25,5 @@ services:
     dockerContext: ./frontend
     plan: free
     envVars:
-      - key: VITE_API_URL
-        fromService:
-          type: web
-          name: api-service
-          property: host
+      - key: BACKEND_URL
+        sync: false
