@@ -1,0 +1,101 @@
+
+@startuml
+' PetPals - Section 4.4.1
+' Representative booking lifecycle sequence diagram
+' Based on UC-006, UC-007, UC-009 and database.md
+
+title PetPals - Booking Lifecycle Sequence Diagram
+
+skinparam shadowing false
+skinparam sequenceMessageAlign left
+skinparam maxMessageSize 220
+hide footbox
+
+actor "Pet Owner" as Owner
+actor "Pet Helper" as Helper
+participant "React PWA" as PWA
+participant "Node.js API" as API
+database "PostgreSQL" as DB
+participant "Google Calendar API" as Calendar
+
+== 1. Booking Request (UC-006) ==
+
+Owner -> PWA: Select service, pet, dates and handover address
+PWA -> API: Submit booking request
+
+API -> DB: Validate user approval, pet ownership,\nlisting eligibility and availability
+DB --> API: Validation result
+
+break Invalid or unavailable request
+    API --> PWA: Reject request with reason
+end
+
+API -> DB: Create booking (status=requested)
+API --> PWA: Booking Requested
+
+== 2. Helper Decision (UC-007) ==
+
+Helper -> PWA: Review booking and choose decision
+PWA -> API: Submit helper decision
+
+break Helper declines
+    API -> DB: Verify helper and Requested status;\nset booking status=declined
+    API --> PWA: Booking Declined
+end
+
+API -> DB: Verify helper and atomically reserve slot;\nset booking status=accepted
+DB --> API: Reservation result
+
+break Unauthorized helper or reservation conflict
+    API --> PWA: Booking not approved
+end
+
+API --> PWA: Booking Approved
+
+note over API,DB
+    Booking acceptance reserves the selected time slot.
+    Overlapping reservations must be prevented.
+end note
+
+== 3. Google Calendar Synchronization ==
+
+loop For each participant with calendar authorization
+    API -> Calendar: Create event with booking details
+    Calendar --> API: Event ID or error
+    API -> DB: Record calendar synchronization status
+end
+
+note over API,Calendar
+    Calendar failures do not cancel an accepted booking.
+    Retry handling follows the agreed integration policy.
+end note
+
+== 4. Service Start Confirmation (UC-009) ==
+
+Helper -> PWA: Initiate Start using in-app buttons
+PWA -> API: Create Start confirmation attempt
+API -> DB: Save pending attempt with expiry
+
+Helper -> PWA: Confirm service start
+PWA -> API: Submit helper confirmation
+API -> DB: Record helper confirmation
+
+Owner -> PWA: Confirm service start
+PWA -> API: Submit owner confirmation
+
+API -> DB: Verify both confirmations\non the same unexpired attempt
+
+alt Both confirmations valid
+    API -> DB: Mark attempt confirmed;\nset booking status=in_progress
+    API --> PWA: Booking In Progress
+else Incomplete or expired
+    API --> PWA: Booking remains Accepted
+end
+
+note over Owner,API
+    QR confirmation (UC-010) is an alternative method.
+    The helper displays the QR code and the owner scans it.
+    Both participants must still confirm the service start.
+end note
+
+@enduml
