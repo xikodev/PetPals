@@ -8,7 +8,7 @@ PetPals is a planned peer-to-peer pet care platform that connects pet owners wit
 
 Pet owners who travel or work long hours often arrange care informally, without availability calendars, verified users, or a structured way to resolve disagreements. PetPals is planned for three groups of users: pet owners, who search for and book care; pet helpers, who offer sitting, walking, and feeding services; and administrators, who verify users and resolve disputes. A booking follows a defined sequence from request to approval, confirmation, and completion, so both parties share one record of the arrangement.
 
-The planned system includes a mobile application for pet owners and helpers, and a web administration panel for administrators.
+The planned system is one React Progressive Web App (PWA) for all roles: pet owners and helpers use it on their phones, and administrators use its administration views in a desktop browser for user verification, service moderation, and dispute resolution.
 
 **Current functionality:** None implemented yet; the project is in the documentation phase.
 
@@ -76,16 +76,18 @@ For detailed setup, see the [project documentation](docs/Home.md).
 
 ## Technologies
 
-The application frameworks and database are still to be confirmed. The following integrations are planned and are not presented as implemented functionality.
+The team has chosen React (PWA) for the client, Node.js with Express for the API, PostgreSQL for the database, and Render for hosting. The table lists these and the planned integrations; it does not indicate that they have already been implemented.
 
 | Technology or service | Planned role in this project | Reason for use or important constraint |
 | --- | --- | --- |
-| Google Maps API | Display nearby helpers and routes to service locations. | Location helps owners find suitable nearby care. |
+| Google Maps API | Display nearby helpers as markers on a map. | Location helps owners find suitable nearby care. |
 | Google Calendar API | Create calendar events and reminders after booking approval. | Both parties need reminders for the care period; calendar access requires authorization. |
 | QR code service | Generate QR codes for service start and completion confirmation. | Supports confirmation during physical meetings; in-app buttons support confirmation when the parties are apart. |
 | OAuth 2.0 / external sign-in provider | Support sign-in through an external provider such as Google. | Sign-in is separate from administrator verification, which is required before users can send or receive booking requests. |
-
-<!-- TODO: Add confirmed application frameworks and the database, explaining their roles and project-specific reasons for use. -->
+| React PWA | One client for all roles: owners and helpers on phones, administrators in a desktop browser. | One codebase for mobile and desktop; installation and device features depend on the browser (ADR-01). |
+| Node.js with Express | API that applies the business rules and is the only part that accesses the database. | One language across client and server (4.1). |
+| PostgreSQL | Stores users, pets, listings, bookings, confirmations, messages, reviews and disputes. | Constraints and transactions prevent double bookings (ADR-02). |
+| Render | Hosts the deployed application. | Chosen hosting platform; details follow in Deployment. |
 
 ## Team Members
 
@@ -93,10 +95,10 @@ The application frameworks and database are still to be confirmed. The following
 | --- | --- |
 | Marta Cekić | Project organization, documentation, development |
 | Borna Krpan | Backend development and integration |
-| Mato Marunović | Documentation, development and integration |
+| Mato Marunović | Frontend development and integration |
 | Tomislav Miletić | Documentation, development and integration |
-| Fran Ivanković | Documentation, development and integration |
-| Oluwafemi Olabinjo | Documentation, development and integration |
+| Fran Ivanković | Documentation, Frontend development and integration |
+
 
 Roles may change during the project. The repository and the agreed task tracker provide supporting evidence of teamwork.
 
