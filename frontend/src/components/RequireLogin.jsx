@@ -23,8 +23,8 @@ export default function RequireLogin() {
     }
   }, [])
 
-  if (status === 'loading') return <p>Provjeravam prijavu…</p>
-  if (status === 'error') return <p>Provjera prijave nije uspjela.</p>
+  if (status === 'loading') return <p>Checking your login…</p>
+  if (status === 'error') return <p>Could not check your login.</p>
   if (status === 'guest') return <Navigate to="/login" replace />
 
   return <Outlet />
