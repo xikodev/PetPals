@@ -14,7 +14,7 @@
 | 22 October 2026; MC, BK, MM, TM, FI | Documentation approach | Written the detailed document describing the topic. The documentation files are divided among members: [BK - database plan, MM - README, TM - 1-Project-Scope.md, FI - 3-use-cases.md, MC - 2-requirements.md]. All members join Trello and learn to work with GitHub. |  |
 | 27 October 2026; MC, BK, MM, TM, FI | Application Architecture | Decided on which technologies will be used to implement the project: Node.js, PostgreSQL, React. Decided to create a progressive web app. | --- |
 | 8 November 2026; MC, BK, MM, TM, FI | Development of the first cycle features | Agreed the first version to deliver: Google login, user profile, an empty "My listings" page, and rejection of requests without login. Split the work into roles (backend, login, two frontend, documentation) and created the Trello cards in order of work. | --- |
-| week 6 | Testing and final checks | --- | --- |
+| 13 November 2026; MC, BK, MM, TM, FI | Progress check before the first demo | Reviewed the status: Google login and profile endpoints are implemented; [frontend screens and Render deployment are in progress]. Preparation for the demo at the lab session on 16 November. | --- |
 
 
 
@@ -56,15 +56,20 @@ Keep the plan at a useful weekly level when a table is used; revise it when prio
 | Database Design Draft | BK | 4 | --- |
 | Architecture & Design (Doc 4) | all | 6 | --- |
 | Mutual PR Review | all | 4 | --- |
-| Backend -  Database schema and migration to Render | BK | --- | --- |
-| Backend -  Hosting and deployment on Render | BK | --- | --- |
-| Backend -  Backend endpoints (profile, “My listings”) | TM | --- | --- |
-| Backend - documentation (README and API document)| TM | --- | --- |
-| Frontend - Frontend initialization and structure | MM | --- | --- |
-| Frontend - Frontend screens (login, profile, “My listings”)| FI | --- | --- |
-| Frontend - Frontend documentation| MM, FI | --- | --- |
-| Task planning, Trello board and repository cleanup | MC | --- | --- |
-| Documentation sync across documents | MC | --- | --- |
+| Backend -  Database schema and migration to Render | BK | 6 | --- |
+| Backend -  Hosting and deployment on Render | BK | 6 | --- |
+| Backend -  Backend endpoints (profile, “My listings”) | TM | 8 | --- |
+| Backend - documentation (README and API document)| TM | 3 | --- |
+| Frontend - Frontend initialization and structure | MM | 5 | --- |
+| Frontend - Frontend screens (login, profile, “My listings”)| FI | 11 | --- |
+| Frontend - Frontend documentation| MM, FI | 3 | --- |
+| Task planning, Trello board and repository cleanup | MC, BK | 4 | --- |
+| Documentation sync across documents | MC | 7 | --- |
+| Testing (Doc 5) | --- | --- | --- |
+| Deployment-Installation-and-Configuration (Doc 6) | --- | --- | --- |
+| Backend - Google login and session | BK | 5 | --- |
+| --- | --- | --- | --- |
+
 
 
 
