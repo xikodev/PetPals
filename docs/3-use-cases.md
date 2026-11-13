@@ -10,7 +10,7 @@
 
 **Versioned PlantUML source:** [`Source puml`](./puml/3-1-petpals-system-UC.puml)
 
-The diagram shows the three roles that interact with PetPals. Pet Owner and Pet Helper use the mobile application and both take part in the goals they share (signing in, confirming a service, messaging, rating, reporting a problem). The Administrator uses the web administration panel only. External systems appear as secondary actors where they take part in a user goal: the OAuth 2.0 provider during sign-in, Google Maps during search and route display, Google Calendar when a helper accepts a request, and the QR Code API when a service is confirmed by QR code. QR confirmation is modelled as an `<<extend>>` of the general confirmation use case because the helper chooses between QR code and button for each confirmation.
+The diagram shows the three roles that interact with PetPals. Pet Owner and Pet Helper use the mobile application and both take part in the goals they share (signing in, confirming a service, messaging, rating, reporting a problem). The Administrator uses the web administration panel only. External systems appear as secondary actors where they take part in a user goal: the OAuth 2.0 provider during sign-in, Google Maps during search, Google Calendar when a helper accepts a request, and the QR Code API when a service is confirmed by QR code. QR confirmation is modelled as an `<<extend>>` of the general confirmation use case because the helper chooses between QR code and button for each confirmation.
 
 **Consistency check:** Show the identified roles that **interact with the application**, not stakeholders who have no interaction. Each main user goal must have an associated actor; an included use case can be reached through another use case without its own direct actor association. Use `<<include>>` and `<<extend>>` only when the relationship expresses actual behavior.
 
@@ -97,7 +97,7 @@ The diagram shows the three roles that interact with PetPals. Pet Owner and Pet 
 | Alternative or failure flows, if any | **2a — Helper declines:** the owner sees the updated status; no slot is locked and no calendar events are created.<br>**4a — Calendar events cannot be created:** the acceptance stays valid; after three failed attempts (NF-06) the application reports that the events were not created. |
 | Result | The booking is accepted, the slot is locked and both parties have calendar events. |
 
-### UC-008: Track booking and view route
+### UC-008: Track booking
 
 | Field | Description |
 | --- | --- |
