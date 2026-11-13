@@ -7,6 +7,7 @@ RUN npm run build --if-present
 
 FROM nginx:alpine AS runner
 COPY --from=builder /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf.template /etc/nginx/templates/default.conf.template
+ENV BACKEND_URL=http://backend:10000
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

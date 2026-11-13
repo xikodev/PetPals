@@ -29,6 +29,8 @@ services:
 
   frontend:
     build: ./frontend
+    environment:
+      BACKEND_URL: http://backend:10000
     ports:
       - "80:80"
     depends_on:
