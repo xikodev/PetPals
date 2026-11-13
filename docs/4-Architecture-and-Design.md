@@ -17,6 +17,8 @@ The expandable Crisis Guard examples illustrate a proposed design. Use your proj
 
 ## 4.1 Solution Strategy
 
+**Objective:** Explain the few architectural choices that most affect the solution and their project-specific reasons.
+
 PetPals uses a React web application with Progressive Web App (PWA) capabilities, a Node.js backend, and a PostgreSQL database. The architecture is designed to support a five-person student team working within a limited development timeline.
 
 The frontend communicates with a single backend API, which applies business rules and accesses the database. The following decisions guide the implementation.
@@ -24,7 +26,7 @@ The frontend communicates with a single backend API, which applies business rule
 | Decision | Alternative considered | Project-specific rationale and trade-off |
 | --- | --- | --- |
 | React web application with PWA capabilities (ADR-01). | Native mobile applications with a separate web client. | A shared frontend codebase supports mobile and desktop use, reducing implementation and maintenance effort for a five-person team. On supported browsers and devices, users can install the PWA on their home screen and access an app-like interface without app store approval. The trade-off is that installation behavior and access to device features depend on browser and platform support. |
-| Node.js backend. | A backend implemented in another language, such as Java or Python. | Using JavaScript across the frontend and backend reduces language switching and makes it easier for team members to contribute across application layers. It also simplifies coordination of API data formats. The trade-off is that using the same language does not remove the need for explicit API contracts, server-side validation, and careful handling of asynchronous operations. |
+| Node.js backend with Express.| A backend implemented in another language, such as Java or Python. | Using JavaScript across the frontend and backend reduces language switching and makes it easier for team members to contribute across application layers. It also simplifies coordination of API data formats. The trade-off is that using the same language does not remove the need for explicit API contracts, server-side validation, and careful handling of asynchronous operations. |
 | PostgreSQL for persistent application data (ADR-02). | A document-oriented database such as MongoDB. | Users, pets, bookings, and reviews have clear relationships. Foreign keys, constraints, and transactions support consistent data and reliable booking operations. Preventing double-bookings requires availability checks combined with suitable database constraints or transaction-level concurrency control. The trade-off is the need to maintain a structured schema and database migrations. |
 | A modular monolithic backend. | Independently deployed microservices. | A single backend application is easier to develop, test, deploy, and manage within the team's size and course timeline. Internal modules separate responsibilities without introducing communication between independently deployed services. The trade-off is that backend modules are deployed and scaled together. |
 
@@ -148,6 +150,8 @@ Start by drawing the boundary around the proposed system. Inside it, identify pa
 </details>
 
 ## 4.5 Architecture Decision Records
+
+**Objective:** Preserve the reasons for consequential architectural choices so a future developer can understand what was decided, what alternative was considered, and which trade-off the team accepted.
 
 The following records document the architectural choices agreed for PetPals, including the alternatives and their consequences.
 
