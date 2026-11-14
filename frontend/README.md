@@ -27,16 +27,16 @@ Open the local URL printed by Vite, usually `http://localhost:5173`. Keep the te
 | `src/api/`        | Contains functions for checking the session and accessing profile and listings data.                         |
 | `src/context/`    | Reserved for state shared across components.                                                                 |
 | `vite.config.js`  | Configures Vite and the local API proxy.                                                                     |
-| `nginx.conf`      | Serves the built frontend and directs page requests to `index.html` so React Router can handle direct links. |
+| `nginx.conf.template`      | Serves the built frontend and directs page requests to `index.html` so React Router can handle direct links. |
 
 ## Routes
 
 | URL            | Access    | Current behavior                                               |
 | -------------- | --------- | -------------------------------------------------------------- |
-| `/`            | Public    | Displays the home page.                                        |
-| `/login`       | Public    | Displays the login screen placeholder.                         |
-| `/profile`     | Protected | Checks the session before displaying the profile placeholder.  |
-| `/my-listings` | Protected | Checks the session before displaying the listings placeholder. |
+| `/`            | Public    | Introduces PetPals, planned services and booking flow, with links to profile/sign-in.                                        |
+| `/login`       | Public    | Provides the Google sign-in link.                         |
+| `/profile`     | Protected | Checks the session, then loads and edits the current profile.  |
+| `/my-listings` | Protected | Checks the session, then displays an empty mocked listings list. |
 
 ## Backend and mock data
 
@@ -78,3 +78,5 @@ Vite writes the production build to `dist/`. To check the Docker build, run this
 ```sh
 docker compose build frontend
 ```
+
+The homepage labels discovery and booking as upcoming. New-user registration currently requires the backend API; there is no frontend registration screen. See [the documentation review](../docs/Documentation-Review.md) for the current authentication setup limitations.

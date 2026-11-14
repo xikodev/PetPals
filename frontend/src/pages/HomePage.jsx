@@ -1,107 +1,59 @@
-import { useState } from 'react'
-import heroImg from '../assets/hero.png'
-import reactLogo from '../assets/react.svg'
-import viteLogo from '../assets/vite.svg'
-import '../App.css'
+import { Link, useOutletContext } from 'react-router-dom'
+import './HomePage.css'
+
+const services = [
+  { icon: 'fa-house', title: 'Pet sitting', text: 'Care and company for your pet while you’re away.' },
+  { icon: 'fa-dog', title: 'Dog walking', text: 'Help keeping up with your dog’s daily walks.' },
+  { icon: 'fa-bowl-food', title: 'Feeding visits', text: 'Someone to stop by for meals and a check-in.' },
+]
 
 export default function HomePage() {
-  const [count, setCount] = useState(0)
+  const { status } = useOutletContext()
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="home-page">
+      <section className="home-intro" aria-labelledby="home-title">
+        <h1 id="home-title">Pet care, close to home.</h1>
+        <p className="home-description">
+          PetPals connects pet owners with local helpers for sitting, walks, and feeding visits.
+          Whether you need care or want to offer it, this is where you’ll get started.
+        </p>
+        <div className="home-actions">
+          {status === 'authenticated' ? (
+            <Link className="primary-link" to="/profile">My profile</Link>
+          ) : (
+            <Link className="primary-link" to="/login">
+              <i className="fa-brands fa-google" aria-hidden="true" />
+              <span>Sign in with Google</span>
+            </Link>
+          )}
         </div>
-
-        <div>
-          <h1>Pet Pals</h1>
-          <p>
-            Edit <code>src/pages/HomePage.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
+        <p className="preview-note">Existing members can sign in and edit their profile.</p>
       </section>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon" />
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+      <section className="home-services" aria-labelledby="services-title">
+        <div className="section-heading">
+          <h2 id="services-title">Care you’ll be able to find</h2>
         </div>
-
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon" />
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg className="button-icon" role="presentation" aria-hidden="true">
-                  <use href="/icons.svg#github-icon" />
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg className="button-icon" role="presentation" aria-hidden="true">
-                  <use href="/icons.svg#discord-icon" />
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg className="button-icon" role="presentation" aria-hidden="true">
-                  <use href="/icons.svg#x-icon" />
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg className="button-icon" role="presentation" aria-hidden="true">
-                  <use href="/icons.svg#bluesky-icon" />
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
+        <div className="service-grid">
+          {services.map(service => (
+            <article className="service-item" key={service.title}>
+              <i className={`fa-solid ${service.icon} service-icon`} aria-hidden="true" />
+              <h3>{service.title}</h3>
+              <p>{service.text}</p>
+            </article>
+          ))}
         </div>
       </section>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+      <section className="how-section" aria-labelledby="how-title">
+        <h2 id="how-title">How bookings will work</h2>
+        <ol className="care-steps">
+          <li><h3>Find a helper</h3><p>Compare nearby services, availability, and rates.</p></li>
+          <li><h3>Request care</h3><p>Choose your pet and dates, then agree on the details with your helper.</p></li>
+          <li><h3>Confirm and review</h3><p>Both of you confirm the start and finish. Leave a review when the booking is complete.</p></li>
+        </ol>
+      </section>
+    </div>
   )
 }
