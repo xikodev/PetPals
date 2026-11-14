@@ -6,7 +6,8 @@
 
 Pet owners who travel or work long hours may need someone trustworthy to look after their pet for a short period. When this is arranged informally, details such as dates, handover place and whether the service actually started and finished live only in chat messages, so there is no shared record if something goes wrong.
 
-PetPals is a peer-to-peer Progressive Web App (PWA), used on phones, that lets a pet owner find verified, nearby helpers who offer pet sitting, walking or feeding. The whole interaction (discovery, booking, on-service confirmation, completion and rating) is structured around a single shared object, the booking, so neither party has to negotiate details informally. A web administration panel gives administrators the records they need to verify users, moderate listings and resolve disputes.
+PetPals is a peer-to-peer Progressive Web App (PWA), used on phones, that lets a pet owner find verified, nearby helpers who offer pet sitting, walking or feeding. The whole interaction (discovery, booking, on-service confirmation, completion and rating) is structured around a single shared object, the booking, so neither party has to negotiate details informally. Administrators use the administration views of the same PWA in a desktop browser to
+view the records they need to verify users, moderate listings and resolve disputes.
 
 The expected benefit is that owners can find and book a suitable helper in one place, both parties have a clear record of what was agreed and confirmed, and administrators can decide disputes from recorded evidence instead of conflicting accounts. We do not claim a measured improvement; the benefit is a clearer and more traceable process.
 
@@ -17,7 +18,7 @@ The expected benefit is that owners can find and book a suitable helper in one p
 | --- | --- |
 | Pet Owner | Find a trustworthy helper near a chosen location for a specific care period, check availability, send a booking request, confirm the service at each step, and rate the helper afterwards. |
 | Pet Helper | Offer services (sitting, walking, feeding) with their own rates and availability, review incoming requests before accepting, confirm the service with the owner, and build a reputation through ratings. |
-| Administrator | Maintain trust and safety: verify new users, remove inappropriate or misclassified listings, and resolve disputes using the platform's records. Uses the web administration panel only. |
+| Administrator | Maintain trust and safety: verify new users, remove inappropriate or misclassified listings, and resolve disputes using the platform's records. Uses the administration views of the PWA in a desktop browser only. |
 
 **Verification rule:** Pet Owners may browse and prepare booking requests, but cannot submit them until an Administrator approves their account. Pet Helpers may prepare service listings, but cannot receive booking requests until approved.
 

@@ -10,7 +10,7 @@
 
 **Versioned PlantUML source:** [`Source puml`](./puml/3-1-petpals-system-UC.puml)
 
-The diagram shows the three roles that interact with PetPals. Pet Owner and Pet Helper use the mobile application and both take part in the goals they share (signing in, confirming a service, messaging, rating, reporting a problem). The Administrator uses the web administration panel only. External systems appear as secondary actors where they take part in a user goal: the OAuth 2.0 provider during sign-in, Google Maps during search, Google Calendar when a helper accepts a request, and the QR Code API when a service is confirmed by QR code. QR confirmation is modelled as an `<<extend>>` of the general confirmation use case because the helper chooses between QR code and button for each confirmation.
+The diagram shows the three roles that interact with PetPals. Pet Owner and Pet Helper use PWA on mobile devices and both take part in the goals they share (signing in, confirming a service, messaging, rating, reporting a problem). The Administrator uses the web administration panel only. External systems appear as secondary actors where they take part in a user goal: the OAuth 2.0 provider during sign-in, Google Maps during search, Google Calendar when a helper accepts a request, and the QR Code API when a service is confirmed by QR code. QR confirmation is modelled as an `<<extend>>` of the general confirmation use case because the helper chooses between QR code and button for each confirmation.
 
 **Consistency check:** Show the identified roles that **interact with the application**, not stakeholders who have no interaction. Each main user goal must have an associated actor; an included use case can be reached through another use case without its own direct actor association. Use `<<include>>` and `<<extend>>` only when the relationship expresses actual behavior.
 
@@ -178,7 +178,7 @@ The diagram shows the three roles that interact with PetPals. Pet Owner and Pet 
 
 | Field | Description |
 | --- | --- |
-| Primary actor | Administrator (web administration panel) |
+| Primary actor | Administrator (administration views of the PWA, desktop browser) |
 | Requirement ID(s) | F-014 |
 | Preconditions, if any | The Administrator is signed in to the panel and new profiles are waiting in the verification queue. |
 | Main flow | 1. The Administrator opens the verification queue and selects a profile.<br>2. The Administrator reviews the submitted name and email.<br>3. The Administrator approves the profile; the application marks the user as verified. |
@@ -189,7 +189,7 @@ The diagram shows the three roles that interact with PetPals. Pet Owner and Pet 
 
 | Field | Description |
 | --- | --- |
-| Primary actor | Administrator (web administration panel) |
+| Primary actor | Administrator (administration views of the PWA, desktop browser) |
 | Requirement ID(s) | F-015 |
 | Preconditions, if any | The Administrator is signed in and a listing is inappropriate, illegal or misclassified (for example not really pet care). |
 | Main flow | 1. The Administrator opens the listing.<br>2. The Administrator removes it.<br>3. The application hides the listing from search and shows the helper that the listing was removed. |
@@ -200,7 +200,7 @@ The diagram shows the three roles that interact with PetPals. Pet Owner and Pet 
 
 | Field | Description |
 | --- | --- |
-| Primary actor | Administrator (web administration panel) |
+| Primary actor | Administrator (administration views of the PWA, desktop browser) |
 | Requirement ID(s) | F-016 |
 | Preconditions, if any | A dispute is open for a booking (UC-013). |
 | Main flow | 1. The Administrator opens the dispute.<br>2. The application shows the full record: the initial request, both parties' profiles and ratings, the complete chat log and the confirmation events.<br>3. The Administrator decides an outcome, such as an account warning, a temporary suspension or a recorded decision affecting the parties' future use of the platform.<br>4. The Administrator records the decision. |

@@ -10,7 +10,7 @@ Pet owners who travel or work long hours often arrange care informally, without 
 
 The planned system is one React Progressive Web App (PWA) for all roles: pet owners and helpers use it on their phones, and administrators use its administration views in a desktop browser for user verification, service moderation, and dispute resolution.
 
-**Current functionality:** None implemented yet; the project is in the documentation phase.
+**Current functionality:** Google sign-in (OpenID Connect); new users choose the owner or helper role; sessions expire after 30 minutes of inactivity; a signed-in user can view and edit their profile (first name, last name, photo). The frontend has login, profile and "My listings" pages; "My listings" does not load data yet. Administrator approval, listings, search and bookings are not implemented.
 
 **Planned key features**
 
@@ -29,19 +29,22 @@ For the complete scope, requirements, design, and test evidence as they are deve
 <a id="deployment"></a>
 ## Deployment
 
-Deployment details will be added once a working version is available.
+The application is hosted on Render and described by [`render.yaml`](render.yaml): a PostgreSQL database (`app-db`), the backend API (`api-service`, Docker, health check `/health`) and the frontend (`web-frontend`, Docker with nginx). The frontend forwards `/api` requests to the backend, so the browser sees a single origin, as the session cookie and the CSRF check require.
 
-**Live application:** To be added once a working version is deployed.
-<!-- TODO: Add the public application URL. -->
+**Live application:** https://petpals-frontend.onrender.com
 
-**Explore:** To be added.
-<!-- TODO: Describe one or two actions that demonstrate a working user flow. -->
+**Explore:** 
+1. Open the URL and select **Sign in with Google**.
+2. After signing in, open **My profile**, change your first name, last name or photo, and save.
+(Pages that need sign-in redirect to the login page when you are not signed in.)
 
-**Demo:** To be added.
-<!-- TODO: Explain how to obtain limited access if sign-in is required. Never publish passwords or tokens. -->
+**Demo:** 
+Sign-in works only for Google accounts added as test users of the project's Google OAuth client.
 
-**Limitations:** To be added.
-<!-- TODO: List limitations of the deployed version or link to the known-issues documentation. -->
+**Limitations:**
+- The free Render plan puts the services to sleep, so the first request after a pause can take about a minute.
+- Administrator approval, listings, search and bookings are not implemented yet; "My listings" is an empty page.
+- Sessions expire after 30 minutes of inactivity.
 
 The deployment and running guide will describe the hosting setup used by the team.
 <!-- TODO: Add a link to the deployment and running guide. -->
@@ -49,28 +52,43 @@ The deployment and running guide will describe the hosting setup used by the tea
 <a id="quick-start"></a>
 ## Quick Start / Installation
 
-Installation and configuration instructions will be completed as development progresses and verified from a clean clone before publication.
-
-**Prerequisites:** To be added.
-<!-- TODO: List required runtimes and versions, package managers, database requirements, and essential external services. -->
+**Prerequisites:** Node.js 20 or newer (npm included), Docker with Docker Compose (for the local PostgreSQL database), Git, and a Google account added as a test user of the project's Google OAuth client (needed only for sign-in).
 
 ```bash
 git clone https://github.com/xikodev/PetPals.git
 cd PetPals
 
-# TODO: Add dependency installation commands.
-# TODO: Add commands to run the backend, mobile application, and administration panel.
+# 1. Start the local PostgreSQL database (appdb, user dbuser) on port 5432
+docker compose up -d db
+
+# 2. Create the database tables (run once, in this order)
+docker compose exec -T db psql -U dbuser -d appdb < backend/migrations/001_initial_schema.sql
+docker compose exec -T db psql -U dbuser -d appdb < backend/migrations/002_auth_sessions.sql
+
+# 3. Backend (terminal 1)
+cd backend
+npm ci
+cp .env.example .env    # then fill in DB_PASSWORD, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
+npm start
+
+# 4. Frontend (terminal 2, from the repository root)
+cd frontend
+npm ci
+npm run dev
+
 ```
 
-**Address:** To be added.
-<!-- TODO: Provide the actual local address or instructions for opening the mobile application. -->
+**Address:** the application is at `http://localhost:5173` (the Vite dev server forwards `/api` requests to the backend at `http://localhost:10000`).
 
-**Configuration:** The planned integrations include Google sign-in, Google Maps, Google Calendar, and a QR code service. Required environment variables, database configuration, and a safe `.env.example` file will be documented once the implementation is established. Service credentials will be obtained from the respective providers.
+**Configuration:** copy `backend/.env.example` to `backend/.env`. For the local database use `DB_PASSWORD=password` (the value set in `docker-compose.yml`) and keep `DB_SSL=false`. For Google sign-in set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` (obtained from the team privately) and keep `AUTH_BASE_URL=http://localhost:10000`. The Google client must list `http://localhost:10000/api/auth/google/callback` as an authorized redirect URI. See [Google sign-in](backend/docs/google-auth.md).
 
 Never put real credentials in this README, example configuration files, screenshots, logs, or commits.
 
-**Verification:** To be added.
-<!-- TODO: Describe a basic check confirming that the application runs correctly. -->
+**Verification:** 
+1. `http://localhost:10000/health` returns a success response.
+2. `cd backend && npm run db:check` prints "PostgreSQL connection successful".
+3. `cd backend && npm test` passes.
+4. Open `http://localhost:5173`, choose **Sign in with Google**, and after signing in open the profile page.
 
 For detailed setup, see the [project documentation](docs/Home.md).
 
