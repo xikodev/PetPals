@@ -1,0 +1,28 @@
+.home-page { max-width: 1040px; margin: auto; padding: 0 32px; }
+.home-intro { max-width: 700px; padding: 64px 0 44px; }
+.home-intro h1 { margin: 14px 0 20px; font-size: clamp(2rem, 5vw, 3rem); font-weight: 650; letter-spacing: -.035em; }
+.home-description { max-width: 620px; font-size: 1.05rem; }
+.home-actions { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; margin: 26px 0 18px; }
+.primary-link { display: inline-flex; gap: 10px; align-items: center; justify-content: center; border-radius: 6px; padding: 11px 18px; background: var(--accent); color: #fff; text-decoration: none; font-weight: 600; font-size: .9rem; }
+.primary-link:hover { background: #254535; }
+.profile-link { font-size: .9rem; text-underline-offset: 4px; }
+.preview-note { max-width: 560px; font-size: .8rem; }
+.home-services { padding: 30px 0 36px; border-top: 1px solid var(--border); }
+.section-heading { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.home-page h2 { font-size: 1.25rem; letter-spacing: -.02em; margin: 0; }
+.service-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; margin-top: 28px; }
+.service-icon { color: var(--accent); font-size: 1.25rem; }
+.service-item h3 { margin: 12px 0 8px; font-size: 1rem; }
+.service-item p { font-size: .9rem; }
+.how-section { border-top: 1px solid var(--border); padding: 30px 0; }
+.care-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; padding: 0 0 0 20px; margin: 24px 0 0; }
+.care-steps li { padding-left: 4px; }
+.care-steps li::marker { color: var(--accent); font-weight: 600; }
+.care-steps h3 { margin: 0 0 8px; font-size: 1rem; }
+.care-steps p { font-size: .9rem; }
+.home-footer { border-top: 1px solid var(--border); padding: 20px 0; font-size: .75rem; }
+@media (max-width: 600px) {
+  .home-page { padding: 0 20px; }
+  .home-intro { padding: 36px 0; }
+  .service-grid, .care-steps { grid-template-columns: 1fr; gap: 24px; }
+}
