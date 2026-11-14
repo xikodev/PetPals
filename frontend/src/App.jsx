@@ -7,6 +7,7 @@ import ProfilePage from './pages/ProfilePage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 import RequireLogin from './components/RequireLogin.jsx'
 import MyListingsPage from './pages/MyListingsPage.jsx'
+import MyPetsPage from './pages/MyPetsPage.jsx'
 
 function Layout() {
   const { pathname } = useLocation()
@@ -38,6 +39,7 @@ function Layout() {
             {status === 'authenticated' ? (
               <>
                 <NavLink to="/profile">My profile</NavLink>
+                <NavLink to="/my-pets">My pets</NavLink>
                 <NavLink to="/my-listings">My listings</NavLink>
               </>
             ) : (
@@ -62,6 +64,7 @@ export default function App() {
 
         <Route element={<RequireLogin />}>
           <Route path="profile" element={<ProfilePage />} />
+          <Route path="my-pets" element={<MyPetsPage />} />
           <Route path="my-listings" element={<MyListingsPage />} />
         </Route>
       </Route>
