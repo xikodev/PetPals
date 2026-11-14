@@ -5,13 +5,14 @@ export const GOOGLE_LOGIN_URL = '/api/auth/google'
 
 export default function LoginPage() {
   return (
-    <main className="login-page">
-      <h1>Pet Pals</h1>
-      <p>Sign in to find pet helpers or offer your care services.</p>
+    <section className="login-page">
+      <h1>Sign in to PetPals</h1>
+      <p>Use your Google account to access your PetPals profile.</p>
       {/* A plain link, not fetch: login is a full-page redirect to Google. */}
       <a className="login-button" href={GOOGLE_LOGIN_URL}>
-        Sign in with Google
+        <i className="fa-brands fa-google" aria-hidden="true" />
+        <span>Sign in with Google</span>
       </a>
-    </main>
+    </section>
   )
 }
