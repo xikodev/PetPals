@@ -48,7 +48,8 @@ general-purpose JWT utility. Token validation tests use locally signed fixtures.
 6. Open `https://YOUR-BACKEND.onrender.com/api/auth/google` (locally,
    `http://localhost:10000/api/auth/google`) in a browser to start sign-in.
    After Google authentication, the callback sets a session cookie and redirects
-   existing users to `/profile`. New users are redirected to `/api/auth/me`,
+   existing users to `http://localhost:5173/profile` in local development, or to
+   `/profile` on the callback origin in production. New users are redirected to `/api/auth/me`,
    which returns registration JSON until a frontend registration page is added.
    Authentication errors return JSON with
    an appropriate HTTP error status; there are no HTML pages.

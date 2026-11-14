@@ -1,38 +1,50 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import { prepareProfilePhoto } from '../api/photo.js'
 
 const MAX_NAME_LENGTH = 100
-const MAX_URL_LENGTH = 2048
 
-// Returns an error message, or null when the photo URL is acceptable.
-// The backend only accepts an HTTPS URL without credentials (or null).
-function photoUrlError(value) {
-  if (value.length > MAX_URL_LENGTH) return 'Photo URL is too long.'
-  try {
-    const url = new URL(value)
-    if (url.protocol !== 'https:' || url.username || url.password) {
-      return 'Photo URL must start with https://'
-    }
-  } catch {
-    return 'Photo URL is not a valid address.'
-  }
-  return null
-}
-
-// Presentational form: it knows nothing about the API.
-// `profile` is the saved data, `onSave(changes)` receives only the changed fields.
 export default function ProfileForm({ profile, onSave, saving = false }) {
+  const [editing, setEditing] = useState(false)
   const [firstName, setFirstName] = useState(profile.first_name)
   const [lastName, setLastName] = useState(profile.last_name)
-  const [photoUrl, setPhotoUrl] = useState(profile.photo_url ?? '')
+  // undefined preserves the saved photo; null removes it; a string replaces it.
+  const [photo, setPhoto] = useState(undefined)
+  const [preparingPhoto, setPreparingPhoto] = useState(false)
+  const [failedImage, setFailedImage] = useState(null)
   const [error, setError] = useState('')
+  const fileInput = useRef(null)
+  const preview = photo === undefined ? profile.photo_url : photo
+  const busy = saving || preparingPhoto
 
-  function handleSubmit(event) {
+  async function handlePhotoChange(event) {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file) return
+    setPreparingPhoto(true)
+    setError('')
+    try {
+      setPhoto(await prepareProfilePhoto(file))
+      setFailedImage(null)
+    } catch (error) {
+      setError(error.message)
+    } finally {
+      setPreparingPhoto(false)
+    }
+  }
+
+  function handleCancel() {
+    setFirstName(profile.first_name)
+    setLastName(profile.last_name)
+    setPhoto(undefined)
+    setError('')
+    setEditing(false)
+  }
+
+  async function handleSubmit(event) {
     event.preventDefault()
-
+    if (!editing || busy) return
     const first = firstName.trim()
     const last = lastName.trim()
-    const photo = photoUrl.trim()
-
     if (!first || !last) {
       setError('First name and last name are required.')
       return
@@ -41,85 +53,69 @@ export default function ProfileForm({ profile, onSave, saving = false }) {
       setError(`Names can have at most ${MAX_NAME_LENGTH} characters.`)
       return
     }
-    if (photo) {
-      const problem = photoUrlError(photo)
-      if (problem) {
-        setError(problem)
-        return
-      }
-    }
-
-    // Send only what changed: the backend rejects an empty update.
     const changes = {}
     if (first !== profile.first_name) changes.first_name = first
     if (last !== profile.last_name) changes.last_name = last
-    if (photo !== (profile.photo_url ?? '')) changes.photo_url = photo || null
+    if (photo === null && profile.photo_url) changes.photo_url = null
+    else if (typeof photo === 'string') changes.photo_data = photo
 
-    if (Object.keys(changes).length === 0) {
+    if (!Object.keys(changes).length) {
       setError('Nothing to save: you have not changed anything.')
       return
     }
-
     setError('')
     setFirstName(first)
     setLastName(last)
-    setPhotoUrl(photo)
-    onSave(changes)
+    if (await onSave(changes)) {
+      setPhoto(undefined)
+      setEditing(false)
+    }
   }
 
   return (
     <form className="profile-form" onSubmit={handleSubmit} noValidate>
-      <label>
-        First name
-        <input
-          type="text"
-          value={firstName}
-          onChange={(event) => setFirstName(event.target.value)}
-          maxLength={MAX_NAME_LENGTH}
-          required
-        />
-      </label>
+      <fieldset disabled={busy}>
+        <div className="profile-photo-editor">
+          <button className="profile-photo-button" type="button" onClick={() => fileInput.current.click()} aria-label="Change profile photo" disabled={!editing}>
+            {preview && failedImage !== preview ? (
+              <img src={preview} alt="Your profile photo" onError={() => setFailedImage(preview)} />
+            ) : (
+              <i className="fa-solid fa-user" aria-hidden="true" />
+            )}
+            {editing && <span className="photo-camera"><i className="fa-solid fa-camera" aria-hidden="true" /></span>}
+          </button>
+          <div className="profile-photo-controls" hidden={!editing}>
+            {preparingPhoto && <p role="status">Preparing photo…</p>}
+            {preview && <button type="button" className="remove-photo" onClick={() => setPhoto(null)}>Remove photo</button>}
+            <p>JPEG, PNG or WebP. Up to 5 MB.</p>
 
-      <label>
-        Last name
-        <input
-          type="text"
-          value={lastName}
-          onChange={(event) => setLastName(event.target.value)}
-          maxLength={MAX_NAME_LENGTH}
-          required
-        />
-      </label>
+          </div>
+          <input ref={fileInput} type="file" accept="image/jpeg,image/png,image/webp" onChange={handlePhotoChange} aria-label="Choose profile photo" hidden />
+        </div>
 
-      <p className="profile-form-hint">
-        Changing your name sets your verification back to pending.
-      </p>
-
-      <label>
-        Photo URL (optional)
-        <input
-          type="url"
-          value={photoUrl}
-          onChange={(event) => setPhotoUrl(event.target.value)}
-          placeholder="https://example.com/me.jpg"
-        />
-      </label>
-
-      <label>
-        Email
-        <input type="email" value={profile.email} readOnly disabled />
-      </label>
-      <p className="profile-form-hint">Your email comes from Google and cannot be changed.</p>
-
-      {error && (
-        <p className="profile-message profile-message-error" role="alert">
-          {error}
-        </p>
+        <div className="profile-name-fields">
+          <label>First name
+            <input type="text" value={firstName} onChange={event => setFirstName(event.target.value)} maxLength={MAX_NAME_LENGTH} readOnly={!editing} required />
+          </label>
+          <label>Last name
+            <input type="text" value={lastName} onChange={event => setLastName(event.target.value)} maxLength={MAX_NAME_LENGTH} readOnly={!editing} required />
+          </label>
+        </div>
+        {editing && <p className="profile-form-hint">Changing your name sets your verification back to pending.</p>}
+        <label>Email
+          <input type="email" value={profile.email} readOnly disabled />
+        </label>
+        <p className="profile-form-hint">Your email comes from Google and cannot be changed.</p>
+      </fieldset>
+      {error && <p className="profile-message profile-message-error" role="alert">{error}</p>}
+      {editing ? (
+        <div className="profile-form-actions">
+          <button type="submit" disabled={busy}>{saving ? 'Saving…' : 'Save changes'}</button>
+          <button type="button" onClick={handleCancel} disabled={busy}>Cancel</button>
+        </div>
+      ) : (
+        <button key="edit" type="button" onClick={() => setEditing(true)}>Edit profile</button>
       )}
-
-      <button type="submit" disabled={saving}>
-        {saving ? 'Saving…' : 'Save changes'}
-      </button>
     </form>
   )
 }

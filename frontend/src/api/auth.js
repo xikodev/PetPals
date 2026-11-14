@@ -32,3 +32,15 @@ export async function getCurrentUser() {
   const session = await getCurrentSession()
   return session?.user ?? null
 }
+export async function logout() {
+  const session = await getCurrentSession()
+  if (!session) return
+  if (!session.csrfToken) throw new Error('Could not sign out. Please refresh and try again.')
+
+  const response = await fetch('/api/auth/logout', {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: { 'X-CSRF-Token': session.csrfToken },
+  })
+  if (!response.ok) throw new Error('Could not sign out. Please try again.')
+}

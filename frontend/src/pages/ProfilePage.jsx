@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { logout } from '../api/auth.js'
 import { getMyProfile, updateMyProfile } from '../api/profile.js'
 import ProfileForm from '../components/ProfileForm.jsx'
 import './ProfilePage.css'
@@ -16,6 +18,9 @@ const VERIFICATION_LABELS = {
 }
 
 export default function ProfilePage() {
+  const navigate = useNavigate()
+  const [loggingOut, setLoggingOut] = useState(false)
+  const [logoutError, setLogoutError] = useState('')
   const [status, setStatus] = useState('loading')
   const [profile, setProfile] = useState(null)
   const [saving, setSaving] = useState(false)
@@ -48,48 +53,63 @@ export default function ProfilePage() {
       const result = await updateMyProfile(changes)
       setProfile(result.profile)
       setMessage({ type: 'success', text: 'Profile saved.' })
+      return true
     } catch (error) {
       setMessage({ type: 'error', text: error.message })
+      return false
     } finally {
       setSaving(false)
     }
   }
 
-  if (status === 'loading') return <p>Loading your profile…</p>
-  if (status === 'error') {
-    return <p role="alert">Could not load your profile. Please try again later.</p>
+  async function handleLogout() {
+    setLoggingOut(true)
+    setLogoutError('')
+    try {
+      await logout()
+      navigate('/', { replace: true })
+    } catch (error) {
+      setLogoutError(error.message)
+    } finally {
+      setLoggingOut(false)
+    }
   }
 
   return (
     <section className="profile-page">
       <h1>My profile</h1>
+      {status === 'loading' && <p>Loading your profile…</p>}
+      {status === 'error' && <p role="alert">Could not load your profile. Please try again later.</p>}
+      {profile && (
+        <div className="profile-panel">
+          <dl className="profile-summary">
+            <dt>Role</dt>
+            <dd>{ROLE_LABELS[profile.role] ?? profile.role}</dd>
+            <dt>Verification</dt>
+            <dd>
+              {VERIFICATION_LABELS[profile.verification_status] ?? profile.verification_status}
+            </dd>
+          </dl>
 
-      <dl className="profile-summary">
-        <dt>Name</dt>
-        <dd>
-          {profile.first_name} {profile.last_name}
-        </dd>
-        <dt>Email</dt>
-        <dd>{profile.email}</dd>
-        <dt>Role</dt>
-        <dd>{ROLE_LABELS[profile.role] ?? profile.role}</dd>
-        <dt>Verification</dt>
-        <dd>
-          {VERIFICATION_LABELS[profile.verification_status] ?? profile.verification_status}
-        </dd>
-      </dl>
+          <ProfileForm profile={profile} onSave={handleSave} saving={saving} />
 
-      <h2>Edit profile</h2>
-      <ProfileForm profile={profile} onSave={handleSave} saving={saving} />
-
-      {message && (
-        <p
-          className={`profile-message profile-message-${message.type}`}
-          role={message.type === 'error' ? 'alert' : 'status'}
-        >
-          {message.text}
-        </p>
+          {message && (
+            <p
+              className={`profile-message profile-message-${message.type}`}
+              role={message.type === 'error' ? 'alert' : 'status'}
+            >
+              {message.text}
+            </p>
+          )}
+        </div>
       )}
+      <footer className="profile-footer">
+        <button className="profile-logout" type="button" onClick={handleLogout} disabled={loggingOut}>
+          <i className="fa-solid fa-right-from-bracket" aria-hidden="true" />
+          {loggingOut ? 'Signing out…' : 'Log out'}
+        </button>
+        {logoutError && <p className="profile-message profile-message-error" role="alert">{logoutError}</p>}
+      </footer>
     </section>
   )
 }
