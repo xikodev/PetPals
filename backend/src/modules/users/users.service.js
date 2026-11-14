@@ -1,3 +1,5 @@
+const { normalizePhoto } = require('./users.photo');
+
 function createUsersService(repository) {
   async function getOwnProfile(userId) {
     const profile = await repository.findProfile(userId);
@@ -12,14 +14,19 @@ function createUsersService(repository) {
     const invalid = (message) => { throw Object.assign(new Error(message), { status: 400 }); };
     if (!body || typeof body !== 'object' || Array.isArray(body)) invalid('Provide a JSON object.');
     const keys = Object.keys(body);
-    const allowed = ['first_name', 'last_name', 'photo_url'];
+    const allowed = ['first_name', 'last_name', 'photo_url', 'photo_data'];
     if (!keys.length || keys.some((key) => !allowed.includes(key))) {
-      invalid('Provide only first_name, last_name or photo_url, with at least one field.');
+      invalid('Provide only first_name, last_name, photo_url or photo_data, with at least one field.');
+    }
+    if (Object.hasOwn(body, 'photo_url') && Object.hasOwn(body, 'photo_data')) {
+      invalid('Provide either photo_url or photo_data, not both.');
     }
     const fields = {};
     for (const key of keys) {
       const value = body[key];
-      if (key !== 'photo_url') {
+      if (key === 'photo_data') {
+        fields.photo_url = await normalizePhoto(value);
+      } else if (key !== 'photo_url') {
         if (typeof value !== 'string' || !value.trim() || value.trim().length > 100) {
           invalid(`${key} must contain between 1 and 100 characters.`);
         }

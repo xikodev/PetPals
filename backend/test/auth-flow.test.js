@@ -2,6 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { createAuthHandlers } = require('../src/modules/auth/auth.routes');
 const { createAuthRepository } = require('../src/modules/auth/auth.repository');
+const { readAuthConfig } = require('../src/modules/auth/auth.config');
 const { randomToken, hashToken } = require('../src/modules/auth/auth.security');
 
 function fixture() {
@@ -37,8 +38,7 @@ function fixture() {
       return { subject: 'verified-subject', email: 'verified@example.com', firstName: 'Ana', lastName: 'Test' };
     },
   };
-  const config = { cookieName: 'petpals', secure: false, origin: 'http://localhost:10000',
-    clientId: 'client', clientSecret: 'secret' };
+  const config = readAuthConfig({ GOOGLE_CLIENT_ID: 'client', GOOGLE_CLIENT_SECRET: 'secret' });
   const handlers = createAuthHandlers({ config, repository, google });
   const res = () => ({
     statusCode: 200,
@@ -103,7 +103,7 @@ test('existing Google subject signs into its stored role without profile changes
   const req = await begin(f);
   const res = f.res();
   await f.handlers.callback(req, res);
-  assert.equal(res.redirected, '/profile');
+  assert.equal(res.redirected, 'http://localhost:5173/profile');
   assert.equal(f.sessions.get(res.token).purpose, 'authenticated');
   assert.equal(f.sessions.get(res.token).user_id, 4);
   assert.equal(f.sessions.get(res.token).data.identity, undefined);

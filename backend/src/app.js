@@ -9,8 +9,6 @@ const { createUsersRouter } = require('./modules/users/users.routes');
 
 const app = express();
 
-// Parse incoming JSON request bodies.
-app.use(express.json({ limit: '16kb' }));
 
 app.get("/health", (req, res) => {
   res.json({ status: "healthy" });
@@ -20,7 +18,7 @@ app.get("/", (req, res) => {
   res.send("API running");
 });
 
-app.use("/api/examples", exampleRoutes);
+app.use("/api/examples", express.json({ limit: '16kb' }), exampleRoutes);
 
 // Lazy pool access keeps importing the app independent of a live database.
 const database = {
@@ -33,7 +31,7 @@ const authDependencies = {
   repository: createAuthRepository(database),
   google: createGoogleProvider(authConfig),
 };
-app.use('/api/auth', createAuthRouter(authDependencies));
+app.use('/api/auth', express.json({ limit: '16kb' }), createAuthRouter(authDependencies));
 app.use('/api/users', createUsersRouter({
   repository: createUsersRepository(database),
   loadSession: createAuthHandlers(authDependencies).loadSession,

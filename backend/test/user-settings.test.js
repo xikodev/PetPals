@@ -1,6 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const express = require('express');
+const sharp = require('sharp');
 const { createUsersRouter } = require('../src/modules/users/users.routes');
 const { createAuthHandlers } = require('../src/modules/auth/auth.routes');
 const { createUsersRepository } = require('../src/modules/users/users.repository');
@@ -9,7 +10,6 @@ async function fixture(t) {
   const calls = [];
   const csrf = createAuthHandlers({ config: { origin: 'https://petpals.example' } }).csrf;
   const app = express();
-  app.use(express.json());
   app.use('/api/users', createUsersRouter({ csrf,
     loadSession(req, res, next) {
       req.auth = { user: req.headers.authorization ? { id: 12 } : null,
@@ -60,6 +60,23 @@ test('rejects unknown, privileged and malformed fields without updating anything
     assert.equal((await f.request(body)).status, 400, JSON.stringify(body));
   }
   assert.deepEqual(f.calls, []);
+});
+
+test('profile upload stores a resized image and rejects invalid image data', async (t) => {
+  const f = await fixture(t);
+  const png = await sharp({
+    create: { width: 640, height: 480, channels: 3, background: '#365d4d' },
+  }).png().toBuffer();
+  const response = await f.request({ photo_data: `data:image/png;base64,${png.toString('base64')}` });
+  assert.equal(response.status, 200);
+  const { profile } = await response.json();
+  assert.match(profile.photo_url, /^data:image\/jpeg;base64,/);
+  const image = await sharp(Buffer.from(profile.photo_url.split(',')[1], 'base64')).metadata();
+  assert.equal(image.format, 'jpeg');
+  assert.equal(image.width, 384);
+  assert.equal(image.height, 384);
+  assert.equal((await f.request({ photo_data: 'data:image/png;base64,AAAA' })).status, 400);
+  assert.equal(f.calls.length, 1);
 });
 
 test('missing users and database failures return safe errors', async (t) => {

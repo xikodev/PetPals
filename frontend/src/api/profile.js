@@ -34,7 +34,8 @@ export async function updateMyProfile(changes) {
   })
 
   if (!response.ok) {
-    throw new Error(`Could not save your profile (${response.status})`)
+    const result = await response.json().catch(() => ({}))
+    throw new Error(result.error || `Could not save your profile (${response.status})`)
   }
 
   return response.json()
