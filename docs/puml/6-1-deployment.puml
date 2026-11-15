@@ -1,0 +1,50 @@
+@startuml
+' PetPals - deployment topology declared in render.yaml (reviewed 2026-11-15).
+' This is a configuration view, not proof that production services are healthy.
+title PetPals - deployment view (configured; live integration unverified)
+left to right direction
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam node {
+  BackgroundColor #F8FAFC
+  BorderColor #64748B
+}
+skinparam database {
+  BackgroundColor #F8FAFC
+  BorderColor #64748B
+}
+skinparam cloud {
+  BackgroundColor #F8FAFC
+  BorderColor #64748B
+}
+
+node "User device" as Device {
+  artifact "Web browser\nReact PWA executes here" as Browser
+}
+
+node "Render (configured services)" as Render {
+  node "web-frontend\nDocker / Nginx" as Frontend {
+    artifact "Vite-built static assets" as Static
+  }
+  node "api-service\nDocker / Node.js / Express" as Backend {
+    artifact "Auth and user profile API\n/health" as API
+  }
+  database "app-db\nPostgreSQL" as Database
+}
+
+cloud "Google Identity\nOpenID Connect" as Google
+
+Browser --> Frontend : HTTPS / pages and assets
+Browser ..> Backend : /api/ requests\nproduction routing to verify
+Backend --> Database : PostgreSQL connection
+Browser --> Google : OAuth navigation / consent
+Browser ..> Backend : callback navigation\nafter Google redirect
+Backend --> Google : code exchange / ID token verification
+
+note bottom of Render
+Configured in render.yaml.
+Live service health, migrations,
+frontend API proxy and cookie handling
+require confirmation.
+end note
+@enduml
