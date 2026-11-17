@@ -6,12 +6,11 @@
 
 ## 2.1 Functional Requirements
 
-**Objective:** State what the application must do for its users, where each capability comes from, and what observable result counts as acceptance. what the system does
+**Objective:** State what the application must do for its users, where each capability comes from, and what observable result counts as acceptance. 
 
 | ID | Description | Priority | Source | Acceptance criteria |
 | :--- | --- | :---: | --- | --- |
-| F-000 | [Observable capability] | [High/Medium/Low] | [Approved task / stakeholder request / feedback] | [Observable result] |
-| F-001 | Users can authenticate via OAuth 2.0 (external provider such as Google). | High | Approved project scope | After successful OAuth 2.0 authentication, their display name is shown in the application. If the user cancels at the provider's consent screen, the login screen is shown and no session is created. |
+| F-001 | Users can authenticate via OAuth 2.0 (external provider such as Google). | High | Approved project scope | After successful OAuth 2.0 authentication, the user’s display name is shown in the application. A new user first chooses a role (owner or helper) and enters their name. If the user cancels at the provider's consent screen, the login screen is shown and no session is created. |
 | F-002 | Pet Owners can create, view, edit, and delete pet profiles with photos and notes. | High | Approved project scope | After saving a new pet profile (name, species, optional breed, birth date, notes, photo), the pet appears in the owner's pet list. Edited values are shown after saving. A deleted pet no longer appears in the list. |
 | F-003 | Pet Owners can search for helpers by location, service type, price range, and availability. | High | Approved project scope | After the owner enters search criteria, the result list contains only helpers that match all entered criteria; only published listings of verified helpers are returned. If no helper matches, a message stating that no results were found is shown. |
 | F-004 | Search results are displayed on an interactive map showing nearby helpers. | High | Approved project scope | Each helper in the result list is shown as a marker on the map. Selecting a marker displays the helper's name, service type, and rate. |
@@ -24,11 +23,11 @@
 | F-011 | Pet Helpers can create and manage service listings with a photo, description, rate, and availability. | High | Approved project scope | After saving a listing with service type (sitting, walking, or feeding), description, a photo, rate, and availability, it appears in owner search results matching its data. Edits are visible after saving. A deleted listing no longer appears in search results. A helper who is not yet verified can save listings, but they are not shown in search results. |
 | F-012 | Pet Helpers can block specific dates on their availability calendar. | High | Approved project scope | Dates blocked by the helper are shown as unavailable in the helper's calendar and in the owner's view of that calendar, and cannot be selected in a booking request. Unblocking a date makes it selectable again. |
 | F-013 | Pet Helpers can view their booking history and a summary of total earnings from completed bookings. | Medium | Approved project scope | The history lists each booking with date range, owner, service type, and status. The earnings summary shows the sum of the recorded total prices of bookings with the status Completed; Requested, Accepted, Declined, and In Progress bookings are not included. |
-| F-014 | Administrators can verify new user profiles (approve or reject). | High | Approved project scope | The admin panel lists profiles awaiting verification. After Approve, the profile is shown as verified; after Reject, it is shown as rejected. The affected user can see the resulting status. |
+| F-014 | Administrators can verify new user profiles (approve or reject). | High | Approved project scope | The admin panel lists profiles awaiting verification. After Approve, the profile is shown as verified; after Reject, it is shown as rejected. The affected user can see the resulting status. If an approved user changes their name, the status returns to pending. |
 | F-015 | Administrators can moderate service listings. | High | Approved project scope | The admin panel lists service listings. After an administrator removes a listing, it no longer appears in search results and the helper sees that it has been removed. |
 | F-016 | Administrators can resolve disputes by reviewing booking history and chat records. | High | Approved project scope | For an open dispute, the admin panel shows the booking history and the chat messages of the related booking. After the administrator records an outcome (account warning, suspension, or note), the dispute status changes to Resolved and the outcome is stored with the dispute. |
 | F-017 | Both parties can exchange text messages within a booking. | Medium | Approved project scope | A text message sent by one party of a booking appears in the booking's message thread of the other party. The thread is accessible only to the two parties of that booking and, during a dispute, to the administrator. |
-| F-018 | Pet Owners and Pet Helpers can report a problem with a booking. | High | Approved project scope | After the user describes the problem and submits, a dispute with the status Open appears in the administrator's dispute list. A problem can be reported only for bookings with the status Accepted, In Progress, or Completed |
+| F-018 | Pet Owners and Pet Helpers can report a problem with a booking. | High | Approved project scope | After the user describes the problem and submits, a dispute with the status Open appears in the administrator's dispute list. A problem can be reported only for bookings with the status Accepted, In Progress, or Completed. |
 
 **High** - the core booking flow and anything that makes the platform trustworthy
 
@@ -40,7 +39,7 @@ Low - not used
 
 ## 2.2 Non-Functional Requirements
 
-**Objective:** Specify the important quality properties and operating conditions of the approved application in a way the team can reasonably check. how well it does it and under what conditions
+**Objective:** Specify the important quality properties and operating conditions of the approved application in a way the team can reasonably check. 
 
 | ID | Description | Priority | Source |
 | :--- | --- | :---: | --- |
@@ -88,7 +87,7 @@ Performance, Security, Usability, Reliability, Privacy, Maintainability
 | AS-02 | Each helper listing has a location that can be shown on the map. | Team assumption | Test listings with and without a valid location. A listing cannot be saved without a valid location. |
 | AS-03 | A booking request captures a start and an end date and time inside an available period, so that calendar events (F-007) carry exact times. | Team assumption | Check the booking request form and the resulting calendar event. |
 | AS-04 | The free usage tiers of the Google Maps and Google Calendar APIs are sufficient for development and demonstration. | Team assumption | Monitor API usage in the provider console during testing and check the current quota and billing terms before relying on it. |
-| AS-05 | Administrator accounts are created by the team directly in the database; administrators sign in through the same OAuth provider. | Team assumption | No registration flow for administrators is designed; verify that an administrator can sign in to the web admin panel. |
+| AS-05 | Administrator accounts are created by the team directly in the database; administrators sign in through the same OAuth provider. | Team assumption | No registration flow for administrators is designed; verify that an administrator can sign in to the administrator views. |
 
 ---
 
@@ -110,25 +109,24 @@ Performance, Security, Usability, Reliability, Privacy, Maintainability
 
 | Requirement ID | Use case or design location | Test or verification location |
 | --- | --- | --- |
-| F-000 | [UC-000] | [ST-001, CT-001] | [Passed / Failed / Pending – reason] |
-| F-001 | UC-001 | `backend/test/auth-flow.test.js` (automated); manual sign-in on the app: pending |
-| F-002 | UC-002 | Pending |
-| F-003 | UC-005 | Pending |
-| F-004 | UC-005 | Pending |
-| F-005 | UC-006, UC-008 | Pending |
-| F-006 | UC-007 | Pending |
-| F-007 | UC-007 (calendar step) | Pending |
-| F-008 | UC-009, UC-010 | Pending |
-| F-009 | UC-009, UC-010 | Pending |
-| F-010 | UC-012 | Pending |
-| F-011 | UC-003 | Pending |
-| F-012 | UC-004 | Pending |
-| F-013 | UC-014 | Pending |
-| F-014 | UC-015 | Pending |
-| F-015 | UC-016 | Pending |
-| F-016 | UC-017 | Pending |
-| F-017 | UC-011 | Pending |
-| F-018 | UC-013 | Pending |
+| F-001 | [UC-001](3-use-cases.md#uc-001-sign-in-and-set-up-profile) | `backend/test/auth-flow.test.js`, `backend/test/auth-security.test.js` (automated); manual sign-in on the app: pending |
+| F-002 | [UC-002](3-use-cases.md#uc-002-manage-pet-profiles)| `backend/test/pets.test.js` (automated); manual check on My pets: pending |
+| F-003 | [UC-005](3-use-cases.md#uc-005-search-helpers-on-map) | Pending |
+| F-004 | [UC-005](3-use-cases.md#uc-005-search-helpers-on-map) | Pending |
+| F-005 | [UC-006](3-use-cases.md#uc-006-send-booking-request), [UC-008](3-use-cases.md#uc-008-track-booking) | Pending |
+| F-006 | [UC-007](3-use-cases.md#uc-007-review-booking-request) | Pending |
+| F-007 | [UC-007](3-use-cases.md#uc-007-review-booking-request) (calendar step) | Pending |
+| F-008 | [UC-009](3-use-cases.md#uc-009-confirm-service-start-or-completion), [UC-010](3-use-cases.md#uc-010-confirm-by-qr-code) | Pending |
+| F-009 | [UC-009](3-use-cases.md#uc-009-confirm-service-start-or-completion), [UC-010](3-use-cases.md#uc-010-confirm-by-qr-code) | Pending |
+| F-010 | [UC-012](3-use-cases.md#uc-012-rate-the-other-party) | Pending |
+| F-011 | [UC-003](3-use-cases.md#uc-003-manage-service-listings) | Pending |
+| F-012 | [UC-004](3-use-cases.md#uc-004-block-unavailable-dates) | Pending |
+| F-013 | [UC-014](3-use-cases.md#uc-014-view-history-and-earnings) | Pending |
+| F-014 | [UC-015](3-use-cases.md#uc-015-verify-users) | Pending |
+| F-015 | [UC-016](3-use-cases.md#uc-016-moderate-listings) | Pending |
+| F-016 | [UC-017](3-use-cases.md#uc-017-resolve-dispute) | Pending |
+| F-017 | [UC-011](3-use-cases.md#uc-011-exchange-booking-messages) | Pending |
+| F-018 | [UC-013](3-use-cases.md#uc-013-report-a-problem-with-a-booking) | Pending |
 | NF-01 to NF-08 | Not use-case based (see checks in 2.2) | Pending |
 
 
@@ -141,7 +139,7 @@ Performance, Security, Usability, Reliability, Privacy, Maintainability
 
 | Checkpoint | Feedback or finding | Resulting requirement or scope decision |
 | --- | --- | --- |
-| Checkpoint 1 (week 7) | [Feedback] | [Decision; see 2.5] |
+| Checkpoint 1 (week 7) | At the demo on 16 Nov 2026, the TA liked the application and the work so far. The TA asked us to finish all the documentation and review it carefully. The TA will look at the application and documentation around Wednesday, 18 Nov, and then hold a meeting with us (Teams) to list further fixes or to see the fixes we have already made.  | No requirement or scope change so far. We are completing and checking all pages, including the requirements, before the 20 Nov submission. Any change decided in the follow-up meeting will be added here and in 2.5. |
 | Demo 2 (week 11) | [Feedback] | [Decision; see 2.5] |  |  |  |
 
 

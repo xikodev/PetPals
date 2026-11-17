@@ -10,7 +10,7 @@
 ' interfaces; their implementations belong to the "Bookings & Confirmations"
 ' module and the "External Service Adapters" module of the component
 ' diagram 4.2. Database columns are intentionally omitted (see the ER diagram).
-' The stored status value is "accepted"; the user interface shows "Approved".
+' The stored status value is "accepted"; the user interface shows "Accepted".
 '
 ' Diagram level: Detailed design
 ' Diagram type:  Class Diagram

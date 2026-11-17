@@ -47,10 +47,10 @@ API -> DB: Verify helper and atomically reserve slot;\nset booking status=accept
 DB --> API: Reservation result
 
 break Unauthorized helper or reservation conflict
-    API --> PWA: Booking not approved
+    API --> PWA: Booking not accepted
 end
 
-API --> PWA: Booking Approved
+API --> PWA: Booking Accepted
 
 note over API,DB
     Booking acceptance reserves the selected time slot.
@@ -67,7 +67,7 @@ end
 
 note over API,Calendar
     Calendar failures do not cancel an accepted booking.
-    Retry handling follows the agreed integration policy.
+    Failed event creation is retried three times, then recorded as failed (NF-06).
 end note
 
 == 4. Service Start Confirmation (UC-009) ==

@@ -6,7 +6,8 @@
 
 Pet owners who travel or work long hours may need someone trustworthy to look after their pet for a short period. When this is arranged informally, details such as dates, handover place and whether the service actually started and finished live only in chat messages, so there is no shared record if something goes wrong.
 
-PetPals is a peer-to-peer Progressive Web App (PWA), used on phones, that lets a pet owner find verified, nearby helpers who offer pet sitting, walking or feeding. The whole interaction (discovery, booking, on-service confirmation, completion and rating) is structured around a single shared object, the booking, so neither party has to negotiate details informally. A web administration panel gives administrators the records they need to verify users, moderate listings and resolve disputes.
+PetPals is a peer-to-peer Progressive Web App (PWA), used on phones, that lets a pet owner find verified, nearby helpers who offer pet sitting, walking or feeding. The whole interaction (discovery, booking, on-service confirmation, completion and rating) is structured around a single shared object, the booking, so neither party has to negotiate details informally. Administrators use the administration views of the same PWA in a desktop browser to
+view the records they need to verify users, moderate listings and resolve disputes.
 
 The expected benefit is that owners can find and book a suitable helper in one place, both parties have a clear record of what was agreed and confirmed, and administrators can decide disputes from recorded evidence instead of conflicting accounts. We do not claim a measured improvement; the benefit is a clearer and more traceable process.
 
@@ -17,18 +18,18 @@ The expected benefit is that owners can find and book a suitable helper in one p
 | --- | --- |
 | Pet Owner | Find a trustworthy helper near a chosen location for a specific care period, check availability, send a booking request, confirm the service at each step, and rate the helper afterwards. |
 | Pet Helper | Offer services (sitting, walking, feeding) with their own rates and availability, review incoming requests before accepting, confirm the service with the owner, and build a reputation through ratings. |
-| Administrator | Maintain trust and safety: verify new users, remove inappropriate or misclassified listings, and resolve disputes using the platform's records. Uses the web administration panel only. |
+| Administrator | Maintain trust and safety: verify new users, remove inappropriate or misclassified listings, and resolve disputes using the platform's records. Uses the administration views of the PWA in a desktop browser only. |
 
 **Verification rule:** Pet Owners may browse and prepare booking requests, but cannot submit them until an Administrator approves their account. Pet Helpers may prepare service listings, but cannot receive booking requests until approved.
 
 ## 1.3 Project Boundaries
 **Objective:** State the principal capabilities within the approved task, important exclusions, and indispensable external dependencies.
 
-**Included:** One React PWA for all roles. For Pet Owners and Pet Helpers on mobile devices: OAuth 2.0 sign-in, profiles, pet profiles, service listings with availability calendars that block unavailable or already-booked time slots, map-based search with service type, date and price filters, booking requests with approval or decline by the helper, confirmation of service start and completion by both parties (QR code or in-app button), with both confirmations required at each milestone, messaging scoped to a booking, reporting a problem with a booking, mutual 1-5 ratings with short reviews, and a helper view of completed bookings and recorded earnings. Web administration panel (the administrator views of the same PWA, used in a desktop browser) for Administrators: user verification queue
+**Included:** One React PWA for all roles. For Pet Owners and Pet Helpers on mobile devices: OAuth 2.0 sign-in, profiles, pet profiles, service listings with availability calendars that block unavailable or already-booked time slots, map-based search with service type, date and price filters, booking requests with acceptance or decline by the helper, confirmation of service start and completion by both parties (QR code or in-app button), with both confirmations required at each milestone, messaging scoped to a booking, reporting a problem with a booking, mutual 1-5 ratings with short reviews, and a helper view of completed bookings and recorded earnings. Web administration panel (the administrator views of the same PWA, used in a desktop browser) for Administrators: user verification queue, listing moderation, and dispute review with a recorded decision.
 
 **Excluded or deferred:** Payment processing. Earnings are only a display of recorded totals and an administrator's dispute decision is recorded, not financially executed. Administrators do not use the owner and helper views, manage booking calendars, list services or take part in ratings. Automated background checks and insurance or guarantee schemes are not part of the project; verification is an administrator's review of the user's name and email.
 
-**External dependencies:** Google Maps API (map and search markers), Google Calendar API (events and reminders for both parties once a booking is approved), a QR Code API (unique QR image per booking for start and completion confirmation) and OAuth 2.0 with an external provider such as Google (authentication). The application keeps responsibility for its own booking, listing, review and dispute data.
+**External dependencies:** Google Maps API (map and search markers), Google Calendar API (events and reminders for both parties once a booking is accepted), a QR Code API (unique QR image per booking for start and completion confirmation) and OAuth 2.0 with an external provider such as Google (authentication). The application keeps responsibility for its own booking, listing, review and dispute data.
 
 ## 1.4 Existing Approaches and Project Rationale
 

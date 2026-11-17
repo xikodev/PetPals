@@ -10,15 +10,17 @@
 
 **Versioned PlantUML source:** [`Source puml`](./puml/3-1-petpals-system-UC.puml)
 
-The diagram shows the three roles that interact with PetPals. Pet Owner and Pet Helper use the mobile application and both take part in the goals they share (signing in, confirming a service, messaging, rating, reporting a problem). The Administrator uses the web administration panel only. External systems appear as secondary actors where they take part in a user goal: the OAuth 2.0 provider during sign-in, Google Maps during search, Google Calendar when a helper accepts a request, and the QR Code API when a service is confirmed by QR code. QR confirmation is modelled as an `<<extend>>` of the general confirmation use case because the helper chooses between QR code and button for each confirmation.
+The diagram shows the three roles that interact with PetPals. Pet Owner and Pet Helper use the PWA on mobile devices and both take part in the goals they share (signing in, confirming a service, messaging, rating, reporting a problem). The Administrator uses the administrator views of the PWA. External systems appear as secondary actors where they take part in a user goal: the OAuth 2.0 provider during sign-in, Google Maps during search, Google Calendar when a helper accepts a request, and the QR Code API when a service is confirmed by QR code. QR confirmation is modelled as an `<<extend>>` of the general confirmation use case because the helper chooses between QR code and button for each confirmation.
 
-**Consistency check:** Show the identified roles that **interact with the application**, not stakeholders who have no interaction. Each main user goal must have an associated actor; an included use case can be reached through another use case without its own direct actor association. Use `<<include>>` and `<<extend>>` only when the relationship expresses actual behavior.
+**Consistency check:** The diagram shows the three roles that use PetPals and the four external systems that take part in a goal. Each main goal has an associated actor. Only the QR confirmation uses <<extend>>.
 
 ---
 
 ## 3.2 Use Case Descriptions
 
 **Objective:** For each use case in the diagram, explain the actor's goal, the normal interaction with the application, and meaningful alternatives. Describe straightforward use cases briefly; expand those whose alternatives, external dependencies, or consequences require more explanation.
+
+Status: UC-001 and UC-002 are implemented. All other use cases describe the planned design.
 
 ### UC-001: Sign in and set up profile
 
@@ -27,8 +29,8 @@ The diagram shows the three roles that interact with PetPals. Pet Owner and Pet 
 | Primary actor | Pet Owner or Pet Helper; secondary actor: OAuth 2.0 provider |
 | Requirement ID(s) | F-001 |
 | Preconditions, if any | None. |
-| Main flow | 1. The user chooses to sign in with an external provider (for example Google).<br>2. The provider authenticates the user and returns their identity to the application.<br>3. On first sign-in the application asks the user to choose a role (Pet Owner or Pet Helper) and to enter a minimal profile: first name, last name and, optionally, a photo.<br>4. The user submits the profile; the application creates the account marked "pending verification". |
-| Alternative or failure flows, if any | **2a — Authentication fails or is cancelled:** the user stays signed out and the application explains how to retry.<br>**3a — Name missing:** the application asks for it before continuing. |
+| Main flow | 1. The user chooses to sign in with an external provider (for example Google).<br>2. The provider authenticates the user and returns their identity to the application.<br>3. On first sign-in the application asks the user to choose a role (Pet Owner or Pet Helper) and to enter a minimal profile: first name and last name.<br>4. The user submits the profile; the application creates the account marked "pending verification". |
+| Alternative or failure flows, if any | **2a — Authentication fails or is cancelled:** the user stays signed out and the application explains how to retry.<br>**3a — Name missing:** the application asks for it before continuing. **Later — edit profile:** the user changes name or photo on the profile page; a name change sets the status back to pending. |
 | Result | The user is signed in. Until an Administrator approves the account (UC-015), an owner can browse and prepare bookings but cannot send requests, and a helper can prepare service listings but cannot receive requests. |
 
 ### UC-002: Manage pet profiles
@@ -50,7 +52,7 @@ The diagram shows the three roles that interact with PetPals. Pet Owner and Pet 
 | Requirement ID(s) | F-011 |
 | Preconditions, if any | The helper is signed in. |
 | Main flow | 1. The helper chooses to add a service listing.<br>2. The helper selects the service type (sitting, walking or feeding) and enters a description, a rate (for example per hour or per day), a photo and the service location.<br>3. The helper sets the availability calendar of the listing and saves.<br>4. The application stores the listing as a bookable, searchable entity with type, price, availability and location. |
-| Alternative or failure flows, if any | **4a — Helper not yet verified:** the listing is saved but cannot receive booking requests until the helper is verified (UC-015).<br>**4b — Listing removed by an Administrator:** the listing is hidden from search and the helper is shown that it was removed (UC-016).<br>**Edit or delete:** the helper can edit or delete a listing; a deleted listing no longer appears in search. |
+| Alternative or failure flows, if any | **4a — Helper not yet verified:** the listing is saved but is not shown in search results and cannot receive booking requests until the helper is verified (UC-015).<br>**4b — Listing removed by an Administrator:** the listing is hidden from search and the helper is shown that it was removed (UC-016).<br>**Edit or delete:** the helper can edit or delete a listing; a deleted listing no longer appears in search. |
 | Result | The listing appears in search results for matching owners, subject to the helper's verified status. |
 
 ### UC-004: Block unavailable dates
@@ -126,7 +128,7 @@ The diagram shows the three roles that interact with PetPals. Pet Owner and Pet 
 | Primary actor | Pet Helper (initiates); Pet Owner (confirms); secondary actor: QR Code API |
 | Requirement ID(s) | F-008, F-009 |
 | Preconditions, if any | A confirmation was initiated (UC-009) and the helper chose the QR method. |
-| Main flow | 1. The application requests a unique QR image for the booking from the QR Code API and displays it.<br>2. The helper's application displays the QR code and the owner scans it with the application.<br>3. The application records both confirmations. |
+| Main flow | 1. The application requests a unique QR image from the QR Code API and shows it on the helper's screen. 2. The owner scans it with the application.<br>3. The application records both confirmations. |
 | Alternative or failure flows, if any | **1a — QR image cannot be generated:** the application reports the failure and the helper can retry or choose the button method. |
 | Result | The confirmation step is completed as in UC-009. |
 
@@ -170,7 +172,7 @@ The diagram shows the three roles that interact with PetPals. Pet Owner and Pet 
 | Primary actor | Pet Helper |
 | Requirement ID(s) | F-013 |
 | Preconditions, if any | The helper is signed in. |
-| Main flow | 1. The helper opens the history view.<br>2. The application lists the helper's completed bookings and shows the total earnings calculated from the rates and the completed bookings recorded in the system. |
+| Main flow | 1. The helper opens the history view.<br>2. The application lists the helper's bookings with date range, owner, service type and status, and shows the total earnings of the bookings with the status Completed. |
 | Alternative or failure flows, if any | **2a — No completed bookings:** the application shows an empty history and zero total. |
 | Result | The helper sees recorded totals. The platform does not process payments; the figure is a display of recorded values. |
 
@@ -178,7 +180,7 @@ The diagram shows the three roles that interact with PetPals. Pet Owner and Pet 
 
 | Field | Description |
 | --- | --- |
-| Primary actor | Administrator (web administration panel) |
+| Primary actor | Administrator (administration views of the PWA, desktop browser) |
 | Requirement ID(s) | F-014 |
 | Preconditions, if any | The Administrator is signed in to the panel and new profiles are waiting in the verification queue. |
 | Main flow | 1. The Administrator opens the verification queue and selects a profile.<br>2. The Administrator reviews the submitted name and email.<br>3. The Administrator approves the profile; the application marks the user as verified. |
@@ -189,7 +191,7 @@ The diagram shows the three roles that interact with PetPals. Pet Owner and Pet 
 
 | Field | Description |
 | --- | --- |
-| Primary actor | Administrator (web administration panel) |
+| Primary actor | Administrator (administration views of the PWA, desktop browser) |
 | Requirement ID(s) | F-015 |
 | Preconditions, if any | The Administrator is signed in and a listing is inappropriate, illegal or misclassified (for example not really pet care). |
 | Main flow | 1. The Administrator opens the listing.<br>2. The Administrator removes it.<br>3. The application hides the listing from search and shows the helper that the listing was removed. |
@@ -200,7 +202,7 @@ The diagram shows the three roles that interact with PetPals. Pet Owner and Pet 
 
 | Field | Description |
 | --- | --- |
-| Primary actor | Administrator (web administration panel) |
+| Primary actor | Administrator (administration views of the PWA, desktop browser) |
 | Requirement ID(s) | F-016 |
 | Preconditions, if any | A dispute is open for a booking (UC-013). |
 | Main flow | 1. The Administrator opens the dispute.<br>2. The application shows the full record: the initial request, both parties' profiles and ratings, the complete chat log and the confirmation events.<br>3. The Administrator decides an outcome, such as an account warning, a temporary suspension or a recorded decision affecting the parties' future use of the platform.<br>4. The Administrator records the decision. |
@@ -214,10 +216,10 @@ The diagram shows the three roles that interact with PetPals. Pet Owner and Pet 
 
 **Objective:** Check that use cases, actors, and requirements agree with one another and with the application the team demonstrates.
 
-| Check | Question for the team |
-| --- | --- |
-| Requirement | Does each important use case link to an existing requirement? |
-| Actor | Does the actor here match an identified role and its permitted interaction? |
-| Application | Can the team demonstrate the described main result and important alternative, or is the description marked as a current design? |
+| Check | Question for the team | Result |
+| --- | --- | --- |
+| Requirement | Does each important use case link to an existing requirement? | Each use case lists its requirement IDs. F-001 to F-018 are all covered; the mapping is in [2.6](./2-requirements.md#26-requirement-traceability). |
+| Actor | Does the actor here match an identified role and its permitted interaction? | Actors are Pet Owner, Pet Helper, Administrator and four external systems. |
+| Application | Can the team demonstrate the described main result and important alternative, or is the description marked as a current design? | UC-001 and UC-002 are implemented in the deployed app (UC-001 without the administrator approval step). The other use cases are the planned design. |
 
-Maintain the requirement-to-use-case-to-test mapping **once, in the [requirement traceability table](./2-requirements.md)**.
+Maintain the requirement-to-use-case-to-test mapping **once, in the [requirement traceability table](./2-requirements.md#26-requirement-traceability)**.

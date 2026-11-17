@@ -3,11 +3,10 @@
 ' @brief ER diagram (important entities, keys and relationships) of PetPals.
 '
 ' @details
-' Shows the entities of database.md with their primary and foreign keys and only
+' Shows the entities created by backend/migrations/001_initial_schema.sql and
+' 002_auth_sessions.sql with their primary and foreign keys and only
 ' the attributes needed to understand the relationships. The remaining columns
-' are described in database.md. Optional links from users to the administrator
-' who reviewed, created or resolved something (reviewed_by, created_by,
-' resolved_by) are omitted for readability.
+' are defined in these migrations. Optional links from users to the administrator
 '
 ' Diagram level: Data
 ' Diagram type:  Entity-Relationship Diagram (PlantUML entity notation)
@@ -25,6 +24,7 @@ entity "users" as users {
   --
   first_name : TEXT
   last_name : TEXT
+  photo_url : TEXT
   email : TEXT
   role : TEXT
   google_subject : TEXT
@@ -39,7 +39,10 @@ entity "pets" as pets {
   * owner_id : INTEGER <<FK>>
   name : TEXT
   species : TEXT
+  breed : TEXT          
   birth_date : DATE
+  care_notes : TEXT    
+  photo_url : TEXT      
 }
 
 entity "service_types" as service_types {
@@ -150,6 +153,16 @@ entity "notifications" as notifications {
   read_at : TIMESTAMPTZ
 }
 
+entity "auth_sessions" as auth_sessions {
+  * token_hash : TEXT <<PK>>
+  --
+  user_id : INTEGER <<FK>>
+  purpose : TEXT
+  created_at : TIMESTAMPTZ
+  expires_at : TIMESTAMPTZ
+  absolute_expires_at : TIMESTAMPTZ
+}
+
 users ||--o{ pets : owns
 users ||--o{ service_listings : offers
 service_types ||--o{ service_listings : categorizes
@@ -157,6 +170,8 @@ service_listings ||--o{ listing_availability : has
 service_listings ||--o{ bookings : receives
 users ||--o{ bookings : requests
 pets ||--o{ bookings : "is cared for in"
+
+users |o--o{ auth_sessions : "signs in with"
 
 bookings ||--o{ booking_confirmations : records
 bookings ||--o{ booking_messages : contains
