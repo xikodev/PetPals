@@ -48,7 +48,7 @@ end note
 ' Accepted booking rules
 note right of Accepted
   Stored database value: accepted
-  User-facing label may be "Approved".
+  User-facing label may be "Accepted".
 
   Google Calendar synchronization occurs
   after acceptance. A failed synchronization

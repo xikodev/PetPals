@@ -32,6 +32,8 @@ skinparam component {
     BorderColor #0D6EFD
     BackgroundColor<<external>> #FFF3CD
     BorderColor<<external>> #856404
+    BackgroundColor<<planned>> #F1F3F5
+    BorderColor<<planned>> #868E96
 }
 skinparam database {
     BackgroundColor #E7F1FF
@@ -43,12 +45,12 @@ rectangle "PetPals System" as System {
     component "React PWA\n(Pet Owner, Pet Helper and\nAdministrator views)" as PWA
 
     rectangle "Node.js API (modular monolith)" as API {
-        component "Users & Verification" as MUsers
-        component "Listings & Search" as MListings
-        component "Bookings & Confirmations" as MBookings
-        component "Messages & Reviews" as MMessages
-        component "Disputes & Moderation" as MDisputes
-        component "External Service Adapters" as MAdapters
+        component "Users & Verification\n(implemented: sign-in, profile, pets)" as MUsers
+        component "Listings & Search" as MListings <<planned>>
+        component "Bookings & Confirmations" as MBookings <<planned>>
+        component "Messages & Reviews" as MMessages <<planned>>
+        component "Disputes & Moderation" as MDisputes <<planned>>
+        component "External Service Adapters\n(Calendar and QR: planned)" as MAdapters <<planned>>
     }
 
     database "PostgreSQL" as DB
@@ -76,11 +78,15 @@ MDisputes ..> MBookings : booking records
 ' External systems
 ' ------------------------------------------------------------------------------
 PWA --> OAuth : sign-in\nredirect
-PWA --> Maps : map, markers,\nroutes
+PWA --> Maps : map and markers
 MUsers --> MAdapters
 MBookings --> MAdapters
 MAdapters --> OAuth : token exchange
 MAdapters --> Calendar : events and\nreminders
 MAdapters --> QR : QR image for\nconfirmation token
+
+legend right
+  Grey modules are planned and not implemented yet.
+endlegend
 
 @enduml
