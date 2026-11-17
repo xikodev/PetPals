@@ -3,9 +3,24 @@
 ' @brief Core use case diagram for the PetPals peer-to-peer pet care platform.
 '
 ' @details
-' Actors and goals of the PetPals mobile application (Pet Owner, Pet Helper)
-' and the web administration panel (Administrator). External systems that
-' take part in a user goal appear as secondary actors.
+' Actors and goals of PetPals. Pet Owners and Pet Helpers use the PWA on their
+' phones; Administrators use the administration views of the same PWA in a
+' desktop browser. External systems that take part in a user goal appear as
+' secondary actors.
+'
+' Architectural Scope & Rationale:
+' This model covers user goals and the system boundary only. Data storage,
+' screens and internal logic are described in the architecture and design pages.
+'
+' Author(s): FI
+' Context: Software Engineering Course
+'
+' AI Usage Disclosure:
+' Claude was used to adjust diagram to current implementation. The team reviewed and corrected the result.
+'
+' Traceability Note:
+' UC-001 to UC-017 map to requirements F-001 to F-018 (see 2.6 in
+' docs/2-requirements.md). Changes made during development must be updated here.
 '
 ' Diagram level: System Requirements
 ' Diagram type:  Use Case Diagram
@@ -66,7 +81,7 @@ rectangle "PetPals System" as PetPals {
     (Manage pet profiles) as UC_Pets
     (Search helpers on map) as UC_Search
     (Send booking request) as UC_Request
-    (Track booking and view route) as UC_Track
+    (Track booking) as UC_Track
 
     ' Shared by owners and helpers
     (Sign in and set up profile) as UC_SignIn
@@ -82,7 +97,7 @@ rectangle "PetPals System" as PetPals {
     (Review booking request) as UC_Review
     (View history and earnings) as UC_History
 
-    ' Administrator (web panel)
+    ' Administrator (administration views of the PWA)
     (Verify users) as UC_Verify
     (Moderate listings) as UC_Moderate
     (Resolve dispute) as UC_Dispute
@@ -130,7 +145,6 @@ UC_Confirm <.. UC_QR : <<extend>>\n[helper chose QR]
 
 UC_SignIn -- IdP
 UC_Search -- Maps
-UC_Track -- Maps
 UC_Review -- Cal
 UC_QR -- QR
 
