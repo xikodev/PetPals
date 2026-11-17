@@ -6,6 +6,8 @@ const { createGoogleProvider } = require('./modules/auth/google.provider');
 const { createAuthRouter, createAuthHandlers } = require('./modules/auth/auth.routes');
 const { createUsersRepository } = require('./modules/users/users.repository');
 const { createUsersRouter } = require('./modules/users/users.routes');
+const { createPetsRepository } = require('./modules/pets/pets.repository');
+const { createPetsRouter } = require('./modules/pets/pets.routes');
 
 const app = express();
 
@@ -34,6 +36,12 @@ const authDependencies = {
 app.use('/api/auth', express.json({ limit: '16kb' }), createAuthRouter(authDependencies));
 app.use('/api/users', createUsersRouter({
   repository: createUsersRepository(database),
+  loadSession: createAuthHandlers(authDependencies).loadSession,
+  csrf: createAuthHandlers(authDependencies).csrf,
+}));
+
+app.use('/api/pets', createPetsRouter({
+  repository: createPetsRepository(database),
   loadSession: createAuthHandlers(authDependencies).loadSession,
   csrf: createAuthHandlers(authDependencies).csrf,
 }));
