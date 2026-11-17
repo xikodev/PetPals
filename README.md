@@ -1,16 +1,16 @@
 # PetPals
 
-PetPals is a planned peer-to-peer pet care platform that connects pet owners with nearby helpers offering pet sitting, walking, and feeding services.
+PetPals is a peer-to-peer pet care platform that connects pet owners with nearby helpers offering pet sitting, walking, and feeding services.
 
 **Course project:** This project is being developed by a student team as part of the [Software Engineering](https://www.fer.unizg.hr/predmet/proinz) course at the Faculty of Electrical Engineering and Computing (FER), University of Zagreb.
 
 ## App Description
 
-Pet owners who travel or work long hours often arrange care informally, without availability calendars, verified users, or a structured way to resolve disagreements. PetPals is planned for three groups of users: pet owners, who search for and book care; pet helpers, who offer sitting, walking, and feeding services; and administrators, who verify users and resolve disputes. A booking follows a defined sequence from request to approval, confirmation, and completion, so both parties share one record of the arrangement.
+Pet owners who travel or work long hours often arrange care informally, without availability calendars, verified users, or a structured way to resolve disagreements. PetPals is planned for three groups of users: pet owners, who search for and book care; pet helpers, who offer sitting, walking, and feeding services; and administrators, who verify users and resolve disputes. A booking follows a defined sequence from request to acceptance, confirmation, and completion, so both parties share one record of the arrangement.
 
 The planned system is one React Progressive Web App (PWA) for all roles: pet owners and helpers use it on their phones, and administrators use its administration views in a desktop browser for user verification, service moderation, and dispute resolution.
 
-**Current functionality:** Google sign-in (OpenID Connect); new users choose the owner or helper role; sessions expire after 30 minutes of inactivity; a signed-in user can view and edit their profile (first name, last name, photo). The frontend has login, profile and "My listings" pages; "My listings" does not load data yet. Administrator approval, listings, search and bookings are not implemented.
+**Current functionality:** Google sign-in (OpenID Connect); new users choose the owner or helper role; sessions expire after 30 minutes of inactivity; a signed-in user can view and edit their profile (first name, last name, photo) and manage their pets (add, edit, delete, with photo) on My pets. The frontend has login, registration, "My profile", "My pets" and "My listings" pages; "My listings" does not load data yet. Administrator approval, listings, search and bookings are not implemented.
 
 **Planned key features**
 
@@ -35,24 +35,25 @@ The application is hosted on Render and described by [`render.yaml`](render.yaml
 
 **Explore:** 
 1. Open the URL and select **Sign in with Google**.
-2. After signing in, open **My profile**, change your first name, last name or photo, and save.
+2. On first sign-in, choose **Pet owner** or **Pet helper** and enter your first and last name. Your verification status starts as pending.
+3. Open **My profile**, change your name or photo, and save.
+4. As an owner, open **My pets** and add, edit or delete a pet.
 (Pages that need sign-in redirect to the login page when you are not signed in.)
 
 **Demo:** 
-Sign-in works only for Google accounts added as test users of the project's Google OAuth client.
+Sign-in works only for Google accounts.
 
 **Limitations:**
 - The free Render plan puts the services to sleep, so the first request after a pause can take about a minute.
 - Administrator approval, listings, search and bookings are not implemented yet; "My listings" is an empty page.
 - Sessions expire after 30 minutes of inactivity.
 
-The deployment and running guide will describe the hosting setup used by the team.
-<!-- TODO: Add a link to the deployment and running guide. -->
+See the [deployment, installation and configuration guide](docs/6-Deployment-Installation-and-Configuration.md) for the hosting setup.
 
 <a id="quick-start"></a>
 ## Quick Start / Installation
 
-**Prerequisites:** Node.js 20 or newer (npm included), Docker with Docker Compose (for the local PostgreSQL database), Git, and a Google account added as a test user of the project's Google OAuth client (needed only for sign-in).
+**Prerequisites:** Node.js 24 or newer (npm included), Docker with Docker Compose (for the local PostgreSQL database), Git, and a Google account (needed only for sign-in).
 
 ```bash
 git clone https://github.com/xikodev/PetPals.git
@@ -82,15 +83,20 @@ npm run dev
 
 **Configuration:** copy `backend/.env.example` to `backend/.env`. For the local database use `DB_PASSWORD=password` (the value set in `docker-compose.yml`) and keep `DB_SSL=false`. For Google sign-in set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` (obtained from the team privately) and keep `AUTH_BASE_URL=http://localhost:10000`. The Google client must list `http://localhost:10000/api/auth/google/callback` as an authorized redirect URI. See [Google sign-in](backend/docs/google-auth.md).
 
-Never put real credentials in this README, example configuration files, screenshots, logs, or commits.
+Never commit real credentials: keep them in your local backend/.env (not tracked by Git) or in the Render dashboard.
 
 **Verification:** 
 1. `http://localhost:10000/health` returns a success response.
 2. `cd backend && npm run db:check` prints "PostgreSQL connection successful".
 3. `cd backend && npm test` passes.
-4. Open `http://localhost:5173`, choose **Sign in with Google**, and after signing in open the profile page.
+4. Open `http://localhost:5173`, choose **Sign in with Google**, choose a role and enter your name on the registration screen, then open **My profile** and **My pets**.
 
-For detailed setup, see the [project documentation](docs/Home.md).
+## Documentation
+- [Project documentation](docs/Home.md)
+- [Backend README](backend/README.md)
+- [API documentation](backend/docs/) (Google sign-in, profile, settings, pets)
+- [Frontend README](frontend/README.md)
+
 
 ## Technologies
 
@@ -99,13 +105,14 @@ The team has chosen React (PWA) for the client, Node.js with Express for the API
 | Technology or service | Planned role in this project | Reason for use or important constraint |
 | --- | --- | --- |
 | Google Maps API | Display nearby helpers as markers on a map. | Location helps owners find suitable nearby care. |
-| Google Calendar API | Create calendar events and reminders after booking approval. | Both parties need reminders for the care period; calendar access requires authorization. |
+| Google Calendar API | Create calendar events and reminders after booking acceptance. | Both parties need reminders for the care period; calendar access requires authorization. |
 | QR code service | Generate QR codes for service start and completion confirmation. | Supports confirmation during physical meetings; in-app buttons support confirmation when the parties are apart. |
-| OAuth 2.0 / external sign-in provider | Support sign-in through an external provider such as Google. | Sign-in is separate from administrator verification, which is required before users can send or receive booking requests. |
-| React PWA | One client for all roles: owners and helpers on phones, administrators in a desktop browser. | One codebase for mobile and desktop; installation and device features depend on the browser (ADR-01). |
-| Node.js with Express | API that applies the business rules and is the only part that accesses the database. | One language across client and server (4.1). |
-| PostgreSQL | Stores users, pets, listings, bookings, confirmations, messages, reviews and disputes. | Constraints and transactions prevent double bookings (ADR-02). |
+| OAuth 2.0 / Google OpenID Connect | Support sign-in through an external provider Google. | Sign-in is separate from administrator verification, which is required before users can send or receive booking requests. |
+| React PWA | One client for all roles: owners and helpers on phones, administrators in a desktop browser. | One codebase for mobile and desktop; installation and device features depend on the browser [ADR-01](docs/4-Architecture-and-Design.md#adr-01-choosing-react-pwa-over-native-mobile). |
+| Node.js with Express | API that applies the business rules and is the only part that accesses the database. | One language across client and server [4.1](docs/4-Architecture-and-Design.md#41-solution-strategy). |
+| PostgreSQL | Stores users, pets, listings, bookings, confirmations, messages, reviews and disputes. | Constraints and transactions prevent double bookings [ADR-02](docs/4-Architecture-and-Design.md#adr-02-choosing-postgresql-for-relational-data-integrity). |
 | Render | Hosts the deployed application. | Chosen hosting platform; details follow in Deployment. |
+
 
 ## Team Members
 
@@ -117,14 +124,13 @@ The team has chosen React (PWA) for the client, Node.js with Express for the API
 | Tomislav Miletić | Documentation, development and integration |
 | Fran Ivanković | Documentation, Frontend development and integration |
 
-
 Roles may change during the project. The repository and the agreed task tracker provide supporting evidence of teamwork.
 
 ## Contributing
 
 Tasks are assigned and their progress is tracked on the team's Trello board. Documentation and code changes are made on separate branches and merged into the main branch through pull requests after review.
 
-<!-- TODO: Add the link to the team's Trello board. -->
+<!-- TODO: Add the link to the team's Trello board. "The team's task board: [Trello board](<paste link>)" -->
 
 <a id="license"></a>
 ## License [![CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
@@ -146,12 +152,11 @@ This project follows FER's [Policy on the Appropriate Use of Artificial Intellig
 
 **Statement:** AI tools were used to draft and revise project documentation based on the PetPals project description and the course templates:
 
-- **OpenAI Codex:** Initial README structure, drafting, and revisions based on team feedback.
+- **OpenAI Codex:** Code drafting and debugging.
 - **Claude by Anthropic:** Drafting and revising project documentation.
 
 Team members are responsible for reviewing and editing AI-assisted material before accepting it and for being able to explain their own contributions.
 
-<!-- TODO: Record the review performed and any additional AI tools used, including their use in application development. -->
 
 <a id="code-of-conduct-and-support"></a>
 ## Code of Conduct and Support [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)

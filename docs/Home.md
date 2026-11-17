@@ -1,7 +1,7 @@
 # PetPals — Project Documentation
 
 **Course:** [Software Engineering](https://www.fer.unizg.hr/predmet/proinz), Faculty of Electrical Engineering and Computing, University of Zagreb  
-**Academic year:** [2026/2027]  
+**Academic year:** 2026/2027  
 **Team:** TG01.1 — PetOps 
 **Instructor:** Vlado Sruk  
 **Assistant / Demonstrator:** Athanasios Papanikolaou, Goran Rajić, Borna Gojšić
@@ -10,7 +10,7 @@
 
 **Objective:** Let a first-time reader identify the application, its intended users, and its principal purpose in two or three sentences.
 
-PetPals is a peer-to-peer pet care platform for pet owners who need someone to look after their pet, and for helpers who offer pet sitting, walking and feeding. A booking is the shared record of the arrangement, from request to approval, confirmation and completion. Administrators verify users and resolve disputes. The application is one React Progressive Web App (PWA) with a Node.js backend and a PostgreSQL database. In the first cycle, users can sign in with Google, choose the owner or helper role, and view and edit their profile; the other planned features are described in the documentation as planned.
+PetPals is a peer-to-peer pet care platform for pet owners who need someone to look after their pet, and for helpers who offer pet sitting, walking and feeding. A booking is the shared record of the arrangement, from request to approval, confirmation and completion. Administrators verify users and resolve disputes. The application is one React Progressive Web App (PWA) with a Node.js backend and a PostgreSQL database. In the first cycle, users can sign in with Google, choose the owner or helper role, view and edit their profile, and pet owners can add, edit and delete their pets; the other planned features are described in the documentation as planned.
 
 
 **Application and basic setup:** [Repository README](../README.md#quick-start)  
@@ -46,7 +46,7 @@ The Wiki is updated as the application develops; only weeks 7 and 14 are formal 
 
 **Working approach:** Work is split into cards by role (backend, login, two frontend roles, documentation) on the team's Trello board. Each card is developed on its own branch and merged into `main` through a pull request that a teammate reviews. The team meets briefly each week; decisions are recorded in A.1 of the group activities document.
 
-**Current task and defect tracking:** [Trello board](TRELLO LINK)  
+**Current task and defect tracking:** Trello board <!--[Trello board](TRELLO LINK)-->  
 
 
 
@@ -66,20 +66,22 @@ Short summary: [README – AI Usage](../#ai-usage). This section records which t
 
 ### Tools Used
 
-<!-- to do: supply with use cases of AI -->
-
 | Tool | Version or model | Used by | Main purpose |
 | --- | --- | --- | --- |
 | Claude (Anthropic) | Sonnet 5.5 | MC | Task planning, understanding materials, document drafting and organisation |
-| OpenAI Codex | --- | MM, FI, TM | Code organisation, developing |
+| OpenAI Codex | --- | MM, FI, TM, BK | Code organisation, developing |
 
 ### Scope of AI Contribution
 
 | Page, file or artifact | Type of assistance | What the tool produced | What the team supplied and changed | Location |
 | --- | --- | --- | --- | --- |
-| [e.g. 3. Use Cases, UC-002] | [Drafting / rewording / translation / diagram source / summarizing] | [Short description] | [Input given to the tool; facts added, corrected or removed] | [Wiki page, `.puml` file, PR] |
-| Documents 1-6 | Drafting | --- | --- | --- |
-| README | Drafting | Initial structure and text | Team supplied the real project facts and corrected the planned features and technologies | README |
+| Documents 1-6 | Drafting and review | Drafts of the text and a list of inconsistencies | We wrote the first versions of the files, checked every AI draft against the code and each other, and corrected it | `docs/` |
+| README | Drafting | Initial structure and text | We supplied the real project facts and corrected the features and technologies | `README.md` |
+| Frontend | Code generation | Page and component code | We described the features and screens we wanted, then changed the code and the look | `frontend/` |
+| Frontend–backend connection | Guidance | Step-by-step instructions | We chose the architecture and asked how to connect the frontend to the backend | `frontend/nginx.conf.template`, `frontend/vite.config.js` |
+| Backend | Advice | Best-practice tips | We described our concerns about how to structure the backend and chose what to use | `backend/` |
+| Render hosting | Guidance | Setup steps | We asked how to set up Render for the first time and did the setup ourselves | `render.yaml` |
+
 
 Pages and artifacts not listed above were written without generative AI assistance. [Optional: list any AI-assisted code or tests here as further rows.]
 
@@ -87,11 +89,10 @@ Pages and artifacts not listed above were written without generative AI assistan
 
 | Check | How it was performed | Evidence |
 | --- | --- | --- |
-| Factual accuracy | [Each statement about features, behavior or architecture was compared with the running application and the code] | [Reviewer names; PR or issue links] |
-| No unimplemented claims | [Features, tests and results described in the text were confirmed to exist; planned work is labeled as planned] | [Comparison with Testing (5.4) and Conclusion (7.1)] |
-| Consistency with other pages | [Names, IDs and diagrams checked against Requirements, Use Cases, Architecture and Testing] | [Checklist or review note] |
-| Diagram sources | [Generated PlantUML was rendered, corrected and matches the implemented system] | [`.puml` file and rendered image] |
-| Confidential content | [How the team ensured no secrets, credentials or personal data entered prompts or the Wiki] | [Practice used] |
+| Factual accuracy | We compared each statement about features, behaviour and architecture with the running app and the code. | done for each new PR for a docs |
+| Consistency with other pages | We checked names, IDs and diagrams against Requirements, Use Cases, Architecture and Testing. | --- |
+| Diagram sources | We rendered the generated PlantUML, corrected it and compared it with the implemented system. | `.puml` files in `docs/puml/` and rendered images |
+
 
 ### Errors Found in AI Output
 
@@ -99,5 +100,4 @@ Pages and artifacts not listed above were written without generative AI assistan
 | --- | --- | --- |
 | [Incorrect, invented or template-copied statement] | [Review, test or comparison with the application] | [Correction, with a link] |
 
-<!-- INSTRUCTION: Record real corrections, or write "None identified". A blanket statement such as "all text was reviewed" is not evidence; the tables above are. The team must be able to explain every sentence it publishes. -->
 
