@@ -49,8 +49,9 @@ general-purpose JWT utility. Token validation tests use locally signed fixtures.
    `http://localhost:10000/api/auth/google`) in a browser to start sign-in.
    After Google authentication, the callback sets a session cookie and redirects
    existing users to `http://localhost:5173/profile` in local development, or to
-   `/profile` on the callback origin in production. New users are redirected to `/api/auth/me`,
-   which returns registration JSON until a frontend registration page is added.
+   `/profile` on the callback origin in production. New users are redirected to
+   `http://localhost:5173/register` locally, or `/register` in production, to
+   confirm their names and choose owner/helper before their account is created.
    Authentication errors return JSON with
    an appropriate HTTP error status; there are no HTML pages.
 
@@ -59,13 +60,14 @@ tokens whose hashes are looked up in the database, not self-contained user data.
 
 ## Frontend integration
 
-Frontend pages are owned by the frontend team. This backend provides only the
-authentication API. Begin sign-in with browser navigation to `/api/auth/google`,
-not an AJAX request. The callback redirects existing users to `/profile` on the
-same origin; new users still receive registration JSON at `/api/auth/me`.
+Begin sign-in with browser navigation to `/api/auth/google`, not an AJAX request.
+The callback redirects existing users to `/profile` and new users to `/register`.
+The registration page reads the pending profile and CSRF token from `/api/auth/me`,
+then submits `/api/auth/register` and opens `/profile` after account creation.
+Visiting `/login` with an unfinished registration resumes `/register`.
 
 The current cookie and Origin policy expects a same-origin client. Serve the
-future React client and API on the same origin or behind a same-origin proxy,
+React client and API on the same origin or behind a same-origin proxy,
 preserving cookie and callback paths. A frontend hosted on a separate origin
 requires an agreed CORS, cookie and CSRF configuration before integration; it
 is not enabled by this change.

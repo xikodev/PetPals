@@ -17,9 +17,7 @@ export async function getCurrentSession() {
 
   const session = await response.json()
 
-  if (session.registrationRequired === true) {
-    return null
-  }
+  if (session.registrationRequired === true) return session
 
   if (!session.user) {
     throw new Error('The response does not contain a user.')
@@ -31,6 +29,18 @@ export async function getCurrentSession() {
 export async function getCurrentUser() {
   const session = await getCurrentSession()
   return session?.user ?? null
+}
+
+export async function register(fields, csrfToken) {
+  const response = await fetch('/api/auth/register', {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
+    body: JSON.stringify(fields),
+  })
+  const result = await response.json()
+  if (!response.ok) throw new Error(result.error || 'Could not create your account. Please try again.')
+  return result.user
 }
 export async function logout() {
   const session = await getCurrentSession()

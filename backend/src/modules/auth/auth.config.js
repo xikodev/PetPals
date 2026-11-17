@@ -12,6 +12,9 @@ function readAuthConfig(env = process.env) {
     profileRedirectUrl: local && env.NODE_ENV !== 'production'
       ? `http://${base.hostname}:5173/profile`
       : '/profile',
+    registrationRedirectUrl: local && env.NODE_ENV !== 'production'
+      ? `http://${base.hostname}:5173/register`
+      : '/register',
     callbackUrl: `${base.origin}/api/auth/google/callback`,
     clientId: env.GOOGLE_CLIENT_ID || '',
     clientSecret: env.GOOGLE_CLIENT_SECRET || '',
