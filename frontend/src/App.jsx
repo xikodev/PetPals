@@ -5,6 +5,7 @@ import './App.css'
 import HomePage from './pages/HomePage.jsx'
 import ProfilePage from './pages/ProfilePage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
+import RegistrationPage from './pages/RegistrationPage.jsx'
 import RequireLogin from './components/RequireLogin.jsx'
 import MyListingsPage from './pages/MyListingsPage.jsx'
 import MyPetsPage from './pages/MyPetsPage.jsx'
@@ -61,6 +62,7 @@ export default function App() {
       <Route element={<Layout />}>
         <Route index element={<HomePage />} />
         <Route path="login" element={<LoginPage />} />
+        <Route path="register" element={<RegistrationPage />} />
 
         <Route element={<RequireLogin />}>
           <Route path="profile" element={<ProfilePage />} />

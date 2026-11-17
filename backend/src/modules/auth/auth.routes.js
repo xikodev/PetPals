@@ -74,7 +74,7 @@ function createAuthHandlers({ config, repository, google }) {
     if (!user) data.identity = identity;
     const next = await repository.createSession(user ? 'authenticated' : 'registration', data, user?.id);
     setSession(res, next);
-    res.redirect(user ? config.profileRedirectUrl : '/api/auth/me');
+    res.redirect(user ? config.profileRedirectUrl : config.registrationRedirectUrl);
   }
 
   function me(req, res) {

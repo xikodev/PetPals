@@ -9,6 +9,11 @@ is documented in [User profile API](docs/user-profile.md).
 The backend uses Node.js and Express. Files use CommonJS: `require()` imports
 another module, and `module.exports` makes functions or objects available to it.
 
+## API reference
+
+See [API documentation](API.md) for the current endpoints, HTTP status codes,
+response fields, and request/response examples.
+
 ## Run locally
 
 From the repository root:

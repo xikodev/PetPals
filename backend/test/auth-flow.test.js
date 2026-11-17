@@ -65,7 +65,7 @@ test('new Google user gets short-lived onboarding, not a privileged user session
   const req = await begin(f);
   const res = f.res();
   await f.handlers.callback(req, res);
-  assert.equal(res.redirected, '/api/auth/me');
+  assert.equal(res.redirected, 'http://localhost:5173/register');
   assert.equal(f.sessions.has(req.token), false);
   assert.notEqual(req.token, res.token);
   const session = f.sessions.get(res.token);
@@ -87,13 +87,59 @@ test('callback requires browser cookie and matching state before token exchange'
   assert.equal(f.exchangeCount, 0);
 });
 
+test('new Google user can load onboarding and submit it to create an authenticated account', async () => {
+  const f = fixture();
+  const callback = f.res();
+  await f.handlers.callback(await begin(f), callback);
+  const req = { headers: { cookie: `petpals=${callback.token}` } };
+  await f.handlers.loadSession(req, f.res(), () => {});
+  const me = f.res();
+  f.handlers.me(req, me);
+  assert.equal(me.body.registrationRequired, true);
+  assert.deepEqual(me.body.profile, { first_name: 'Ana', last_name: 'Test', email: 'verified@example.com' });
+
+  req.headers.origin = 'http://localhost:10000';
+  req.headers['x-csrf-token'] = me.body.csrfToken;
+  let allowed = false;
+  f.handlers.csrf(req, f.res(), () => { allowed = true; });
+  assert.equal(allowed, true);
+  req.body = { first_name: ' Ana ', last_name: 'Test', role: 'helper' };
+  f.repository.register = async (token, fields) => {
+    assert.equal(token, callback.token);
+    assert.deepEqual(fields, { firstName: 'Ana', lastName: 'Test', role: 'helper' });
+    const user = { id: 7, first_name: fields.firstName, last_name: fields.lastName,
+      role: fields.role, verification_status: 'pending' };
+    f.setUser(user);
+    await f.repository.destroySession(token);
+    return { user, session: await f.repository.createSession('authenticated', { csrf: randomToken() }, user.id) };
+  };
+  const registered = f.res();
+  await f.handlers.register(req, registered);
+  assert.equal(registered.statusCode, 201);
+  assert.equal(registered.body.user.verification_status, 'pending');
+  assert.equal(f.sessions.has(callback.token), false);
+  assert.equal(f.sessions.get(registered.token).purpose, 'authenticated');
+  const signedIn = { headers: { cookie: `petpals=${registered.token}` } };
+  await f.handlers.loadSession(signedIn, f.res(), () => {});
+  const profile = f.res();
+  f.handlers.me(signedIn, profile);
+  assert.equal(profile.body.user.id, 7);
+  assert.equal(profile.body.registrationRequired, undefined);
+});
+
+test('production callback destinations use frontend routes on the same origin', () => {
+  const config = readAuthConfig({ NODE_ENV: 'production', AUTH_BASE_URL: 'https://petpals.example' });
+  assert.equal(config.registrationRedirectUrl, '/register');
+  assert.equal(config.profileRedirectUrl, '/profile');
+});
+
 test('callback cannot be replayed, including concurrent callbacks', async () => {
   const f = fixture();
   const req = await begin(f);
   const responses = [f.res(), f.res()];
   await Promise.all(responses.map((res) => f.handlers.callback(req, res)));
   assert.equal(f.exchangeCount, 1);
-  assert.equal(responses.filter((res) => res.redirected === '/api/auth/me').length, 1);
+  assert.equal(responses.filter((res) => res.redirected === 'http://localhost:5173/register').length, 1);
   assert.equal(responses.filter((res) => res.statusCode === 400).length, 1);
 });
 
