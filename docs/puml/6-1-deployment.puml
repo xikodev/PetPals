@@ -1,8 +1,39 @@
+' ==============================================================================
+' @file 6-1-deployment.puml
+' @brief UML deployment diagram of the public PetPals application on Render.
+'
+' @details
+' Shows where the executable parts run (the user's browser and three Render
+' services), how they communicate (protocol and port) and which configuration
+' values and database migrations each part depends on. Google Identity is the
+' external provider used for sign-in.
+'
+' Architectural Scope & Rationale:
+' The diagram covers the running environments only. Logical responsibilities
+' are in the component diagram (4.2); the installation steps are in section 6.
+'
+' Author(s): <team member names>
+' Context: Software Engineering Course / Project Documentation
+'
+' AI Usage Disclosure:
+' <tool> was used to <draft / revise this diagram>. The team reviewed and
+' corrected it and is responsible for the final content.
+'
+' Traceability Note:
+' The services and variables must match render.yaml and the environment
+' variables set in the Render dashboard. Changes to the hosting setup must be
+' updated here and in section 6.3.
+'
+' Diagram level: Physical deployment architecture
+' Diagram type:  Deployment Diagram
+' ==============================================================================
+
 @startuml
-' PetPals - deployment topology declared in render.yaml (reviewed 2026-11-15).
-' This is a configuration view, not proof that production services are healthy.
-title PetPals - deployment view (configured; live integration unverified)
+
+title PetPals - deployment view
+
 left to right direction
+
 skinparam shadowing false
 skinparam defaultFontName Arial
 skinparam node {
@@ -17,34 +48,68 @@ skinparam cloud {
   BackgroundColor #F8FAFC
   BorderColor #64748B
 }
-
-node "User device" as Device {
-  artifact "Web browser\nReact PWA executes here" as Browser
+skinparam artifact {
+  BackgroundColor #FFFBEA
+  BorderColor #B8860B
+}
+skinparam note {
+  BackgroundColor #E7F1FF
+  BorderColor #0D6EFD
 }
 
-node "Render (configured services)" as Render {
-  node "web-frontend\nDocker / Nginx" as Frontend {
-    artifact "Vite-built static assets" as Static
+' ==============================================================================
+' Nodes, environments and configuration artifacts
+' ==============================================================================
+
+node "User device" as Device <<device>> {
+  node "Web browser\nReact PWA executes here" as Browser <<executionEnvironment>>
+}
+
+cloud "Render Platform" as Render {
+
+  node "web-frontend\nDocker / Nginx" as Frontend <<executionEnvironment>> {
+    artifact "Vite-built static assets\n+ nginx /api/ proxy" as Static <<artifact>>
+    artifact "BACKEND_URL" as FrontendEnv <<configuration>>
+    Static ..> FrontendEnv : <<requires>>
   }
-  node "api-service\nDocker / Node.js / Express" as Backend {
-    artifact "Auth and user profile API\n/health" as API
+
+  node "api-service\nDocker / Node.js / Express" as Backend <<executionEnvironment>> {
+    artifact "Auth, profile and pets API\n/health" as API <<artifact>>
+    artifact "DATABASE_URL" as BackendEnv <<configuration>>
+    artifact "AUTH_BASE_URL\nGOOGLE_CLIENT_ID\nGOOGLE_CLIENT_SECRET" as AuthEnv <<configuration>>
+    API ..> BackendEnv : <<requires>>
+    API ..> AuthEnv : <<requires>>
   }
-  database "app-db\nPostgreSQL" as Database
+
+  database "app-db\nPostgreSQL" as Database <<database>> {
+    artifact "001_initial_schema.sql\n002_auth_sessions.sql" as Schema <<artifact>>
+  }
 }
 
 cloud "Google Identity\nOpenID Connect" as Google
 
-Browser --> Frontend : HTTPS / pages and assets
-Browser ..> Backend : /api/ requests\nproduction routing to verify
-Backend --> Database : PostgreSQL connection
-Browser --> Google : OAuth navigation / consent
-Browser ..> Backend : callback navigation\nafter Google redirect
-Backend --> Google : code exchange / ID token verification
+' ==============================================================================
+' Operational dependencies
+' ==============================================================================
+
+' The backend cannot work until the migrations have been applied (manually).
+API ..> Schema : <<dependsOn>>
+
+' ==============================================================================
+' Communication paths
+' ==============================================================================
+
+Browser -[#blue]-> Frontend : <<HTTPS : 443>>\npages, assets and /api/ requests
+Frontend -[#blue]-> Backend : <<HTTPS : 443>>\n/api/ proxied by nginx
+Backend -[#green,bold]-> Database : <<TCP/IP : 5432>>\nconnection pool
+Browser -[#darkorange]-> Google : <<HTTPS : 443>>\nsign-in redirect and consent
+Backend -[#darkorange]-> Google : <<HTTPS : 443>>\ncode exchange and ID token verification
 
 note bottom of Render
 Configured in render.yaml.
-Live service health, migrations,
-frontend API proxy and cookie handling
-require confirmation.
+BACKEND_URL, AUTH_BASE_URL and the Google
+credentials are set in the Render dashboard,
+not stored in Git. Migrations are applied manually.
 end note
+
 @enduml

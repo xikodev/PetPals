@@ -1,42 +1,46 @@
 # 6. Deployment, Installation, and Configuration
 
-> **Review status (15 November 2026):** The instructions below describe the repository configuration and implemented interfaces on GitHub `main`, not a newly verified end-to-end installation. The review environment could inspect source but could not obtain a runnable checkout, use Docker/PostgreSQL, or complete Google sign-in. Local and public deployment checks marked **Requires verification** must be executed before this section is submitted as a fully validated installation guide.
+**Objective:** Show where the application runs, how its deployed parts communicate, and how a reader can install, configure, deploy, and maintain it. The [README](../README.md) gives the public address and the shortest local Quick Start; this page adds the setup details needed to reproduce the application.
 
 ## 6.1 Deployment View
 
-PetPals is designed as one React Progressive Web Application for Pet Owners, Pet Helpers, and Administrators. The implemented frontend is built with React, React Router, and Vite; the Node.js/Express backend provides the current authentication, self-profile, and profile-editing APIs; PostgreSQL stores the application schema and authentication sessions. Google Identity supplies OpenID Connect authentication. Payment processing is outside project scope.
+**Objective:** Identify the running environments, deployed software, data store, and relevant external services. Show communication between them in one UML deployment diagram. A component diagram explains logical responsibilities; this diagram explains where the executable parts run.
 
-The version-controlled [`render.yaml`](../render.yaml) **defines**, but does not by itself prove the health of, these hosted parts:
+PetPals is designed as one React Progressive Web Application for Pet Owners, Pet Helpers, and Administrators. The implemented frontend is built with React, React Router, and Vite; the Node.js/Express backend provides the current authentication and registration, self-profile and pets APIs; PostgreSQL stores the application schema and authentication sessions. Google Identity supplies OpenID Connect authentication. Payment processing is outside project scope.
+
+The version-controlled [`render.yaml`](../render.yaml) defines these hosted parts:
 
 | Deployment node / service | Runtime or role | Connection |
 | --- | --- | --- |
-| User's browser | Executes the React frontend and sends API requests | HTTPS to frontend; API session requests need a working same-origin routing arrangement |
-| Render frontend service, `web-frontend` | Docker-built Vite assets served by Nginx | Delivers static files and React Router history fallback |
-| Render backend service, `api-service` | Node.js/Express in Docker; `PORT` set by hosting platform | Handles `/health`, `/api/auth/*`, `/api/users/me`, and example routes |
+| User's browser | Executes the React frontend and sends API requests | HTTPS to the frontend only; /api/ requests go through the frontend's nginx |
+| Render frontend service, `web-frontend` | Docker-built Vite assets served by Nginx | Delivers static files and React Router history fallback, and forwards /api/ to the backend |
+| Render backend service, `api-service` | Node.js/Express in Docker; `PORT` set by hosting platform | Handles /health, /api/auth/*, /api/users/me, /api/pets and example routes |
 | Render PostgreSQL database, `app-db` | Managed PostgreSQL (`appdb`, database user `dbuser` in declared blueprint) | Private database connection from the backend; not directly from browser |
 | Google Identity | External OAuth 2.0/OpenID Connect provider | Browser authorization redirect and backend callback; provider is not hosted by PetPals |
 
-**Deployment diagram (configuration-defined topology; public communication paths still require verification):**
+**Deployment diagram:**
 
 ![PetPals deployment view](assets/diagrams/6-1-deployment.svg)
 
-PlantUML source: [`puml/6-1-deployment.puml`](puml/6-1-deployment.puml). The companion SVG is a visual export of this logical deployment view; deployment status must be independently checked.
+PlantUML source: [`puml/6-1-deployment.puml`](puml/6-1-deployment.puml).
 
-**Actual vs. planned:** Authentication sessions, self-profile retrieval, profile updates and photo processing have code on `main`. The React client includes login, profile, and a My Pets page, but its pet CRUD implementation is an in-memory mock and is not stored through an API. Maps, Google Calendar synchronization, bookings, service confirmations, reviews and the administrative UI remain outside the verified live-deployment inventory of this report, even where represented in the design documentation. There is **one frontend application**, with different views based on role, not three separately deployed applications.
+**Actual vs. planned:** Authentication sessions, self-profile retrieval, profile updates and photo processing have code on `main`. The React client includes login, registration, profile, My pets (saved to PostgreSQL through /api/pets) and an empty My listings page. Maps, Google Calendar synchronization, bookings, confirmations, reviews and the administrative UI are planned. There is **one frontend application**, with different views based on role, not three separately deployed applications.
 
-**Public address:** The repository references [`https://petpals-frontend.onrender.com/`](https://petpals-frontend.onrender.com/). An external retrieval on 15 November 2026 returned HTTP 503, so the public frontend was **not confirmed operational at the time of this check**. Ask the teammate who manages Render to verify the actual frontend/backend service URLs and availability. Do not insert an invented backend URL into the deployment diagram.
+**Public address:** The application runs at https://petpals-frontend.onrender.com/ and the backend API at <backend URL>. The free Render plan puts services to sleep, so the first request after a pause can take about a minute.
 
-**Integration constraint:** In development, [`frontend/vite.config.js`](../frontend/vite.config.js) proxies `/api` to `http://localhost:10000`. The checked-in [`frontend/nginx.conf`](../frontend/nginx.conf) provides a static-file/SPA fallback but **does not contain an equivalent `/api` reverse proxy**. The backend authentication implementation expects same-origin cookies and Origin/CSRF checks, and its callback redirects returning users to a profile page (`localhost:5173/profile` in local development, `/profile` in production), while new users still enter the backend registration flow through `/api/auth/me`. Therefore, public frontend-to-backend login must be treated as **unverified pending integration/configuration**, not a completed production flow.
+**How the browser reaches the API:** The browser opens only the frontend address. In production nginx ([`frontend/nginx.conf.template`](../frontend/nginx.conf.template)) serves the React files and forwards every `/api/` request to the backend (the target is `BACKEND_URL` of `web-frontend` in [`render.yaml`](../render.yaml)). Locally the Vite dev server ([`frontend/vite.config.js`](../frontend/vite.config.js)) does the same for `http://localhost:10000`. Because the page and the API share one origin, the session cookie and the CSRF check work. After Google sign-in a returning user lands on `/profile` and a new user on `/register`.
 
 ## 6.2 Installation and Local Configuration
 
-The procedure below uses a local Node.js backend and Vite frontend plus a PostgreSQL container. It avoids treating the incomplete all-in-one production-mode Docker Compose configuration as a proven development setup. Follow the detailed setup documents in [`backend/README.md`](../backend/README.md), [`backend/docs/google-auth.md`](../backend/docs/google-auth.md) and [`frontend/README.md`](../frontend/README.md) if they are updated later; reconcile any conflicting instructions with the current code.
+**Objective:** Enable a reader to install and run the complete application from a clean checkout, including services and data that a short README Quick Start cannot explain fully.
+
+The procedure below uses a local Node.js backend and Vite frontend plus a PostgreSQL container. More detail is in [backend/README.md](../backend/README.md), [Google sign-in](../backend/docs/google-auth.md) and [frontend/README.md](../frontend/README.md).
 
 ### 6.2.1 Prerequisites and source code
 
-Install Git, Node.js and npm compatible with the versioned lockfiles, PostgreSQL 15 or a compatible version, and a PostgreSQL command-line client (`psql`) or Docker Engine with Docker Compose. The backend Dockerfile uses Node.js 20; the frontend README reports local development tested with Node.js 24/npm 11. **Do not assume either is a formal cross-platform support guarantee**: record the versions used in a successful clean-checkout test.
+Install Git, Node.js and npm compatible with the versioned lockfiles, PostgreSQL 15 or a compatible version, and a PostgreSQL command-line client (`psql`) or Docker Engine with Docker Compose. Use Node.js 20 or newer (the Dockerfiles use Node.js 20).
 
-For a real Google sign-in test, obtain a Google Cloud **Web application OAuth client** in an authorized team project. A developer who only needs local route/guest checks can postpone Google OAuth, but fully starting the backend may still require valid auth settings; verify startup requirements against the checked-in environment validation.
+For a real Google sign-in test, obtain a Google Cloud **Web application OAuth client** in an authorized team project. The team provides the client ID and secret privately; never commit them.
 
 From a terminal, clone the repository and check the revision:
 
@@ -52,7 +56,7 @@ The following paths assume the terminal is at **the repository root** unless a `
 
 ### 6.2.2 Database selection and migrations
 
-**Team-shared Render database:** Borna asked teammates to create an untracked `backend/.env` using individually provided credentials for the Render PostgreSQL service. That arrangement runs Node.js locally but connects to a **shared remote database** (`DB_SSL=true` for an external TLS endpoint). Only authorized teammates should receive the current secret values; do not copy them into Git, this document, screenshots, or test logs. The shared database may contain real team data. **Do not run initial migrations or mutating integration tests there unless the database maintainer confirms the intended state and authorizes the operation.**
+**Shared database:** A teammate can run the backend locally against the Render PostgreSQL service with an untracked backend/.env (DB_SSL=true). Ask the database maintainer for the values; never copy them into Git, documents, screenshots or logs, and do not run migrations or tests that change data there without the maintainer's agreement.
 
 **Recommended isolated test setup:** The Docker commands below deliberately create a different, disposable *local* database. They should not be run against the shared Render database. In `backend/.env`, choose either the local Postgres values with `DB_SSL=false`, or the approved Render connection settings with TLS; do not mix them. For isolated automated tests, prefer local Postgres even if the developer normally connects to Render.
 
@@ -111,7 +115,7 @@ Edit `backend/.env` (never commit real credentials). These are the relevant vari
 | `GOOGLE_CLIENT_ID` | OAuth Web client identifier from Google Cloud |
 | `GOOGLE_CLIENT_SECRET` | OAuth Web client secret; **secret** |
 
-If Borna supplies a team-specific local configuration, enter those secret values only in the ignored `backend/.env`; never publish the password or OAuth secret. Rotate any previously exposed database and OAuth credentials. Avoid configuring conflicting `DATABASE_URL` and `DB_*` values; the backend code gives the connection string precedence. In Google Cloud, configure the OAuth consent screen, allow the relevant test accounts when consent is in testing mode, and add the authorized redirect URI:
+ Avoid configuring conflicting `DATABASE_URL` and `DB_*` values; the backend code gives the connection string precedence. In Google Cloud, configure the OAuth consent screen, allow the relevant test accounts when consent is in testing mode, and add the authorized redirect URI:
 
 ```
 http://localhost:10000/api/auth/google/callback
@@ -134,9 +138,9 @@ curl -i http://localhost:10000/health
 curl -i http://localhost:10000/api/auth/me
 ```
 
-Expected behavior: `/health` should return a successful health JSON response; `/api/auth/me` without a session should return an authentication-related response, not a proxy/network error. Google sign-in begins by navigating the **browser** to `http://localhost:10000/api/auth/google`. Google returns to the backend callback. Existing authenticated users are redirected to the frontend profile page; a new user enters a registration session and is redirected to `/api/auth/me` JSON. The existing React login and profile pages do not by themselves prove that this end-to-end flow works with the current proxy and Origin settings.
+Expected behavior: `/health` should return a successful health JSON response; `/api/auth/me` without a session should return an authentication-related response, not a proxy/network error. Google sign-in starts when the user selects "Sign in with Google" in the frontend, which forwards /api/auth/google to the backend. Google returns to the backend callback. A returning user lands on /profile; a new user lands on /register, chooses a role (owner or helper), enters a first and last name, and is then taken to /profile with the verification status "pending".
 
-For a full implemented route list, request bodies, response JSON, status and error codes, see [API reference](API.md). For detailed authentication constraints and examples see [Google sign-in](../backend/docs/google-auth.md), [User profile](../backend/docs/user-profile.md), and [User settings](../backend/docs/user-settings.md). The protected `GET /api/users/me` and `PATCH /api/users/me` routes require an authenticated test session; state-changing requests additionally require the documented Origin and CSRF token. New owner/helper accounts require administrator approval before booking access.
+For a full implemented route list, request bodies, response JSON, status and error codes, see [API reference](../backend/API.md). For detailed authentication constraints and examples see [Google sign-in](../backend/docs/google-auth.md), [User profile](../backend/docs/user-profile.md), and [User settings](../backend/docs/user-settings.md), [Pets](../backend/docs/pets.md). The protected `GET /api/users/me` and `PATCH /api/users/me` routes require an authenticated test session; state-changing requests additionally require the documented Origin and CSRF token. New owner/helper accounts require administrator approval before booking access.
 
 ### 6.2.4 Frontend configuration, startup and quality checks
 
@@ -150,7 +154,7 @@ npm run build
 npm run dev
 ```
 
-Open Vite's displayed development URL, normally `http://localhost:5173`. The checked-in frontend implements home, `/login`, `/profile`, `/my-pets`, and `/my-listings`. Profile display/editing uses backend APIs; My Pets CRUD uses an in-memory frontend mock and is not persisted. These distinctions should be demonstrated at the checkpoint rather than claiming every screen has working backend persistence.
+Open Vite's displayed development URL, normally `http://localhost:5173`. The frontend has the pages home, /login, /register, /profile, /my-pets and /my-listings. Profile and My pets use the backend and are stored in PostgreSQL; My listings is an empty page.
 
 The Vite development proxy forwards requests with the `/api` prefix to port 10000. To check guest routing without a Google test account, create an uncommitted `frontend/.env.local` containing:
 
@@ -160,7 +164,7 @@ VITE_MOCK_GUEST=true
 
 Restart `npm run dev` after changing Vite environment files, and navigate directly to `/profile` and `/my-listings`; both should redirect a guest to `/login`. Remove this setting or set it to `false` when testing real authentication. This is a frontend route-guard check, **not proof of backend session functionality**.
 
-For actual client-to-backend communication, use browser developer tools to inspect the request to `/api/auth/me`, including its status, content type, and the Vite proxy. A `401` from the backend for an anonymous request can be an expected result; a network error, HTML fallback or proxy failure is not. For data persistence, use an approved **isolated** test account to update an allowed profile field and then retrieve the profile again; do not use shared production users. Check the `Origin` on PATCH requests: local Vite runs at port 5173 while the backend compares Origin to `AUTH_BASE_URL` (typically port 10000), which may lead to HTTP 403. This needs an agreed proxy/security fix and a measured test rather than a presumed pass. Also verify profile-photo uploads: the users PATCH route has a `512kb` JSON parser and photo-data validation of at most 350000 characters; the `16kb` parsers in `app.js` are mounted on other API prefixes.
+For actual client-to-backend communication, use browser developer tools to inspect the request to `/api/auth/me`, including its status, content type, and the Vite proxy. A `401` from the backend for an anonymous request can be an expected result; a network error, HTML fallback or proxy failure is not. For data persistence, use an approved **isolated** test account to update an allowed profile field and then retrieve the profile again; do not use shared production users. The Vite development proxy rewrites the Origin header, so the backend's CSRF check accepts requests from http://localhost:5173. Also verify profile-photo uploads: the users PATCH route has a `512kb` JSON parser and photo-data validation of at most 350000 characters; the `16kb` parsers in `app.js` are mounted on other API prefixes.
 
 ### 6.2.5 Troubleshooting and local acceptance criteria
 
@@ -169,20 +173,21 @@ For actual client-to-backend communication, use browser developer tools to inspe
 | Backend refuses to start | Confirm PostgreSQL health, `DB_*` or `DATABASE_URL`, migration state, `AUTH_BASE_URL` and required Google settings; inspect backend console output |
 | `npm run db:check` fails | Confirm DB port/account/password and that the database exists; use `docker compose ps` and PostgreSQL logs |
 | OAuth sign-in fails | Verify callback URI matches Google Cloud settings exactly, `AUTH_BASE_URL`, allowed test accounts, and backend logs; never log tokens or client secrets |
-| Browser `/api/*` returns frontend HTML | Check Vite proxy in local dev or Nginx reverse-proxy/routing configuration in deployed environment |
-| Profile PATCH returns 403 | Check session, `X-CSRF-Token` from `/api/auth/me`, and the local Vite Origin (port 5173) versus backend `AUTH_BASE_URL` (port 10000); do not disable CSRF protection casually |
+| Browser `/api/*` returns frontend HTML | Check Vite proxy in local dev or the nginx proxy (frontend/nginx.conf.template) and the BACKEND_URL setting of web-frontend |
 | Profile-photo PATCH returns 413 | The users PATCH route has a `512kb` JSON body limit, which returns HTTP 413 when exceeded. A `photo_data` string over 350000 characters instead fails validation with HTTP 400; the auth/examples `16kb` parsers do not apply to this route. |
 | Node/Vite build fails | Use a Node/npm combination compatible with the current lockfiles and record exact build error |
 
-**A local installation is verified only when** PostgreSQL is initialized, the backend health endpoint works, frontend lint/build complete, Vite serves the app, a client request reaches the API, and the required authenticated profile/persistence tests pass in a controlled environment. Those results were **not collected** during this document preparation. Record them in [Section 5](5-Testing.md).
+**A local installation is verified only when** PostgreSQL is initialized, the backend health endpoint works, frontend lint/build complete, Vite serves the app, a client request reaches the API, and the required authenticated profile/persistence tests pass in a controlled environment. The results are recorded in [Section 5](5-Testing.md).
 
 ## 6.3 Public Deployment and Administration
 
+**Objective:** Enable a reader to reproduce the **public** application from the repository, including the hosted database and connections among deployed parts.
+
 ### 6.3.1 Hosting and build configuration
 
-[`render.yaml`](../render.yaml) defines one PostgreSQL database and two Docker-backed Render web services. The backend's [`Dockerfile`](../backend/Dockerfile) uses Node.js 20 in production mode and starts `npm start`; the frontend's [`Dockerfile`](../frontend/Dockerfile) builds the Vite application and serves its `dist` output with Nginx. [`frontend/nginx.conf`](../frontend/nginx.conf) includes React Router SPA fallback. This is **versioned deployment configuration**, not independent confirmation that all three services are deployed and healthy.
+[`render.yaml`](../render.yaml) defines one PostgreSQL database and two Docker-backed Render web services. The backend's [`Dockerfile`](../backend/Dockerfile) uses Node.js 20 in production mode and starts `npm start`; the frontend's [`Dockerfile`](../frontend/Dockerfile) builds the Vite application and serves its `dist` output with Nginx. [`frontend/nginx.conf.template`](../frontend/nginx.conf.template) serves the React app with SPA fallback and forwards /api/ to the backend. 
 
-The hosted backend must use Render's assigned `PORT`, an authorized managed PostgreSQL connection, an HTTPS `AUTH_BASE_URL` equal to the backend's public origin, and the team's Google OAuth Web client settings. It exposes a `/health` endpoint, which the blueprint references for health checking. The backend's database migration scripts do **not** run automatically at startup. Borna's shared Render database and the blueprint's `app-db` are not proven to be the same database; the actual Render database/service names and migration history must be checked in the dashboard.
+The hosted backend uses Render's assigned `PORT`, the connection string of `app-db`, an HTTPS `AUTH_BASE_URL` (see 6.3.2) and the team's Google OAuth Web client settings. It exposes a `/health` endpoint, which the blueprint references for health checking. The database migrations do not run automatically at startup; `001_initial_schema.sql` and `002_auth_sessions.sql` were applied manually to the Render database.
 
 ### 6.3.2 Required hosted settings and secrets
 
@@ -190,31 +195,31 @@ The hosted backend must use Render's assigned `PORT`, an authorized managed Post
 | --- | --- | --- |
 | Render PostgreSQL | Database name, role and database connection URL | Obtain from Render; do not publish credentials |
 | Backend | `DATABASE_URL`, `PORT` (host-provided), and any required SSL configuration | Store securely in Render service environment; never embed database secrets in frontend |
-| Backend | `AUTH_BASE_URL=https://<actual-backend-host>` | Backend origin over HTTPS; must match registered Google callback origin |
+| Backend | AUTH_BASE_URL=https://petpals-frontend.onrender.com` | The address users open (the frontend), because nginx forwards /api/ including the Google callback. It must equal the browser's Origin (CSRF check) and the origin of the redirect URI registered in Google Cloud |
 | Backend | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | From team's authorized Google Cloud OAuth client; client secret is private |
-| Frontend | Browser-facing API routing / any Vite build-time public variables | Must be resolved during build and support the same-origin session/CSRF design; do not put secrets in `VITE_*` |
+| Frontend (web-frontend) | BACKEND_URL=https://<backend-host> | Address of the backend; nginx forwards /api/ to it |
 | GitHub Actions CD | `RENDER_DEPLOY_HOOK_URL`, if automatic redeployment via webhook is enabled | Repository secret; if absent, the workflow prints a skip message |
 
-The repository's blueprint mentions `VITE_API_URL`, but the reviewed frontend uses relative `/api` calls through a **development-only Vite proxy**. Do not assume that setting this variable alone enables the production frontend; verify build-time wiring and the missing Nginx/API proxy with the frontend and backend owners.
+The web-frontend service needs BACKEND_URL, the address of the backend service; nginx uses it as the target for /api/ (set in render.yaml). The frontend code calls relative /api paths and needs no VITE_* variable.
 
-### 6.3.3 Deployment procedure to verify with the maintainer
+### 6.3.3 Deployment procedure
 
 1. In Render, confirm which repository/branch is connected to `app-db`, `api-service`, and `web-frontend` (see [`render.yaml`](../render.yaml)). Compare the **actual** dashboard configuration with the version-controlled blueprint.
 2. Provision or inspect managed PostgreSQL. On a *new empty* database, apply [`001_initial_schema.sql`](../backend/migrations/001_initial_schema.sql) and [`002_auth_sessions.sql`](../backend/migrations/002_auth_sessions.sql) in that order through an authorized secure SQL connection or approved migration mechanism. Check schema and permissions; never rerun initial schema on populated databases.
 3. Set the backend's environment settings in Render and configure the exact HTTPS Google callback URL in Google Cloud: `https://<actual-backend-host>/api/auth/google/callback`.
 4. Deploy the backend image; confirm startup logs and `GET https://<actual-backend-host>/health`. Check authentication errors without exposing session cookies, database URLs, or tokens.
-5. Fix/confirm the production client-to-API routing and cookie/Origin design with the team. Because the checked-in Nginx config has no `/api` proxy, choose and implement a tested same-origin proxy arrangement (or a reviewed alternative security design) **before** claiming working public login.
+5. Set BACKEND_URL on web-frontend to the backend's address. Open the frontend address and sign in: a returning user lands on /profile, a new user on /register.
 6. Deploy the frontend image, verify its actual public address, load `/`, test SPA reload of `/profile`, and complete the sign-in and profile checks with an authorized test account. Capture browser network evidence that the request reaches the correct backend.
 7. Record the deployed Git revision, URLs, migration version, and smoke-test results in [Testing](5-Testing.md). Do not claim deployment complete based solely on a Render dashboard green indicator or static home page.
 
-**Current public status:** The frontend URL linked by the repository returned HTTP 503 during a check on 15 November 2026; this is a single observed response and should be rechecked against Render logs and service status. A verified backend production URL, working public OAuth flow, and successful Render migration evidence were not available during this review.
+**Current public status:** Checked on 17.11.26.: frontend and Google sign-in work on the public address (see DEP-01 and REG-01 in [5.2](./5-Testing.md#52-test-cases)). Migrations 001 and 002 were applied manually to the Render database.
 
 ### 6.3.4 Administration, monitoring and maintenance
 
-The application data model includes an administrator role, but the reviewed authentication implementation does not provide an administrator sign-up flow, an initial administrator provisioning process, or a completed admin UI. An already-provisioned Google administrator account may sign in, subject to backend implementation; access must be granted by an authorized maintainer. Do not document an unverified `/admin` URL or publish any administrator credentials.
+The data model includes an administrator role, but administrator sign-up, an initial administrator account and the administration screens are not implemented yet (planned for the next cycle). Administrator credentials are never published.
 
-Operational checks available from the versioned project include the backend `/health` endpoint, Render service logs/events, PostgreSQL connection diagnostics, and GitHub Actions workflow history. The CI workflow currently **does not** execute backend unit tests or frontend lint/build; it echoes a message. The CD workflow posts to a Render deploy hook on pushes to `main` **only if** its secret exists; otherwise it skips. These should not be characterized as verified continuous test and deployment coverage.
+Operational checks available from the versioned project include the backend `/health` endpoint, Render service logs/events, PostgreSQL connection diagnostics, and GitHub Actions workflow history. The CI workflow currently **does not** execute backend unit tests or frontend lint/build; it echoes a message. The CD workflow posts to a Render deploy hook on pushes to `main` **only if** its secret exists; otherwise it skips.
 
-For a production update, review the PR and relevant test evidence, back up production data using an approved policy, inspect pending schema changes, deploy through the authorized team procedure, and run a health and browser smoke test. The presence of backup, restore, automatic cleanup, monitoring alerts, or rollback infrastructure was **not confirmed** in this audit; maintainers must document the real procedure before relying on it. Authentication session expiry is implemented, while regular database cleanup of expired session rows is described as potential future housekeeping, not a confirmed scheduled job.
+For a production update, review the PR and relevant test evidence, back up production data using an approved policy, inspect pending schema changes, deploy through the authorized team procedure, and run a health and browser smoke test. A backup, restore or rollback procedure beyond Render's own features is not defined yet. Authentication session expiry is implemented, while regular database cleanup of expired session rows is described as potential future housekeeping, not a confirmed scheduled job.
 
-**Pending team confirmations:** whether Render uses the blueprint's `app-db` or the separate team-shared database, actual Render service URLs and active deployment; working same-origin frontend/API configuration; Google OAuth redirect/test account setup; migration status; production logs; administrator provisioning; backup/restore procedures; and results of the checks in [§5](5-Testing.md).
+**Known gaps:** no administrator provisioning, no defined backup and restore procedure, and no automated tests in CI (see [5.4](5-Testing.md#54-known-defects-and-testing-limits)).
