@@ -2,165 +2,94 @@
 
 **Objective:** Show how the team checks the application's important behavior, what was actually tested, what the results show, and which known defects remain. A planned test is not evidence of a successful run.
 
-The expandable Crisis Guard examples illustrate test design and reporting. They are not results from the published student project. Keep the requirement-to-use-case-to-test mapping in the [requirement traceability table](2.-Requirements); record test specifications and execution evidence here or link to the tests in the repository.
-
 ## 5.1 Test Approach
 
 **Objective:** Select checks that address the main user goals, important failure conditions, and project-specific non-functional requirements.
 
-**Testing approach:** [In a few sentences, name the components or rules tested in isolation, the main interactions checked in the running application, and the relevant non-functional checks. State which checks are automated, which are manual, and where the team keeps their evidence.]
+PetPals is a peer-to-peer pet-care platform. The implemented part is Google sign-in with registration (role and name), PostgreSQL-backed sessions, viewing and editing the own profile (including a profile photo), and managing pets (My pets: add, edit, delete, with a photo). The frontend has the login, registration, profile, My pets and "My listings" pages with guest route guards; "My listings" does not load data yet. Listings, search, booking, confirmation, calendar, messages, reviews and the administration workflows are planned and are not tested yet.
 
-Choose normal cases, boundaries, and failures that expose different behavior. Selenium IDE can record and replay a basic browser interaction; Selenium WebDriver can express a browser check in code. Use Selenium or another suitable tool when it helps make a system check repeatable. State which tool the team actually uses. A test of a class or rule belongs at the component level; opening a form in a browser checks the running system. Name a CI workflow and its run only if the team uses CI.
+Testing is divided into the following levels:
 
-<details>
-<summary><strong>Choosing checks for report submission</strong></summary>
+| Level | Scope and method | Automation currently available | Evidence location |
+| --- | --- | --- | --- |
+| Backend component / handler | OAuth state and token validation, session security, registration, authorization, profile queries, and profile update validation with controlled fixtures or repositories | Node.js built-in test runner (`npm test`) | [`backend/test/`](../backend/test/) and the individual files linked below |
+| Backend API / integration | Actual Express server, database connectivity, PostgreSQL persistence, authentication cookie behavior, status codes, and migration compatibility | No automated suite against a real database; database behavior is checked manually (BE-01, DB-01, DB-02, PETS-01) | Run record in [5.3](#53-executed-tests-and-results) |
+| Frontend static quality | ESLint checks and Vite production compilation | `npm run lint`, `npm run build`; no frontend `npm test` script | [`frontend/package.json`](../frontend/package.json); results in [5.3](#53-executed-tests-and-results) |
+| Frontend manual/system | Route navigation, guest redirects, browser-to-API communication, authenticated profile, and error handling | No browser E2E test suite verified | Manual results in [5.2](#52-test-cases) and [5.3](#53-executed-tests-and-results)|
+| Deployment / non-functional | Docker/Render startup, database migrations, Google OAuth callback, access control, and availability | CI workflow exists but currently only echoes a message; it does not run the above checks | [CI configuration](../.github/workflows/ci.yml), deployment checks in [5.2](#52-test-cases) (DEP-01, DEP-02) |
 
-**Example — Crisis Guard:** The team tests location validation and report-state changes directly with controlled inputs. It then checks report submission and its error messages in a running browser using Selenium WebDriver. A separate check attempts report approval without moderator permission. If notification delivery belongs to the approved scope, a test examines recipient selection; an end-to-end delivery test also needs a working notification provider. Browser geolocation denial is checked with a manual location fallback. The automated test code is kept in Git, and each executed result refers to a specific run.
+The backend has six automated test files in [`backend/test/`](../backend/test/): [`auth-flow.test.js`](../backend/test/auth-flow.test.js), [`auth-security.test.js`](../backend/test/auth-security.test.js), [`user-profile.test.js`](../backend/test/user-profile.test.js), [`user-settings.test.js`](../backend/test/user-settings.test.js), [`pets.test.js`](../backend/test/pets.test.js) and [`database-config.test.js`](../backend/test/database-config.test.js). They use local fixtures, injected dependencies and test repositories, so they do not prove that a real Google account or the deployed database works; those parts are checked manually (see 5.2). Automated backend tests use the Node.js built-in test runner. Browser checks are done manually; no Selenium or other browser-automation tool is used.
 
-**Analysis of the example:** A validation rule can pass while the full submission still fails. Browser and component tests therefore answer different questions. The notification example separates recipient-selection logic from actual delivery. Neither a named tool nor a screenshot by itself proves that an entire interaction passed.
-
-</details>
+Tests prioritize both valid actions and important failures: invalid/replayed OAuth attempts, missing sessions, cross-site request forgery (CSRF), attempts to modify protected profile fields, unauthorized access to another user's data, database outages, and unavailable frontend/API communication. End-to-end booking and calendar test cases will be added when corresponding code exists. The links from requirements to tests are kept in the [requirement traceability table](./2-requirements.md#26-requirement-traceability).
 
 ## 5.2 Test Cases
 
 **Objective:** Make important checks reproducible by recording the scenario, input, steps, expected result, and result of execution. Give each check a stable ID that can be used in the requirement traceability table.
 
-| Test Case ID | Test Scenario | Input Data | Expected Results | Actual Results | Pass/Fail | Test Steps |
-| --- | --- | --- | --- | --- | --- | --- |
-|  |  |  |  |  |  |  |
-
-The scenario identifies the functionality being tested. Enter the observed result and **Pass**, **Fail**, or **Blocked** only after a run; until then use **Not run**. Test steps must let another team member reproduce the check. Keep automated test source code in the project Git repository and link to it from the relevant case; for a manual check, document the steps here. Select normal cases, meaningful invalid inputs or boundaries, failures, and relevant quality properties. A feature that has not been implemented is unfinished scope; testing how the application handles an invalid ID is a valid negative test.
-
-<details>
-<summary><strong>Report submission cases at two test levels</strong></summary>
-
-**Example — Crisis Guard test cases:** One failed result, ST-02, illustrates how a completed case differs from planned cases marked **Not run**. Dates, revision, environment, and evidence for the example run appear below.
+Each case has a stable ID. **Actual Results** and **Pass/Fail** record what happened in the run described in [5.3](#53-executed-tests-and-results). Steps that need a signed-in user use a Google account and test data; real credentials are never part of the evidence.
 
 | Test Case ID | Test Scenario | Input Data | Expected Results | Actual Results | Pass/Fail | Test Steps |
 | --- | --- | --- | --- | --- | --- | --- |
-| CT-01 | Component: valid location | Flood; latitude 45.82; longitude 16.00. | Coordinates accepted. | Not run. | Not run | Call the location validator with both coordinates; assert valid result. |
-| CT-02 | Component: missing location | Flood; latitude and longitude absent. | Validation rejects submission; nothing is saved. | Not run. | Not run | Call validation with no location; assert rejection and no save. |
-| CT-03 | Component: coordinate boundary | First (90, 180), then (90.01, 180). | Boundary accepted; value beyond it rejected. | Not run. | Not run | Run the validation test with both inputs; compare outcomes. |
-| CT-04 | Component: report transition | Report in SUBMITTED state; rejection, then approval. | Approval rejected; status remains REJECTED. | Not run. | Not run | Reject the report; call approve; inspect resulting status. |
-| CT-05 | Component: missing report | Repository contains no report with ID 9999. | Defined not-found outcome; no fabricated report. | Not run. | Not run | Request ID 9999 against controlled repository data; assert not found. |
-| CT-06 | Component: notification recipients | Confirmed flood near region A; one subscription to region A and one to region B. | Only eligible recipient in region A selected. | Not run. | Not run | Invoke recipient selection with the two subscriptions; compare IDs. |
-| CT-07 | Component: invalid disaster type | A report contains an disaster type outside the supported set. | Validation rejects the type; no report is saved. | Not run. | Not run | Supply the unsupported value to report validation; assert rejection. |
-| ST-01 | System: valid report submission | Flood; High; selected map location 45.82, 16.00. | Confirmation appears; report can be retrieved. | Not run. | Not run | Open form; enter data; select point; submit; open resulting report. |
-| ST-02 | System: required location missing | Flood; High; description “Water rising”; location empty. | Location-specific error appears; report count does not increase. | Generic server error shown; report count stayed at 24. | Fail | Open form; enter data without location; submit; compare report count before and after. |
-| ST-03 | System: geolocation permission denied | Browser permission denied; Flood; manually chosen map point. | User can select location manually and submit the report. | Not run. | Not run | Deny permission; select point on map; submit; inspect confirmation. |
-| ST-04 | System: protected report review | Signed-in citizen without moderator role; report ID 104. | Approval refused; report remains unchanged. | Not run. | Not run | Try approval through the application/API; inspect response and report state. |
-| ST-05 | System: backend unavailable | Valid flood report details; backend deliberately unavailable in a test environment. | Application reports the failure and does not falsely confirm submission. | Not run. | Not run | Disable the test backend; submit through the browser; inspect the message and recovery behavior. |
+| **BE-01** | Backend health check | Public backend (api-service on Render) | `GET /health` returns `{"status":"healthy"}` | Opened https://petpals-backend-bfo2.onrender.com/health in a browser on 17 Nov 2026; it showed {"status":"healthy"}. | **Passed** | Open https://petpals-backend-bfo2.onrender.com/health in a browser (the first request after a pause can take about a minute). Local alternative: `curl -i http://localhost:10000/health`. |
+| **DB-01** | Database connection | Valid local DB configuration | `npm run db:check` finishes successfully without modifying data | Not run (local environment not set up). | **Not run** | Configure `.env`, run `cd backend && npm run db:check`; save terminal output. |
+| **DB-02** | Fresh schema and authentication sessions | New empty PetPals database | SQL migrations 001 then 002 complete; required tables, including `auth_sessions`, exist | Not run | **Not run** | Execute both migration files in order on a disposable DB; inspect `\dt` and session table. |
+| **AUTH-01** | Google token verification | Valid locally signed fixture; altered signature, issuer, audience, nonce, or expiry | Valid fixture accepted; invalid tokens rejected | Passed in auth-security.test.js (npm test, 18 Nov 2026, c2f77ec): “verifies a signed Google identity and tolerates missing profile names”; “rejects invalid signature, issuer, audience, expiry, nonce and unverified email” | **Passed** | Run `npm test`; inspect assertions in `auth-security.test.js` and recorded TAP output. |
+| **AUTH-02** | OAuth state/replay protection | Missing/mismatched state and repeated callback attempt | Invalid or repeated OAuth attempts cannot create a new authenticated session | Passed in auth-flow.test.js (npm test, 18 Nov 2026, c2f77ec): “callback requires browser cookie and matching state before token exchange”; “callback cannot be replayed, including concurrent callbacks” | **Passed** | Execute `auth-flow.test.js`; review state/cookie/replay cases and outcomes. |
+| **AUTH-03** | Session handling | Anonymous request, valid session, expired session | Anonymous/expired requests are rejected; valid session returns its own user data | Signed out, https://petpals-frontend.onrender.com/api/auth/me returned {"error":"Sign in first."}; signed in, the profile page showed the user's own data (see USER-03). Expired sessions: automated test only. Passed in auth-flow.test.js, user-profile.test.js (npm test, 18 Nov 2026, c2f77ec): "session storage hashes bearer tokens and specifies bounded expiry”; “anonymous, expired and unfinished registration sessions cannot view profiles”. | **Passed** | Run auth/profile tests (see 5.3); in a private window open /api/auth/me on the public address; sign in and open /profile. |
+| **AUTH-04** | CSRF and Origin protection | State-changing request with missing/invalid Origin or CSRF token | Request rejected without performing profile or session mutation | Passed in auth-flow.test.js, user-settings.test.js (npm test, 18 Nov 2026, c2f77ec): “registration and logout require both same origin and session-bound CSRF token”; “settings require authentication and matching Origin and CSRF token”. | **Passed** | Run auth-security/settings tests; attempt a controlled invalid `PATCH /api/users/me` with authenticated fixture. |
+| **AUTH-05** | Logout invalidates session | Authenticated session, valid Origin and CSRF token | `POST /api/auth/logout` expires session; subsequent protected request is unauthorized | Signed in, used Log out, then opened /profile again; the login page was shown. Passed in auth-flow.test.js (npm test, 18 Nov 2026, c2f77ec): “logout removes server-side session and expires cookie” | **Passed** | Sign in, select Log out, then open /profile directly. Automated part: `auth-flow.test.js`. |
+| **USER-01** | Read own profile | Registered owner/helper, valid session | `GET /api/users/me` returns only signed-in profile and role-relevant pets/listings | Passed in user-profile.test.js (npm test, 18 Nov 2026, c2f77ec): “pending owner sees their pets and cannot override session identity using query parameters”; “helper sees active listings and no private pet collection” | **Passed** | Run `user-profile.test.js`; call API with each role's test session; inspect ownership. |
+| **USER-02** | Profile cannot be read anonymously | No session or incomplete registration | `GET /api/users/me` returns HTTP 401; no private profile data exposed | Passed in `user-profile.test.js` ("anonymous, expired and unfinished registration sessions cannot view profiles"; `npm test`, 18 Nov 2026, 45 of 45 tests passed). A manual check in the browser was not completed because the hosting service showed a bot-verification page instead of the API response. | **Passed** | Automated: run `npm test` in `backend/`. Manual: while signed out, open the profile API address in the browser and read the response. |
+| **USER-03** | Valid profile update | Authenticated owner/helper, valid Origin/CSRF; changed name | `PATCH /api/users/me` updates only permitted fields and resets owner/helper verification to `pending` when a name changes | Changed the first name on the profile page and saved. After reloading the page the new name was still shown. Verification status showed "pending" afterwards. | **Passed** | Run `user-settings.test.js`; send supported JSON with test credentials; query own profile again. |
+| **USER-04** | Reject unsupported profile fields | Authenticated user attempts `role`, `email`, or `verification_status` change | HTTP 400 and no unauthorized changes persisted | Passed in user-settings.test.js (npm test, 18 Nov 2026, c2f77ec): “rejects unknown, privileged and malformed fields without updating anything” | **Passed** | Run settings tests; send controlled invalid PATCH request; compare profile before/after. |
+| **USER-05** | Reject cross-site profile edit | Authenticated user, bad/missing CSRF or Origin | HTTP 403; profile remains unchanged | Passed in user-settings.test.js (npm test, 18 Nov 2026, c2f77ec): “settings require authentication and matching Origin and CSRF token” | **Passed** | Run settings tests; repeat controlled PATCH with invalid protection headers. |
+| **FE-01** | Guest route protection | Not signed in (signed out) on the public application; visit /profile, /my-pets and /my-listings | Guest is sent to `/login`; protected content not displayed | Signed out, opened the three addresses directly; each time the login page (/login) was shown and no profile or pet data. | **Passed** | Sign out, then open each of the three addresses directly in the browser and note where you end up. |
+| **FE-02** | Frontend code quality and build | Clean install of frontend at identified revision | ESLint and `vite build` complete without errors | `npm run lint` finished without errors (18 Nov 2026, c2f77ec, macOS, Node v20.15.0). `npm run build` failed on this machine with "Cannot find native binding" (a missing optional package for the Mac; Node 20.15.0 is also older than the 20.19 that Vite 8 needs). The same build runs in the Docker image on Render. | **Passed** (lint); **Blocked** (local build) | `cd frontend && npm ci && npm run lint && npm run build`; save exit codes and output. |
+| **FE-03** | API proxy (nginx on Render, Vite locally) | Public frontend address, not signed in | `GET /api/auth/me` through the frontend reaches the backend; a 401 JSON is expected for a guest, an HTML page or network error is not | Opened https://petpals-frontend.onrender.com/api/auth/me; the response was {"error":"Sign in first."} (JSON, not the React page). | **Passed** | Open the address in a private window and check that it shows JSON. Local variant: open http://localhost:5173/api/auth/me with backend and frontend running. |
+| **USER-06** | Profile photo input and size limits | Authorized user; JPEG/PNG/WebP data URL, invalid data and representative larger image | Valid image in supported request size is normalized to JPEG; invalid image rejected; real app must honor documented upload size | Passed in user-settings.test.js (npm test, 18 Nov 2026, c2f77ec): “profile upload stores a resized image and rejects invalid image data” | **Passed** (images only; the size limit on a running server is not tested, see 5.4)| Run `user-settings.test.js` and try controlled image uploads through the actual Express app; record 200/400/413 and request size. The users PATCH router has its own `512kb` JSON limit; the photo normalizer separately caps the `photo_data` string at 350000 characters. |
+| **PETS-01** | Owner manages pets and data persists | Signed-in owner; name, species, birth date, photo; optional breed and care notes | A new pet appears in the list; after reloading the page it is still there; an edit and a delete are shown after saving | Added a pet on My pets; it appeared in the list and was still there after reloading. Edited and deleted it; both were shown.| **Passed** | Open My pets, add a pet, reload the page, edit it, delete it. Automated: `pets.test.js` (owner creates, reloads, edits and deletes pets). |
+| **PETS-02** | Pet validation | Pet without a required field (name, species, birth date or photo) or with an invalid ID | HTTP 400 and nothing is saved | Passed in pets.test.js (npm test, 18 Nov 2026, c2f77ec): “invalid pet details and IDs fail before a database write” | **Passed** | Automated: `pets.test.js` (invalid pet details and IDs fail before a database write). |
+| **PETS-03** | Owners cannot reach another owner's pets | Two owners; second owner uses the first owner's pet ID | The pet is not found (404), nothing is changed | Passed in pets.test.js (npm test, 18 Nov 2026, c2f77ec): “owners cannot see, edit, delete or take ownership of another owner’s pet” | **Passed** | Automated: `pets.test.js` (owners cannot see, edit, delete or take ownership of another owner's pet). |
+| **PETS-04** | Only owners can manage pets | Anonymous request; helper account; write request without CSRF token or Origin | Anonymous 401, helper 403, write without CSRF/Origin 403 | Passed in pets.test.js (npm test, 18 Nov 2026, c2f77ec): “anonymous and non-owner accounts cannot manage pets; writes require CSRF and Origin” | **Passed** | Automated: `pets.test.js` (anonymous and non-owner accounts cannot manage pets). |
+| **FE-04** | Local profile edit through Vite proxy | Authenticated test account; change an allowed name with Origin from Vite at `localhost:5173` | Profile editing completes (HTTP 200) when the app is opened at http://localhost:5173; no CSRF or Origin error | Not run (local environment not set up) | **Not run** | Run backend and frontend locally, sign in, change the first name on the profile page, and check in browser devtools that the PATCH request returns 200. |
+| **DEP-01** | Hosted frontend/API and sign-in | Deployed frontend + backend, any Google account (the application is not limited to test users) | User can reach frontend, begin sign-in, return with session, and use authenticated API on supported origin | Signed in on https://petpals-frontend.onrender.com with a Google account; Google returned the user to the application, signed in, and authenticated pages loaded. | **Passed** | Record live addresses, use test account, inspect redirects, cookies, network and backend logs. |
+| **DEP-02** | Containerized startup | Repository Docker Compose setup, required environment | PostgreSQL starts; backend/frontend only considered successful if config, migrations, health, and browser-to-API flow work | Not run | **Not run** | Start disposable environment after configuring secrets; run `docker compose ps`, health check, and API/browser smoke tests. |
+| **REG-01** | First sign-in and registration | New Google account that has never signed in | After Google consent the user lands on `/register`; after choosing owner or helper and entering first and last name the user lands on `/profile` and the verification status is "pending" | Signed in with a Google account that had not been used before. The application showed /register; chose owner, entered first and last name, and arrived on /profile with verification status "pending". | **Passed** | On the public URL sign in with a new test account; choose a role; enter a name; check `/profile`. Automated part: `auth-flow.test.js` (new Google user ... create an authenticated account). |
 
-**Analysis of the example:** Component cases exercise rules directly; system cases exercise visible behavior across the running application. CT-03 demonstrates an actual boundary and a value just beyond it; a vague phrase such as “very long input” would not establish a boundary. If the team adopts the location-fallback quality requirement NF-01, ST-03 can also check it; do not create a second case with identical steps merely to produce a non-functional test ID. CT-06 and ST-04 depend on the approved features. The rows show a range of techniques and one example failure; they do not set a case-count quota. A performance or availability target needs an agreed threshold and a feasible measurement procedure before it becomes a project test.
+AUTH-01 to AUTH-05, REG-01 (backend part), USER-01 to USER-06 and PETS-01 to PETS-04 have automated cases in backend/test/. The manual steps are separate checks on the running application, because a test with fake data does not prove that a real Google account or the deployed database works.
 
-**ST-02 reproduction detail:** Before the action, count stored reports in the test database (24 in this example run). Open the form; choose Flood and High severity; enter “Water rising”; leave location empty; submit; observe the message and check the database count again. Record the application revision, the displayed error, and the two counts. The generic error fails the expected location-specific explanation even though the count remains 24.
-
-</details>
-
-<details>
-<summary><strong>From report-submission steps to Selenium actions</strong></summary>
-
-**Example — Crisis Guard, ST-01:** The case uses a manual coordinate field in this teaching design. Selector names below represent elements in this example's form; a team must inspect its own application rather than copy these identifiers. Selenium IDE can record the interaction, but the recorded case still needs an assertion about the result. Selenium WebDriver permits the team to write the actions and assertions in a versioned test.
-
-| Step | Human-readable procedure | Selenium WebDriver action in the example |
-| --- | --- | --- |
-| 1 | Open the report form. | Navigate to the test application's report-form URL. |
-| 2 | Choose Flood as the disaster type. | Locate the `disasterType` select element and choose `Flood`. |
-| 3 | Choose High severity. | Locate the `severity` select element and choose `High`. |
-| 4 | Enter the report location. | Locate `locationInput` and enter `45.82, 16.00`. |
-| 5 | Describe the disaster. | Locate `description` and enter `Flooding in the city center`. |
-| 6 | Submit the form. | Locate and click `submitReport`. |
-| 7 | Check the result. | Wait for `reportConfirmation`; assert that it contains a report reference; open the report and verify its description. |
-
-**WebDriver fragment (JavaScript):**
-
-```js
-const { By, until } = require('selenium-webdriver');
-const assert = require('assert');
-
-await driver.get(baseUrl + '/reports/new');
-await driver.findElement(By.id('incidentType')).sendKeys('Flood');
-await driver.findElement(By.id('severity')).sendKeys('High');
-await driver.findElement(By.id('locationInput')).sendKeys('45.82, 16.00');
-await driver.findElement(By.id('description')).sendKeys('Flooding in the city center');
-await driver.findElement(By.id('submitReport')).click();
-
-const confirmation = await driver.wait(
-  until.elementLocated(By.id('reportConfirmation')), 10000);
-assert((await confirmation.getText()).includes('Report'));
-
-const reportUrl = await driver.findElement(By.id('createdReportLink'))
-  .getAttribute('href');
-await driver.get(reportUrl);
-assert((await driver.findElement(By.id('reportDetails')).getText())
-  .includes('Flooding in the city center'));
-```
-
-**Analysis of the example:** The seventh step asserts the confirmation and verifies that the submitted report can be retrieved. An explicit wait gives the application time to display an asynchronous confirmation. The selectors, route, and confirmation wording must match the team's UI; recording a flow without checking the expected result is not evidence that the test passed. Version the automated test and save the run result.
-
-</details>
-
-<details>
-<summary><strong>Performance, usability, and security cases</strong></summary>
-
-**Example — Crisis Guard:** These additional cases show the kinds of checks represented in the earlier course material. Targets for load or task completion apply only when the team has an agreed requirement and a feasible way to measure it. All six cases below are **Not run** in this teaching example.
-
-| Test Case ID | Test Scenario | Input Data | Expected Results | Actual Results | Status | Test Steps |
-| --- | --- | --- | --- | --- | --- | --- |
-| NF-P-01 | Performance: report-list load | 20 concurrent readers for two minutes; database seeded with 100 reports. | If the approved target is a 2 s 95th-percentile response and at most 1% failed requests, both measured values meet it. | Not run. | Not run | Seed reports; run JMeter or a suitable load tool; record response times, error rate, and hosting configuration. |
-| NF-P-02 | Performance: higher load | Increase readers from 20 to 40, then 80 with the same dataset. | Record the load at which the agreed latency or error-rate target is first exceeded; do not claim a pass without a target. | Not run. | Not run | Increase load in stages; preserve the tool report and note when errors first appear. |
-| NF-U-01 | Usability: submit a flood report | Three participants new to the interface; each receives the same reporting task. | Each participant can locate the form, enter a location, and submit without assistance; report time and difficulties. | Not run. | Not run | Give the task; observe attempts; record completion, time, and points of confusion. |
-| NF-U-02 | Accessibility: keyboard-only submission | Keyboard navigation; manual location-entry option. | The user can reach all required fields, select a location, submit, and read the confirmation without a pointer. | Not run. | Not run | Navigate with keyboard only; record focus order and the result. |
-| NF-S-01 | Security: report input treated as data | Description contains the string `' OR '1'='1` in a controlled test environment. | No unintended query result, unauthorized access, or server failure; the input is handled as data. | Not run. | Not run | Submit the string; inspect response and stored result; review relevant test logs. |
-| NF-S-02 | Security: invalid identity for review | Expired or invalid sign-in token; attempt to approve report 104. | Request rejected; report 104 remains unchanged. | Not run. | Not run | Call the protected action with the invalid identity; inspect response and report state. |
-
-**Analysis of the example:** The load example requires recorded percentiles and errors, not a statement that the application “handled 1,000 users.” The three-person observation is evidence about those attempts, not proof of general usability. The security rows test defined behavior; one input string does not establish that the application is secure. NF-S-02 is relevant only when protected report review is part of the approved scope. A system test may also provide evidence for a non-functional requirement: ST-03 already checks the manual-location fallback, so repeating the same steps under a new ID adds no value.
-
-</details>
+**Future scope (not an executed test):** Once booking code is delivered, add owner/pet authorization, atomic overlapping-slot prevention, transitions `requested → accepted/declined → in_progress → completed`, two-party confirmation of the same unexpired attempt, Calendar failure isolation, review eligibility only after completion, and administrator permission checks. These rules are currently documented in [Architecture and Design](4-Architecture-and-Design.md), not demonstrated as working software.
 
 ## 5.3 Executed Tests and Results
 
 **Objective:** Give the application revision, environment, and evidence needed to interpret the actual results in the test-case table. Add a short run record when those details cannot be conveyed by a test-code or CI run link.
 
-**Latest run or evidence:** [Link to CI run, manual test note, or a short run summary, with date, revision, and environment.]
+**Latest run or evidence:** Backend automated tests: `npm test` in `backend/`, 18 Nov 2026, revision c2f77ec, macOS, Node.js v20.15.0, npm 10.8.1: 45 tests, 45 passed, 0 failed. Frontend `npm run lint` finished without errors. Manual checks: public application, 17 and 18 Nov 2026 (see 5.2).
 
-The **Actual Results** and **Pass/Fail** columns above are the authoritative per-case outcomes. Do not copy all case results into another mandatory table. Record failed and blocked runs honestly; when rerunning a test, retain its relevant history rather than presenting an old pass as the current result.
-
-<details>
-<summary><strong>Recording a failed run without inventing a pass</strong></summary>
-
-**Example — Crisis Guard review scenario:** During a run of ST-02, the user submits a report without selecting a location. The application shows a generic server error instead of identifying the missing field.
+The **Actual Results** and **Pass/Fail** columns in 5.2 are the per-case outcomes.
 
 | Test ID or run | Date and application revision | Environment | Observed result and outcome | Evidence |
 | --- | --- | --- | --- | --- |
-| ST-02 | 20 September 2026; revision `7a12c4e` | Local test deployment; Chrome; API at `localhost:8080` | **Failed:** generic server error shown instead of the location-specific message. Report count was 24 before and after submission. | `tests/evidence/ST-02-error.png`; `tests/evidence/ST-02-db-check.txt`; issue #18 |
-
-**Analysis of the example:** The revision and environment make the run identifiable; the screenshot supports the observed message, while the recorded report counts support the separate claim that nothing was saved. The issue tracks the defect. These dates, revision, file path, and issue number belong to this example scenario, not to the published student project. After a fix, rerun ST-02 and update its result; keep the earlier failure in the run or issue history.
-
-</details>
+| Backend `npm test` (all six files in `backend/test/`) | 18 Nov 2026; c2f77ec | macOS, Node v20.15.0, npm 10.8.1 | **Passed:** 45 tests, 45 passed, 0 failed, 0 skipped. | terminal output of `npm test`, [`backend/test/`](../backend/test/) |
+| Frontend `npm run lint` | 18 Nov 2026; c2f77ec | macOS, Node v20.15.0 | **Passed:** no lint errors. | terminal output |
+| Frontend `npm run build` | 18 Nov 2026; c2f77ec | macOS, Node v20.15.0 | **Blocked locally:** "Cannot find native binding" (missing optional package for this Mac). The build runs in the Docker image on Render, where the public frontend is built. | terminal output; [`frontend/Dockerfile`](../frontend/Dockerfile) |
+| Manual checks on the public application | 17 and 18 Nov 2026 | Browser, https://petpals-frontend.onrender.com | **Passed:** BE-01, AUTH-03, AUTH-05, REG-01, DEP-01, USER-03, FE-01, FE-03, PETS-01 (see 5.2). | results in 5.2 |
 
 ## 5.4 Known Defects and Testing Limits
 
 **Objective:** Let a reader see defects that affect use of the current application and important behavior the team could not verify.
 
-| Issue or limitation | User-visible effect or unverified behavior | Evidence or issue link |
+The items below are known defects, unfinished features and limits of the tests.
+
+| Issue or limitation | User-visible effect or unverified behavior | Evidence or follow-up |
 | --- | --- | --- |
-|  |  |  |
+| **CI is placeholder** | A green CI workflow, if displayed, would not establish that unit tests or frontend checks succeeded | [CI workflow](../.github/workflows/ci.yml); the echo step should be replaced by `npm test`, `npm run lint` and `npm run build` |
+| **Profile-photo upload limits not tested end to end** | The users PATCH route parses JSON up to `512kb`, and `photo_data` has a separate 350000-character validation limit before image normalization. Correct handling of supported images, invalid data, and oversized requests is not yet demonstrated against a running server. The 16 KB auth/examples parsers are **not** applied to this users route. | [`backend/src/app.js`](../backend/src/app.js), [`backend/src/modules/users/users.routes.js`](../backend/src/modules/users/users.routes.js), [`backend/src/modules/users/users.photo.js`](../backend/src/modules/users/users.photo.js); run USER-06 |
+| **Backend production auth settings not provided by local Compose** | All-container startup may fail or authentication may remain unusable without the required `AUTH_BASE_URL` and Google credentials | [`docker-compose.yml`](../docker-compose.yml), [`backend/Dockerfile`](../backend/Dockerfile), [auth setup](../backend/docs/google-auth.md) |
+| **Free Render plan: services sleep** | After a period without requests the services sleep, so the first request can take about a minute and may show an error page before the application answers. | Open the application a few minutes before a demonstration; see Limitations in the [README](../README.md#deployment) |
+| **Automated frontend E2E suite not present** | Protected routes and profile usage still require manual verification or a future browser automation suite | [`frontend/package.json`](../frontend/package.json), [`frontend/README.md`](../frontend/README.md) |
+| **Booking features are not implemented** | Listings, search, booking, QR and button confirmation, Google Calendar events, messages, reviews and disputes have no code yet, so they have no tests. The "My listings" page is empty. | [Requirements](2-requirements.md), [Architecture](4-Architecture-and-Design.md) |
+| **Administrator verification is not implemented** | New users stay "pending"; there is no administrator account, provisioning process or administration screen yet. | [Google sign-in](../backend/docs/google-auth.md), UC-015 in [Use Cases](3-use-cases.md) |
+| **Frontend build needs a recent Node.js** | `npm run build` needs Node.js 20.19 or newer; on one Mac with Node 20.15 it failed with a missing native package. The build in the Docker image on Render works. | Use Node.js 22 or 20.19+; see [Section 6](6-Deployment-Installation-and-Configuration.md) |
 
-Keep detailed bug reproduction and progress in the issue tracker, with a brief pointer here for defects that materially affect the application or demonstration. If a required feature is unfinished, state that clearly in the final results; do not call it a known defect or a passing test. Note a missing test capability honestly, such as an external provider unavailable during a run. This section does not require a second complete issue log.
-
-<details>
-<summary><strong>Separating a failed check from an unverified integration</strong></summary>
-
-**Example — Crisis Guard:**
-
-| Issue or limitation | User-visible effect or unverified behavior | Evidence or issue link |
-| --- | --- | --- |
-| Missing-location error is generic | The citizen cannot tell what must be corrected before submitting a report. | Example issue #18; ST-02 run evidence. |
-| Notification provider was unavailable during the test | The team has not verified notification delivery in that run. Report submission may still work. | Example blocked run record `tests/evidence/notification-blocked.txt`. |
-
-**Analysis of the example:** The first row describes an observed defect; the second describes a limit of the available evidence. Neither should be presented as a successful notification test. Remove or update the row when the team's recorded evidence changes.
-
-</details>
-
-**Final consistency check:** Test IDs and expected outcomes match the applicable requirements and use cases. Executed results refer to a real application revision and an inspectable run or reproducible observation. Important failures and open defects remain visible, while the final description of delivered features reflects what the tests and running application support.
+Unfinished features are not counted as failed tests; they are listed above as not implemented. This section is updated when new functionality is merged or the deployment changes.
