@@ -2,116 +2,224 @@
 
 **Objective:** Show where the application runs, how its deployed parts communicate, and how a reader can install, configure, deploy, and maintain it. The [README](../README.md) gives the public address and the shortest local Quick Start; this page adds the setup details needed to reproduce the application.
 
-The expandable Crisis Guard material is a **teaching example of a possible deployment**, not a description or a test result from the published student project. Replace its topology, settings, and checks with those of your application. Render is used in the example; document the platform your team actually uses.
-
 ## 6.1 Deployment View
 
 **Objective:** Identify the running environments, deployed software, data store, and relevant external services. Show communication between them in one UML deployment diagram. A component diagram explains logical responsibilities; this diagram explains where the executable parts run.
 
-**Deployment diagram:** [Embed a readable image of your UML deployment diagram.]  
-**PlantUML source:** [Link to the matching, versioned `.puml` file.]  
-**Public application:** [Link to the live address recorded in the README, or link to its Deployment section.]  
+PetPals is designed as one React Progressive Web Application for Pet Owners, Pet Helpers, and Administrators. The implemented frontend is built with React, React Router, and Vite; the Node.js/Express backend provides the current authentication and registration, self-profile and pets APIs; PostgreSQL stores the application schema and authentication sessions. Google Identity supplies OpenID Connect authentication. Payment processing is outside project scope.
 
-Label the actual hosting nodes and important connections. Include a database or external provider only if the deployed application uses it. A development laptop is not the public server. If you changed the intended architecture during implementation, show the resulting deployment here and update the architecture description accordingly.
+The version-controlled [`render.yaml`](../render.yaml) defines these hosted parts:
 
-<details>
-<summary><strong>Public deployment of a report and notification application</strong></summary>
+| Deployment node / service | Runtime or role | Connection |
+| --- | --- | --- |
+| User's browser | Executes the React frontend and sends API requests | HTTPS to the frontend only; /api/ requests go through the frontend's nginx |
+| Render frontend service, `web-frontend` | Docker-built Vite assets served by Nginx | Delivers static files and React Router history fallback, and forwards /api/ to the backend |
+| Render backend service, `api-service` | Node.js/Express in Docker; `PORT` set by hosting platform | Handles /health, /api/auth/*, /api/users/me, /api/pets and example routes |
+| Render PostgreSQL database, `app-db` | Managed PostgreSQL (`appdb`, database user `dbuser` in declared blueprint) | Private database connection from the backend; not directly from browser |
+| Google Identity | External OAuth 2.0/OpenID Connect provider | Browser authorization redirect and backend callback; provider is not hosted by PetPals |
 
-**Example — Crisis Guard:** The proposed web client is built as a static site. A backend web service processes reports and runs the notification task in the **same deployed backend application**. PostgreSQL stores reports; a map tile provider serves maps to the browser; Firebase Cloud Messaging receives notification requests from the backend. The example assumes notifications belong to this particular project's scope.
+**Deployment diagram:**
 
-![Crisis Guard system deployment diagram](./assets/diagrams/6-1-crisis-guard-DD.svg)  
-[PlantUML source](./puml/6-1-crisis-guard-DD.puml)
+![PetPals deployment view](assets/diagrams/6-1-deployment.svg)
 
-**Analysis of the example:** The static site distributes client files, while the browser executes the client code. The backend's API and notification task remain inside one deployed service despite having separate responsibilities in the component diagram. The database connection comes from the backend, not directly from the browser. The map and notification services are outside the team's hosting environment. These boxes represent deployment locations, not a second inventory of backend modules or a promise of separate servers for each class. Omit FCM and its arrow if notifications are not implemented; include a sign-in provider only when that integration is part of the approved project and is actually deployed. A different host changes the deployment labels, not the purpose of the diagram.
+PlantUML source: [`puml/6-1-deployment.puml`](puml/6-1-deployment.puml).
 
-</details>
+**Actual vs. planned:** Authentication sessions, self-profile retrieval, profile updates and photo processing have code on `main`. The React client includes login, registration, profile, My pets (saved to PostgreSQL through /api/pets) and an empty My listings page. Maps, Google Calendar synchronization, bookings, confirmations, reviews and the administrative UI are planned. There is **one frontend application**, with different views based on role, not three separately deployed applications.
+
+**Public address:** The application runs at https://petpals-frontend.onrender.com/ and the backend API at https://petpals-backend-bfo2.onrender.com (health check: /health). The free Render plan puts services to sleep, so the first request after a pause can take about a minute.
+
+**How the browser reaches the API:** The browser opens only the frontend address. In production nginx ([`frontend/nginx.conf.template`](../frontend/nginx.conf.template)) serves the React files and forwards every `/api/` request to the backend (the target is `BACKEND_URL` of `web-frontend` in [`render.yaml`](../render.yaml)). Locally the Vite dev server ([`frontend/vite.config.js`](../frontend/vite.config.js)) does the same for `http://localhost:10000`. Because the page and the API share one origin, the session cookie and the CSRF check work. After Google sign-in a returning user lands on `/profile` and a new user on `/register`.
 
 ## 6.2 Installation and Local Configuration
 
 **Objective:** Enable a reader to install and run the complete application from a clean checkout, including services and data that a short README Quick Start cannot explain fully.
 
-1. **Prerequisites and source:** [List the required runtime, package manager, database or other essential service, their supported versions, and how to obtain the repository. State which commands run from the repository root and which from a subdirectory. The README has the short version; give the full procedure here if setup has additional steps.]
-2. **Dependencies and local settings:** [Give the real install commands for each part. Name the required configuration variables or files, what each controls, how an authorized reader obtains secret values, and which values may be public. Link to a safe `.env.example` if provided. Never publish real credentials.]
-3. **Database and initial data, if used:** [Give the commands and order for creating the local database, granting the application access, applying schema migrations, and loading **only necessary** example data. Identify whether migrations are manual or run on startup. Name actual versioned script paths; explain how to avoid applying the initial schema twice.]
-4. **Start and check:** [Show the commands and order for starting each process, the resulting local addresses, and one check that proves the client can use the backend and that important data persists. State where a reader can inspect errors when a step fails.]
+The procedure below uses a local Node.js backend and Vite frontend plus a PostgreSQL container. More detail is in [backend/README.md](../backend/README.md), [Google sign-in](../backend/docs/google-auth.md) and [frontend/README.md](../frontend/README.md).
 
-Include only steps the application actually needs. If the README already contains a complete reproducible procedure, link to it and add the missing details here instead of maintaining two full copies.
+### 6.2.1 Prerequisites and source code
 
-<details>
-<summary><strong>Installing the report application with a local PostgreSQL database</strong></summary>
+Install Git, Node.js and npm compatible with the versioned lockfiles, PostgreSQL 15 or a compatible version, and a PostgreSQL command-line client (`psql`) or Docker Engine with Docker Compose. Use Node.js 20 or newer (the Dockerfiles use Node.js 20).
 
-**Example — Crisis Guard:** This teaching setup uses a React/Vite client in `frontend/`, a Node.js backend in `backend/`, and PostgreSQL. It models the disaster-reporting topic; it does not assert the technology used by the published Crisis Guard project. Before starting, install compatible Node.js/npm and a PostgreSQL server/client; the finished project page would give the versions verified by its team. Obtain the source with the repository's README clone command. Start PostgreSQL and use a local account permitted to create a database. From the repository root, run:
+For a real Google sign-in test, obtain a Google Cloud **Web application OAuth client** in an authorized team project. The team provides the client ID and secret privately; never commit them.
+
+From a terminal, clone the repository and check the revision:
 
 ```bash
-createdb crisis_guard_dev
-psql -d crisis_guard_dev -f backend/db/001_create_schema.sql
-psql -d crisis_guard_dev -c '\dt'
+git clone https://github.com/xikodev/PetPals.git
+cd PetPals
+git checkout main
+git pull --ff-only
+git rev-parse --short HEAD
 ```
 
-The versioned SQL file in this example creates the tables on a **new** database. The `\dt` check should list them. Configure a local PostgreSQL login that can use this schema; record the creation and permission commands if it is a separate account. The Node.js backend in this example reads `DATABASE_URL`: configure it locally to connect to `crisis_guard_dev` through a PostgreSQL URL, with any required credentials in an uncommitted local setting. Do not publish the complete connection URL when it contains a password. If another application uses automatic migrations, start it as instructed and verify that those migrations ran instead of executing a separate schema script. If report examples require seed data, show that project's actual seed command and explain when it should be used.
+The following paths assume the terminal is at **the repository root** unless a `cd` command is shown.
 
-Start the backend in the first terminal, from the repository root:
+### 6.2.2 Database selection and migrations
+
+**Shared database:** A teammate can run the backend locally against the Render PostgreSQL service with an untracked backend/.env (DB_SSL=true). Ask the database maintainer for the values; never copy them into Git, documents, screenshots or logs, and do not run migrations or tests that change data there without the maintainer's agreement.
+
+**Recommended isolated test setup:** The Docker commands below deliberately create a different, disposable *local* database. They should not be run against the shared Render database. In `backend/.env`, choose either the local Postgres values with `DB_SSL=false`, or the approved Render connection settings with TLS; do not mix them. For isolated automated tests, prefer local Postgres even if the developer normally connects to Render.
+
+
+For the repository's development Docker Compose setup, start **only PostgreSQL** initially:
+
+```bash
+docker compose up -d db
+docker compose ps
+```
+
+The Compose file configures a PostgreSQL 15 container, a local database named `appdb`, and a development account `dbuser`. Its sample password is **for isolated local development only**; replace shared/default credentials for any exposed or hosted environment. Wait for the database to become healthy. To inspect an already initialized database:
+
+```bash
+docker compose exec db psql -U dbuser -d appdb -c '\dt'
+```
+
+For a **fresh empty database only**, apply these migrations in order. They are not automatically run when the backend starts:
+
+```bash
+docker compose exec -T db psql -U dbuser -d appdb < backend/migrations/001_initial_schema.sql
+docker compose exec -T db psql -U dbuser -d appdb < backend/migrations/002_auth_sessions.sql
+docker compose exec db psql -U dbuser -d appdb -c '\dt'
+```
+
+Alternatively, for a separately managed local PostgreSQL instance with a previously created `dbuser` and `appdb`:
+
+```bash
+psql -h localhost -U dbuser -d appdb -v ON_ERROR_STOP=1 -f backend/migrations/001_initial_schema.sql
+psql -h localhost -U dbuser -d appdb -v ON_ERROR_STOP=1 -f backend/migrations/002_auth_sessions.sql
+```
+
+The alternative assumes that the role/database already exist and has schema privileges; creating a PostgreSQL role/database requires an administrator and is installation-specific. **Do not rerun migration 001** on an existing initialized PetPals database. If only migration 002 is missing, apply only 002. Verify `auth_sessions` exists, and preserve production data by running migrations through a reviewed backup/change procedure. Do not use a production database for testing.
+
+### 6.2.3 Backend configuration and startup
+
+Copy the backend's safe example configuration to a local, uncommitted file:
+
+```bash
+cp backend/.env.example backend/.env
+```
+
+Edit `backend/.env` (never commit real credentials). These are the relevant variable names from the repository:
+
+| Variable | Purpose / safe local example |
+| --- | --- |
+| `PORT` | Backend listening port, normally `10000` |
+| `DB_HOST` | `localhost` when running Node.js on the host and PostgreSQL through published Compose port |
+| `DB_PORT` | `5432` for the local Compose database |
+| `DB_USER` | Local application PostgreSQL role, e.g. `dbuser` |
+| `DB_PASSWORD` | Local database password; **secret** |
+| `DB_NAME` | Local database name, e.g. `appdb` |
+| `DB_SSL` | `false` for a trusted local PostgreSQL setup; configure hosted TLS according to provider policy |
+| `DATABASE_URL` | Optional connection-string alternative; if used, contains credentials and is **secret** |
+| `AUTH_BASE_URL` | Local backend origin `http://localhost:10000` with no path |
+| `GOOGLE_CLIENT_ID` | OAuth Web client identifier from Google Cloud |
+| `GOOGLE_CLIENT_SECRET` | OAuth Web client secret; **secret** |
+
+ Avoid configuring conflicting `DATABASE_URL` and `DB_*` values; the backend code gives the connection string precedence. In Google Cloud, configure the OAuth consent screen, allow the relevant test accounts when consent is in testing mode, and add the authorized redirect URI:
+
+```
+http://localhost:10000/api/auth/google/callback
+```
+
+In a terminal at the repository root, run:
 
 ```bash
 cd backend
 npm ci
+npm run db:check
+npm test
 npm start
 ```
 
-In a second terminal, also from the repository root, install the client dependencies and start it. Set the public local API URL before starting the client; use your project's configuration mechanism if it differs:
+The backend should listen at `http://localhost:10000` if configuration and database checks succeed. Keep the process running for browser testing. Test in a separate terminal:
+
+```bash
+curl -i http://localhost:10000/health
+curl -i http://localhost:10000/api/auth/me
+```
+
+Expected behavior: `/health` should return a successful health JSON response; `/api/auth/me` without a session should return an authentication-related response, not a proxy/network error. Google sign-in starts when the user selects "Sign in with Google" in the frontend, which forwards /api/auth/google to the backend. Google returns to the backend callback. A returning user lands on /profile; a new user lands on /register, chooses a role (owner or helper), enters a first and last name, and is then taken to /profile with the verification status "pending".
+
+For a full implemented route list, request bodies, response JSON, status and error codes, see [API reference](../backend/API.md). For detailed authentication constraints and examples see [Google sign-in](../backend/docs/google-auth.md), [User profile](../backend/docs/user-profile.md), and [User settings](../backend/docs/user-settings.md), [Pets](../backend/docs/pets.md). The protected `GET /api/users/me` and `PATCH /api/users/me` routes require an authenticated test session; state-changing requests additionally require the documented Origin and CSRF token. New owner/helper accounts require administrator approval before booking access.
+
+### 6.2.4 Frontend configuration, startup and quality checks
+
+Open a **second terminal** from the repository root:
 
 ```bash
 cd frontend
 npm ci
-VITE_API_BASE_URL=http://localhost:8080 npm run dev
+npm run lint
+npm run build
+npm run dev
 ```
 
-Use the backend address actually printed by the application if it differs from `http://localhost:8080`. Open the client address printed by Vite, submit a report with a location, and retrieve it. The client page loading alone does not show that the backend and database work. If submission fails, inspect the browser's API request and the backend log; if startup fails, check the database connection settings and whether the schema was created. Do not copy this example's paths or commands if your repository differs.
+Open Vite's displayed development URL, normally `http://localhost:5173`. The frontend has the pages home, /login, /register, /profile, /my-pets and /my-listings. Profile and My pets use the backend and are stored in PostgreSQL; My listings is an empty page.
 
-**Analysis of the example:** The procedure has an order: create the database, establish the schema and access, configure connections, start both processes, and check a saved report. Commands and expected observations are specific enough to diagnose an incomplete setup. They complement the README's short route to the application rather than claiming that a web page loading proves installation succeeded.
+The Vite development proxy forwards requests with the `/api` prefix to port 10000. To check guest routing without a Google test account, create an uncommitted `frontend/.env.local` containing:
 
-</details>
+```dotenv
+VITE_MOCK_GUEST=true
+```
+
+Restart `npm run dev` after changing Vite environment files, and navigate directly to `/profile` and `/my-listings`; both should redirect a guest to `/login`. Remove this setting or set it to `false` when testing real authentication. This is a frontend route-guard check, **not proof of backend session functionality**.
+
+For actual client-to-backend communication, use browser developer tools to inspect the request to `/api/auth/me`, including its status, content type, and the Vite proxy. A `401` from the backend for an anonymous request can be an expected result; a network error, HTML fallback or proxy failure is not. For data persistence, use an approved **isolated** test account to update an allowed profile field and then retrieve the profile again; do not use shared production users. The Vite development proxy rewrites the Origin header, so the backend's CSRF check accepts requests from http://localhost:5173. Also verify profile-photo uploads: the users PATCH route has a `512kb` JSON parser and photo-data validation of at most 350000 characters; the `16kb` parsers in `app.js` are mounted on other API prefixes.
+
+### 6.2.5 Troubleshooting and local acceptance criteria
+
+| Symptom | Check |
+| --- | --- |
+| Backend refuses to start | Confirm PostgreSQL health, `DB_*` or `DATABASE_URL`, migration state, `AUTH_BASE_URL` and required Google settings; inspect backend console output |
+| `npm run db:check` fails | Confirm DB port/account/password and that the database exists; use `docker compose ps` and PostgreSQL logs |
+| OAuth sign-in fails | Verify callback URI matches Google Cloud settings exactly, `AUTH_BASE_URL`, and backend logs; never log tokens or client secrets |
+| Browser `/api/*` returns frontend HTML | Check Vite proxy in local dev or the nginx proxy (frontend/nginx.conf.template) and the BACKEND_URL setting of web-frontend |
+| Profile-photo PATCH returns 413 | The users PATCH route has a `512kb` JSON body limit, which returns HTTP 413 when exceeded. A `photo_data` string over 350000 characters instead fails validation with HTTP 400; the auth/examples `16kb` parsers do not apply to this route. |
+| Node/Vite build fails | Use a Node/npm combination compatible with the current lockfiles and record exact build error |
+
+**A local installation is verified only when** PostgreSQL is initialized, the backend health endpoint works, frontend lint/build complete, Vite serves the app, a client request reaches the API, and the required authenticated profile/persistence tests pass in a controlled environment. The results are recorded in [Section 5](5-Testing.md).
 
 ## 6.3 Public Deployment and Administration
 
 **Objective:** Enable a reader to reproduce the **public** application from the repository, including the hosted database and connections among deployed parts.
 
-**Hosting and build:** [Name each hosting service actually used, the repository path or branch it deploys, build/start commands or versioned configuration, and when the hosted schema is established. Link to configuration already in Git when a link is clearer than copying it.]
+### 6.3.1 Hosting and build configuration
 
-**Required settings:** [List variable **names and purposes**, where an authorized maintainer obtains the values, and which service receives each one. Distinguish browser-visible configuration from backend secrets.]
+[`render.yaml`](../render.yaml) defines one PostgreSQL database and two Docker-backed Render web services. The backend's [`Dockerfile`](../backend/Dockerfile) uses Node.js 20 in production mode and starts `npm start`; the frontend's [`Dockerfile`](../frontend/Dockerfile) builds the Vite application and serves its `dist` output with Nginx. [`frontend/nginx.conf.template`](../frontend/nginx.conf.template) serves the React app with SPA fallback and forwards /api/ to the backend. 
 
-**Deployment procedure:** [Give the steps in order: create necessary hosted services, configure and migrate the **hosted** database, build and deploy backend and client, connect their public addresses, and find the final URL. Provide the real commands or platform actions for steps that are not evident from versioned configuration.]
+The hosted backend uses Render's assigned `PORT`, the connection string of `app-db`, an HTTPS `AUTH_BASE_URL` (see 6.3.2) and the team's Google OAuth Web client settings. It exposes a `/health` endpoint, which the blueprint references for health checking. The database migrations do not run automatically at startup; `001_initial_schema.sql` and `002_auth_sessions.sql` were applied manually to the Render database.
 
-**Access and essential administration:** [If the application has an administrator role, give the path to its interface and explain how an authorized person obtains access **without publishing credentials**. Explain how to inspect application errors and redeploy an update on the hosting platform. Document backup or recovery steps only if the team has actually configured and used them. If there is no administrator interface, state that briefly.]
+### 6.3.2 Required hosted settings and secrets
 
-Describe only environments that exist. A staging environment, CI/CD pipeline, health endpoint, scheduled backups, and other routine operations are conditional on what the team has implemented. The project's test cases and results belong in Testing; this page needs only the practical steps for running and maintaining the application.
-
-<details>
-<summary><strong>Configuring a Render static site, backend, and database</strong></summary>
-
-**Example — Crisis Guard:** One feasible deployment of the Node.js teaching setup above uses these Render services. The local PostgreSQL database from §6.2 is separate from the managed database serving the public application.
-
-| Deployed part | Source and build/start configuration | Necessary connection or setting |
+| Service | Required setting | Handling |
 | --- | --- | --- |
-| Static site | `frontend/`; build `npm ci && npm run build`; publish `dist/`. | `VITE_API_BASE_URL` points to the public backend URL. This is browser-visible configuration, not a secret. |
-| Backend web service | Choose the Node.js runtime and `backend/` as the repository root directory for this service; build `npm ci`; start `npm start`. | `DATABASE_URL` uses the managed database's **internal** connection URL. The backend must listen on Render's `PORT` at `0.0.0.0`. Configure the permitted client origin if required. |
-| Managed PostgreSQL | Create the database in the same Render region as the backend; apply the versioned initial schema to a **new** database before report requests are served. | Obtain connection details from the database's dashboard; keep them private. Apply later migrations separately instead of rerunning the initial creation script. |
-| Notification provider | Configure the backend integration only if it belongs to the approved project and was implemented. | Give the server-side credential through the host's secret settings; document its **name**, never its value. |
+| Render PostgreSQL | Database name, role and database connection URL | Obtain from Render; do not publish credentials |
+| Backend | `DATABASE_URL`, `PORT` (host-provided), and any required SSL configuration | Store securely in Render service environment; never embed database secrets in frontend |
+| Backend | AUTH_BASE_URL=https://petpals-frontend.onrender.com | The address users open (the frontend), because nginx forwards /api/ including the Google callback. It must equal the browser's Origin (CSRF check) and the origin of the redirect URI registered in Google Cloud |
+| Backend | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | From team's authorized Google Cloud OAuth client; client secret is private |
+| Frontend (web-frontend) | BACKEND_URL=https://petpals-backend-bfo2.onrender.com | Full backend address with https:// and no path; nginx forwards /api/ to it |
+| GitHub Actions CD | `RENDER_DEPLOY_HOOK_URL`, if automatic redeployment via webhook is enabled | Repository secret; if absent, the workflow prints a skip message |
 
-**Render procedure in this example:**
+The web-frontend service needs BACKEND_URL, the address of the backend service; nginx uses it as the target for /api/ (set in render.yaml). The frontend code calls relative /api paths and needs no VITE_* variable.
 
-1. **Connect the repository and create PostgreSQL.** In the Render dashboard, create a Postgres database in the region where the backend will run. Keep the database's internal connection URL for the backend; do not paste it into the Wiki or frontend settings.
-2. **Create the hosted schema.** For a new database, use the dashboard's PSQL connection instruction from a trusted terminal at the repository root, if the database permits an external connection. In the connected `psql` session, run `\i backend/db/001_create_schema.sql` and then `\dt` to check the tables. Do not copy the credential-bearing connection instruction into the repository or documentation. If external connections are disabled, the team must describe its actual authorized migration mechanism instead. Do not run the initial creation script again on every deploy.
-3. **Create a web service.** Connect the same repository, select the Node.js runtime and the intended branch, set its root directory to `backend/`, its build command to `npm ci`, and its start command to `npm start`. Add `DATABASE_URL` in the service's private environment settings using the database's **internal** URL. Configure the backend to listen on `0.0.0.0` and the port supplied by Render's `PORT` variable. Once deployed, note the backend's public address.
-4. **Create a static site.** Connect the repository and choose `frontend/` as its root directory, `npm ci && npm run build` as its build command, and `dist/` as its publish directory. Set `VITE_API_BASE_URL` to the **public backend address** before building the client. This value is visible to the browser; do not use the private database URL here. Note the site's generated public address.
-5. **Connect, open, and maintain the application.** If the backend restricts browser origins, allow the public static-site address and redeploy the backend. Open the site, submit a report, and retrieve it; record the site's public address in the README. For a failed deploy, check the service's deployment output and logs in Render; for a new revision, use the repository connection's configured automatic deployment or the dashboard's manual deployment action. Configure any notification credential only on the backend if that feature was actually implemented.
+### 6.3.3 Deployment procedure
 
-The team replaces the sample directory names, commands, schema mechanism, and settings with the values that work in its own repository. If notifications are unavailable, document the integration honestly; a successful report submission does not establish notification delivery.
+1. In Render, confirm which repository/branch is connected to `app-db`, `api-service`, and `web-frontend` (see [`render.yaml`](../render.yaml)). 
+2. Provision or inspect managed PostgreSQL. On a *new empty* database, apply [`001_initial_schema.sql`](../backend/migrations/001_initial_schema.sql) and [`002_auth_sessions.sql`](../backend/migrations/002_auth_sessions.sql) in that order through an authorized secure SQL connection or approved migration mechanism. Check schema and permissions; never rerun initial schema on populated databases.
+3. Set the backend's environment settings in Render and configure the exact HTTPS Google callback URL in Google Cloud: `https://petpals-frontend.onrender.com/api/auth/google/callback`.
+4. Deploy the backend image; confirm startup logs and `GET https://petpals-backend-bfo2.onrender.com/health`. Check authentication errors without exposing session cookies, database URLs, or tokens.
+5. Set BACKEND_URL on web-frontend to the backend's address. Open the frontend address and sign in: a returning user lands on /profile, a new user on /register.
+6. Deploy the frontend image, verify its actual public address, load `/`, test SPA reload of `/profile`, and complete the sign-in and profile checks with an authorized test account. Capture browser network evidence that the request reaches the correct backend.
+7. Record the deployed Git revision, URLs, migration version, and smoke-test results in [Testing](5-Testing.md).
 
-If this application includes a moderator interface, name its path and explain how a moderator account is granted through the application or approved team process. Do not publish a default password. Describe database recovery only if the team has arranged a usable backup procedure; do not imply that managed hosting automatically guarantees recovery.
+**Current public status:** Checked on 17 and 18 Nov 2026: the frontend and Google sign-in work on the public address (see DEP-01 and REG-01 in [5.2](./5-Testing.md#52-test-cases)). The backend answers GET /health with {"status":"healthy"}, and a request to /api/auth/me through the frontend address returns the API's JSON (not the React page), which shows that nginx forwards /api/ to the backend. Migrations 001 and 002 were applied manually to the Render database.
 
- The API and notification work remain one backend deployment, as in the diagram. The procedure distinguishes Render's internal database connection from the public backend URL used by the client, and establishes the hosted schema before handling reports. The frontend build receives only browser-visible configuration; database and provider secrets stay on the backend. The steps show where to inspect a failure and how to publish an update. Render is one teaching example, so another platform requires a description of its own setup.
+### 6.3.4 Administration, monitoring and maintenance
 
-</details>
+The data model includes an administrator role, but administrator sign-up, an initial administrator account and the administration screens are not implemented yet (planned for the next cycle). Administrator credentials are never published.
 
-**Final consistency check:** A reader can follow the local and hosted setup with the project's real commands and settings; the diagram matches the public deployment; the README link opens the application; and the administration instructions describe only capabilities the team actually provides, without disclosing credentials.
+Operational checks available from the versioned project include the backend `/health` endpoint, Render service logs/events, PostgreSQL connection diagnostics, and GitHub Actions workflow history. The CI workflow currently **does not** execute backend unit tests or frontend lint/build; it echoes a message. The CD workflow posts to a Render deploy hook on pushes to `main` **only if** its secret exists; otherwise it skips.
+
+For a production update, review the PR and the test results, check whether the change needs a new migration (migrations are applied manually), deploy through the Render deploy hook or dashboard, and run the health check and a browser sign-in test. A backup, restore or rollback procedure beyond Render's own features is not defined yet. Authentication session expiry is implemented, while regular database cleanup of expired session rows is described as potential future housekeeping, not a confirmed scheduled job.
+
+**Known gaps:** no administrator provisioning, no defined backup and restore procedure, and no automated tests in CI (see [5.4](5-Testing.md#54-known-defects-and-testing-limits)).
