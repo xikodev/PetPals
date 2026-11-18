@@ -26,7 +26,7 @@ PlantUML source: [`puml/6-1-deployment.puml`](puml/6-1-deployment.puml).
 
 **Actual vs. planned:** Authentication sessions, self-profile retrieval, profile updates and photo processing have code on `main`. The React client includes login, registration, profile, My pets (saved to PostgreSQL through /api/pets) and an empty My listings page. Maps, Google Calendar synchronization, bookings, confirmations, reviews and the administrative UI are planned. There is **one frontend application**, with different views based on role, not three separately deployed applications.
 
-**Public address:** The application runs at https://petpals-frontend.onrender.com/ and the backend API at <backend URL>. The free Render plan puts services to sleep, so the first request after a pause can take about a minute.
+**Public address:** The application runs at https://petpals-frontend.onrender.com/ and the backend API at https://petpals-backend-bfo2.onrender.com (health check: /health). The free Render plan puts services to sleep, so the first request after a pause can take about a minute.
 
 **How the browser reaches the API:** The browser opens only the frontend address. In production nginx ([`frontend/nginx.conf.template`](../frontend/nginx.conf.template)) serves the React files and forwards every `/api/` request to the backend (the target is `BACKEND_URL` of `web-frontend` in [`render.yaml`](../render.yaml)). Locally the Vite dev server ([`frontend/vite.config.js`](../frontend/vite.config.js)) does the same for `http://localhost:10000`. Because the page and the API share one origin, the session cookie and the CSRF check work. After Google sign-in a returning user lands on `/profile` and a new user on `/register`.
 
@@ -172,7 +172,7 @@ For actual client-to-backend communication, use browser developer tools to inspe
 | --- | --- |
 | Backend refuses to start | Confirm PostgreSQL health, `DB_*` or `DATABASE_URL`, migration state, `AUTH_BASE_URL` and required Google settings; inspect backend console output |
 | `npm run db:check` fails | Confirm DB port/account/password and that the database exists; use `docker compose ps` and PostgreSQL logs |
-| OAuth sign-in fails | Verify callback URI matches Google Cloud settings exactly, `AUTH_BASE_URL`, allowed test accounts, and backend logs; never log tokens or client secrets |
+| OAuth sign-in fails | Verify callback URI matches Google Cloud settings exactly, `AUTH_BASE_URL`, and backend logs; never log tokens or client secrets |
 | Browser `/api/*` returns frontend HTML | Check Vite proxy in local dev or the nginx proxy (frontend/nginx.conf.template) and the BACKEND_URL setting of web-frontend |
 | Profile-photo PATCH returns 413 | The users PATCH route has a `512kb` JSON body limit, which returns HTTP 413 when exceeded. A `photo_data` string over 350000 characters instead fails validation with HTTP 400; the auth/examples `16kb` parsers do not apply to this route. |
 | Node/Vite build fails | Use a Node/npm combination compatible with the current lockfiles and record exact build error |
@@ -195,24 +195,24 @@ The hosted backend uses Render's assigned `PORT`, the connection string of `app-
 | --- | --- | --- |
 | Render PostgreSQL | Database name, role and database connection URL | Obtain from Render; do not publish credentials |
 | Backend | `DATABASE_URL`, `PORT` (host-provided), and any required SSL configuration | Store securely in Render service environment; never embed database secrets in frontend |
-| Backend | AUTH_BASE_URL=https://petpals-frontend.onrender.com` | The address users open (the frontend), because nginx forwards /api/ including the Google callback. It must equal the browser's Origin (CSRF check) and the origin of the redirect URI registered in Google Cloud |
+| Backend | AUTH_BASE_URL=https://petpals-frontend.onrender.com | The address users open (the frontend), because nginx forwards /api/ including the Google callback. It must equal the browser's Origin (CSRF check) and the origin of the redirect URI registered in Google Cloud |
 | Backend | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | From team's authorized Google Cloud OAuth client; client secret is private |
-| Frontend (web-frontend) | BACKEND_URL=https://<backend-host> | Address of the backend; nginx forwards /api/ to it |
+| Frontend (web-frontend) | BACKEND_URL=https://petpals-backend-bfo2.onrender.com | Full backend address with https:// and no path; nginx forwards /api/ to it |
 | GitHub Actions CD | `RENDER_DEPLOY_HOOK_URL`, if automatic redeployment via webhook is enabled | Repository secret; if absent, the workflow prints a skip message |
 
 The web-frontend service needs BACKEND_URL, the address of the backend service; nginx uses it as the target for /api/ (set in render.yaml). The frontend code calls relative /api paths and needs no VITE_* variable.
 
 ### 6.3.3 Deployment procedure
 
-1. In Render, confirm which repository/branch is connected to `app-db`, `api-service`, and `web-frontend` (see [`render.yaml`](../render.yaml)). Compare the **actual** dashboard configuration with the version-controlled blueprint.
+1. In Render, confirm which repository/branch is connected to `app-db`, `api-service`, and `web-frontend` (see [`render.yaml`](../render.yaml)). 
 2. Provision or inspect managed PostgreSQL. On a *new empty* database, apply [`001_initial_schema.sql`](../backend/migrations/001_initial_schema.sql) and [`002_auth_sessions.sql`](../backend/migrations/002_auth_sessions.sql) in that order through an authorized secure SQL connection or approved migration mechanism. Check schema and permissions; never rerun initial schema on populated databases.
-3. Set the backend's environment settings in Render and configure the exact HTTPS Google callback URL in Google Cloud: `https://<actual-backend-host>/api/auth/google/callback`.
-4. Deploy the backend image; confirm startup logs and `GET https://<actual-backend-host>/health`. Check authentication errors without exposing session cookies, database URLs, or tokens.
+3. Set the backend's environment settings in Render and configure the exact HTTPS Google callback URL in Google Cloud: `https://petpals-frontend.onrender.com/api/auth/google/callback`.
+4. Deploy the backend image; confirm startup logs and `GET https://petpals-backend-bfo2.onrender.com/health`. Check authentication errors without exposing session cookies, database URLs, or tokens.
 5. Set BACKEND_URL on web-frontend to the backend's address. Open the frontend address and sign in: a returning user lands on /profile, a new user on /register.
 6. Deploy the frontend image, verify its actual public address, load `/`, test SPA reload of `/profile`, and complete the sign-in and profile checks with an authorized test account. Capture browser network evidence that the request reaches the correct backend.
-7. Record the deployed Git revision, URLs, migration version, and smoke-test results in [Testing](5-Testing.md). Do not claim deployment complete based solely on a Render dashboard green indicator or static home page.
+7. Record the deployed Git revision, URLs, migration version, and smoke-test results in [Testing](5-Testing.md).
 
-**Current public status:** Checked on 17.11.26.: frontend and Google sign-in work on the public address (see DEP-01 and REG-01 in [5.2](./5-Testing.md#52-test-cases)). Migrations 001 and 002 were applied manually to the Render database.
+**Current public status:** Checked on 17 and 18 Nov 2026: the frontend and Google sign-in work on the public address (see DEP-01 and REG-01 in [5.2](./5-Testing.md#52-test-cases)). The backend answers GET /health with {"status":"healthy"}, and a request to /api/auth/me through the frontend address returns the API's JSON (not the React page), which shows that nginx forwards /api/ to the backend. Migrations 001 and 002 were applied manually to the Render database.
 
 ### 6.3.4 Administration, monitoring and maintenance
 
@@ -220,6 +220,6 @@ The data model includes an administrator role, but administrator sign-up, an ini
 
 Operational checks available from the versioned project include the backend `/health` endpoint, Render service logs/events, PostgreSQL connection diagnostics, and GitHub Actions workflow history. The CI workflow currently **does not** execute backend unit tests or frontend lint/build; it echoes a message. The CD workflow posts to a Render deploy hook on pushes to `main` **only if** its secret exists; otherwise it skips.
 
-For a production update, review the PR and relevant test evidence, back up production data using an approved policy, inspect pending schema changes, deploy through the authorized team procedure, and run a health and browser smoke test. A backup, restore or rollback procedure beyond Render's own features is not defined yet. Authentication session expiry is implemented, while regular database cleanup of expired session rows is described as potential future housekeeping, not a confirmed scheduled job.
+For a production update, review the PR and the test results, check whether the change needs a new migration (migrations are applied manually), deploy through the Render deploy hook or dashboard, and run the health check and a browser sign-in test. A backup, restore or rollback procedure beyond Render's own features is not defined yet. Authentication session expiry is implemented, while regular database cleanup of expired session rows is described as potential future housekeeping, not a confirmed scheduled job.
 
 **Known gaps:** no administrator provisioning, no defined backup and restore procedure, and no automated tests in CI (see [5.4](5-Testing.md#54-known-defects-and-testing-limits)).
