@@ -10,11 +10,12 @@
 
 | Date and participants | Main topic | Decision, action, or open question | Link to task or resulting work, if available |
 | --- | --- | --- | --- |
-| 12 October 2026; MC, BK, MM, TM, FI | Initial ideas and choice of topic | All members got acquainted with GitHub. The team co-wrote the proposal for the team's custom topic (PetPals). |  |
-| 22 October 2026; MC, BK, MM, TM, FI | Documentation approach | Written the detailed document describing the topic. The documentation files are divided among members: [BK - database plan, MM - README, TM - 1-Project-Scope.md, FI - 3-use-cases.md, MC - 2-requirements.md]. All members join Trello and learn to work with GitHub. |  |
+| 12 October 2026; MC, BK, MM, TM, FI | Initial ideas and choice of topic | All members got acquainted with GitHub. The team co-wrote the proposal for the team's custom topic (PetPals). | - |
+| 22 October 2026; MC, BK, MM, TM, FI | Documentation approach | Written the detailed document describing the topic. The documentation files are divided among members: BK - database plan, MM - README, TM - 1-Project-Scope.md, FI - 3-use-cases.md, MC - 2-requirements.md. All members join Trello and learn to work with GitHub. | [Doc 2](2-requirements.md), [Doc 3](3-use-cases.md), [Doc 1](1-Project-Scope.md), [README](README.md) |
 | 27 October 2026; MC, BK, MM, TM, FI | Application Architecture | Decided on which technologies will be used to implement the project: Node.js, PostgreSQL, React. Decided to create a progressive web app. | --- |
 | 8 November 2026; MC, BK, MM, TM, FI | Development of the first cycle features | Agreed the first version to deliver: Google login, user profile, an empty "My listings" page, and rejection of requests without login. Split the work into roles (backend, login, two frontend, documentation) and created the Trello cards in order of work. | --- |
-| 13 November 2026; MC, BK, MM, TM, FI | Progress check before the first demo | Reviewed the status: Google login and profile endpoints are implemented; [frontend screens and Render deployment are in progress]. Preparation for the demo at the lab session on 16 November. | --- |
+| 13 November 2026; MC, BK, MM, TM, FI | Progress check before the first demo | Reviewed the status: Google login and profile endpoints are implemented; frontend screens and Render deployment are in progress. Preparation for the demo at the lab session on 16 November. | --- |
+| 16 November 2026; MC, BK, MM, TM, FI | Finishing the repository for the first-cycle submission | The team showed the first demo and received feedback. Work was divided to finish the documentation and clean the repository before submission | --- |
 
 
 
@@ -32,13 +33,8 @@
 | Project week 3 | Project scope, requirements, and use case documents; README.md | [MC, BK, MM, TM, FI] |
 | Project week 4 | Decide on technologies and fill out document 4 | [MC, BK, MM, TM, FI] |
 | Project week 5 | Start creating the first versions and features | [MC, BK, MM, TM, FI] |
-| Project week 6 | Finish up testing the product and features, prepare for the first project-cycle submission. | [MC, BK, MM, TM, FI] |
-| Project week 7 | Submit. | --- |
-
-
-
-Keep the plan at a useful weekly level when a table is used; revise it when priorities change. If you use member abbreviations, define them in A.1 and use them consistently here; extend a code if two members share the same initials. The plan is not evidence that planned work was completed. Only the 8th and 14th weeks are formal course checkpoints; ordinary meetings and internal plans are not additional hand-ins.
-
+| Project week 6 | Finish up testing the product and features, prepare for the first project-cycle submission by reviewing documentation | [MC, BK, MM, TM, FI] |
+| Project week 7 | Fix the documentation after the demo feedback; write Docs 5 and 6; test the public application; clean the repository for submission | [MC, BK, MM, TM, FI] |
 
 
 ## A.3 Activity Table
@@ -64,17 +60,11 @@ Keep the plan at a useful weekly level when a table is used; revise it when prio
 | Frontend - Frontend screens (login, profile, “My listings”)| FI | 11 | --- |
 | Frontend - Frontend documentation| MM, FI | 3 | --- |
 | Task planning, Trello board and repository cleanup | MC, BK | 4 | --- |
-| Documentation sync across documents | MC | 7 | --- |
-| Testing (Doc 5) | --- | --- | --- |
-| Deployment-Installation-and-Configuration (Doc 6) | --- | --- | --- |
+| Documentation sync across documents | MC | 15 | --- |
+| Testing (Doc 5) | MC, TM | 5 | --- |
+| Deployment-Installation-and-Configuration (Doc 6) | MC,TM | 5 | --- |
 | Backend - Google login and session | BK | 5 | --- |
 | --- | --- | --- | --- |
-
-
-
-
-
-Use project-specific activities rather than a mandatory row for every Wiki chapter or every UML diagram. The team should record hours consistently and avoid double-counting joint work; the representative result explains what the reported effort produced. Hours are self-reported effort, not a measure of quality or a substitute for examining code and artefacts.
 
 
 ## A.4 Change Overview Diagram
@@ -83,7 +73,6 @@ Use project-specific activities rather than a mandatory row for every Wiki chapt
 
 **Repository activity view:** [GitHub Contributors graph](https://github.com/xikodev/PetPals/graphs/contributors), covering 12 October 2026 to the submission date.
 
-The graph can show when commits were made and by whom, but it does not reveal all design, testing, integration, review, or documentation work. Explain a notable mismatch with the activity table if one exists; do not infer hours from the graph. Keep the generated view tied to the actual repository rather than drawing a second chart by hand.
 
 ## A.5 Key Challenges and Solutions
 
@@ -92,9 +81,7 @@ The graph can show when commits were made and by whom, but it does not reveal al
 | Challenge | Action taken | Outcome or remaining limit |
 | --- | --- | --- |
 | The team had varying levels of experience with Git and GitHub, and most members were unfamiliar with pull requests, branches, and merge conflicts. | BK guided the team through the initial repository setup and demonstrated the branching and PR workflow. | All team members successfully created branches, opened pull requests, and merged code without corrupting the main branch. |
-| --- | --- | --- |
-| --- | --- | --- |
-| --- | --- | --- |
+
 
 
 **Final consistency check:** Meetings identify meaningful outcomes and owners; the plan reflects intended work; the effort table and generated repository view refer to the same project; and concrete challenges are connected to actions and their results. The issue board remains the live source for task status.
