@@ -1,6 +1,6 @@
 # 2. Requirement Analysis
 
-**Objective:** Derive identifiable, prioritized, and verifiable requirements from the approved project scope. The requirements may evolve; by the final submission, they must reflect the agreed application.
+**Objective:** Derive identifiable, prioritized, and verifiable requirements project scope. The requirements may evolve; by the final submission, they must reflect the agreed application.
 
 ---
 
@@ -39,14 +39,14 @@
 
 | ID | Description | Priority | Source |
 | :--- | --- | :---: | --- |
-| NF-01 | Search results are returned within 3 seconds under normal conditions. Check: measure the response time of a set of sample searches on the deployed application with a test data set (100 helpers). | High | Team decision |
+| NF-01 | Search results are returned within 3 seconds under normal conditions. Check: measure the response time of a set of sample searches on the deployed application with a test data set (100 helpers). | High | Team decision (see 2.5) |
 | NF-02 | A map with up to 100 helper markers loads all markers and stays responsive to panning and zooming. Check: load a test data set of 100 markers and pan and zoom the map. | Medium | Team decision (see 2.5); ToolShare assignment (map display) |
-| NF-03 | All client-server traffic uses HTTPS. The application stores no passwords; session tokens are stored only as hashes, and any Google tokens stored later (for Calendar events) are encrypted. | High | ---? |
+| NF-03 | All client-server traffic uses HTTPS. The application stores no passwords; session tokens are stored only as hashes, and any Google tokens stored later (for Calendar events) are encrypted. Check: inspect the deployed configuration and the database contents.| High | Team decision (see 2.5) |
 | NF-04 | Authentication uses OAuth 2.0, and a session expires after a period of inactivity (30 min). Check: remain inactive beyond the timeout and attempt a protected action. | High | ToolShare assignment (OAuth 2.0 login); team decision (see 2.5) |
-| NF-05 | The PWA is usable on common Android screen sizes for owners and helpers, and the administrator views are usable in desktop browsers. Check: run the application on several emulated Android screen sizes and in at least two desktop browsers. | Medium | Team decision |
+| NF-05 | The PWA is usable on common Android screen sizes for owners and helpers, and the administrator views are usable in desktop browsers. Check: run the application on several emulated Android screen sizes and in at least two desktop browsers. | Medium | Team decision (see 2.5) |
 | NF-06 | If creating a Google Calendar event fails, the system retries three times, and the booking stays Accepted. Check: simulate a failed API call and observe the retry and the booking status. | Medium | ToolShare assignment (Google Calendar integration); team decision (see 2.5) |
 | NF-07 | Deleting an account removes the user’s personal data (GDPR-aligned); booking records shared with other users are kept in anonymized form. Check: delete a test account and verify that no personal data remains in the database. | High | GDPR (right to erasure); team decision (see 2.5) |
-| NF-08 | External APIs are accessed only through abstractions: Google Calendar and the QR Code API through the backend service layer, and Google Maps through one map component in the client. Check: code review of the service layer and the map component. | Medium | Team decision |
+| NF-08 | External APIs are accessed only through abstractions: Google Calendar and the QR Code API through the backend service layer, and Google Maps through one map component in the client. Check: code review of the service layer and the map component. | Medium | Team decision (see 2.5) |
 
 
 
@@ -84,7 +84,7 @@
 | AS-02 | Each helper listing has a location that can be shown on the map. | Team assumption | Test listings with and without a valid location. A listing cannot be saved without a valid location. |
 | AS-03 | A booking request captures a start and an end date and time inside an available period, so that calendar events (F-007) carry exact times. | Team assumption | Check the booking request form and the resulting calendar event. |
 | AS-04 | The free usage tiers of the Google Maps and Google Calendar APIs are sufficient for development and demonstration. | Team assumption | Monitor API usage in the provider console during testing and check the current quota and billing terms before relying on it. |
-| AS-05 | Administrator accounts are created by the team directly in the database; administrators sign in through the same OAuth provider. | Team assumption | Not implemented in the first cycle (see Testing 5.4). |
+| AS-05 | No registration flow for administrators is designed; verify that an administrator can sign in to the administrator views. Not implemented in the first cycle (see Testing 5.4). | Team assumption | Not implemented in the first cycle (see Testing 5.4). |
 
 ---
 
@@ -94,9 +94,10 @@
 
 | Date | Requirement ID | Change and reason | Agreed with / evidence |
 | --- | --- | --- | --- |
+| 27.10.2026. | NF-01 to NF-08 | The course topic gives no figures, so the team set the measurable targets: search within 3 seconds, 100 map markers, HTTPS and encrypted tokens, 30-minute session timeout, Android screen sizes, three Calendar retries, and external APIs only behind abstractions. Reason: make the requirements verifiable. | Team (MC, BK, MM, TM, FI); recorded here after TA feedback of 19 Nov 2026 |
 | 30.10.2026. | C-05, NF-05 | Two clients (mobile application and web administration panel) replaced by one React PWA for all roles; administrators use it in a desktop browser. Reason: one codebase for mobile and desktop (ADR-01). | Team (all members) |
 | 30.10.2026. | UC-008 | Route display to the handover address removed from scope; the map shows helper markers only. Reason: Out of the scope of this project | Team (all members) |
-| 27.10.2026. | NF-01 to NF-08 | The course topic gives no figures, so the team set the measurable targets: search within 3 seconds, 100 map markers, HTTPS and encrypted tokens, 30-minute session timeout, Android screen sizes, three Calendar retries, and external APIs only behind abstractions. Reason: make the requirements verifiable. | Team (MC, BK, MM, TM, FI); recorded here after TA feedback of 19 Nov 2026 |
+
 
 
 ---
