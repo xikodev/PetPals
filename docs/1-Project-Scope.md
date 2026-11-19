@@ -14,11 +14,21 @@ The expected benefit is that owners can find and book a suitable helper in one p
 ## 1.2 Intended Users and Stakeholders
 **Objective:** Identify the people or organizations whose needs define the task.
 
-| User or stakeholder group | Need or interest relevant to this project |
+**Users**
+
+| User group | Need or interest relevant to this project |
 | --- | --- |
 | Pet Owner | Find a trustworthy helper near a chosen location for a specific care period, check availability, send a booking request, confirm the service at each step, and rate the helper afterwards. |
 | Pet Helper | Offer services (sitting, walking, feeding) with their own rates and availability, review incoming requests before accepting, confirm the service with the owner, and build a reputation through ratings. |
 | Administrator | Maintain trust and safety: verify new users, remove inappropriate or misclassified listings, and resolve disputes using the platform's records. Uses the administration views of the PWA in a desktop browser only. |
+
+**Stakeholders** 
+
+| Stakeholder | Interest relevant to this project |
+| --- | --- |
+| PetPals team (MC, BK, MM, TM, FI) | Designs, builds, deploys and documents the application and decides its scope; responsible for delivering each project cycle. |
+| Course staff (teaching assistant) | Reviews the application and documentation against the course requirements at the checkpoints in weeks 7 and 14. |
+| Google (OAuth, Maps, Calendar) | Provides sign-in, maps and calendar events under its terms and usage limits; PetPals depends on these services (see AS-04 in Requirements). |
 
 **Verification rule:** Pet Owners may browse and prepare booking requests, but cannot submit them until an Administrator approves their account. Pet Helpers may prepare service listings, but cannot receive booking requests until approved.
 
