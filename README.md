@@ -54,7 +54,7 @@ See the [deployment, installation and configuration guide](docs/6-Deployment-Ins
 <a id="quick-start"></a>
 ## Quick Start / Installation
 
-**Prerequisites:** Node.js 24 or newer (npm included), Docker with Docker Compose (for the local PostgreSQL database), Git, and a Google account (needed only for sign-in).
+**Prerequisites:** Node.js 20.19 or newer (npm included), Docker with Docker Compose (for the local PostgreSQL database), Git, and a Google account (needed only for sign-in).
 
 ```bash
 git clone https://github.com/xikodev/PetPals.git

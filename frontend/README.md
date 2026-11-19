@@ -1,6 +1,6 @@
 # PetPals Frontend
 
-The PetPals frontend is a React application built with Vite. It uses React Router for navigation. The current version includes a home page, routes for login, profile and listings, and a login check for the protected pages.
+The PetPals frontend is a React application built with Vite. It uses React Router for navigation. The current version includes a home page, routes for login, registration, profile, My pets and My listings, and a login check for the protected pages.
 
 ## Run locally
 
@@ -29,18 +29,24 @@ Open the local URL printed by Vite, usually `http://localhost:5173`. Keep the te
 | `vite.config.js`  | Configures Vite and the local API proxy.                                                                     |
 | `nginx.conf.template`      | Serves the built frontend and directs page requests to `index.html` so React Router can handle direct links. |
 
+
+
 ## Routes
 
 | URL            | Access    | Current behavior                                               |
 | -------------- | --------- | -------------------------------------------------------------- |
 | `/`            | Public    | Introduces PetPals, planned services and booking flow, with links to profile/sign-in.                                        |
-| `/login`       | Public    | Provides the Google sign-in link.                         |
+| `/login`       | Public    | Provides the Google sign-in link. A signed-in user is sent to `/profile`; a user who has not finished registration is sent to `/register`.                        |
 | `/profile`     | Protected | Checks the session, then loads and edits the current profile.  |
 | `/my-listings` | Protected | Checks the session, then displays an empty mocked listings list. |
+| `/register`    | Public (only usable after the first Google sign-in) | Choose owner or helper and enter the first and last name, then go to `/profile`. A registered user is sent to `/profile`. |
+| `/my-pets`     | Protected | Owners list, add, edit and delete their pets. |
 
 ## Backend and mock data
 
 During local development, frontend code uses relative URLs such as `/api/auth/me`. Vite forwards requests starting with `/api` to `http://localhost:10000`.
+
+Registration uses `POST /api/auth/register` and logout uses `POST /api/auth/logout`, both with the session CSRF token. My pets uses GET, POST, PATCH and DELETE on `/api/pets`. 
 
 `src/api/auth.js` calls `GET /api/auth/me` to check the current session. A `401` response redirects a visitor from a protected page to `/login`. If the backend is unavailable, the page displays an error message.
 
@@ -79,4 +85,4 @@ Vite writes the production build to `dist/`. To check the Docker build, run this
 docker compose build frontend
 ```
 
-The homepage labels discovery and booking as upcoming. New-user registration currently requires the backend API; there is no frontend registration screen. See [the documentation review](../docs/Documentation-Review.md) for the current authentication setup limitations.
+The homepage describes discovery and booking as future features. New users complete registration (role and name) on the /register page after the first Google sign-in; see [Google sign-in](../backend/docs/google-auth.md).

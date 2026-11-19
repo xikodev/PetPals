@@ -26,7 +26,7 @@ The maintained list of members, GitHub profiles, and their roles or principal co
 | --- | --- |
 | [1. Project Scope](1-Project-Scope.md) | Problem, objective, and boundary of the project |
 | [2. Requirement Analysis](2-requirements.md) | Requirements, constraints, and traceability |
-| [3. Use Cases](3-use-Cases.md) | Actors and representative user interactions |
+| [3. Use Cases](3-use-cases.md) | Actors and representative user interactions |
 | [4. Architecture and Design](4-Architecture-and-Design.md) | Main design decisions, structure, data, and behavior |
 | [5. Testing](5-Testing.md) | Test approach, actual results, and known defects |
 | [6. Deployment, Installation, and Configuration](6-Deployment-Installation-and-Configuration.md) | Local installation, configuration, public deployment, and administration |
@@ -37,7 +37,7 @@ The maintained list of members, GitHub profiles, and their roles or principal co
 
 | Checkpoint | Demonstration | Video |
 | --- | --- | --- |
-| Week 7 — first review | [Public application](https://petpals-frontend.onrender.com) | [Demo 1 video link, if recorded] |
+| Week 7 — first review | [Public application](https://petpals-frontend.onrender.com) | Not recorded |
 | Week 14 — final review | [Link to the final demonstration or project version] | [Final demo video link, if recorded] |
 
 The Wiki is updated as the application develops; only weeks 7 and 14 are formal checkpoints.
@@ -52,7 +52,7 @@ The Wiki is updated as the application develops; only weeks 7 and 14 are formal 
 
 ## Documentation Conventions
 
-The documentation consists of linked Markdown pages. Required UML diagrams use PlantUML, with versioned source and a readable image in the Wiki. The examples in this course template show how to write a record; they are not results of the student's project.
+The documentation consists of linked Markdown pages. Required UML diagrams use PlantUML, with versioned source and a readable image in the Wiki. 
 
 PetPals uses a React (Vite) PWA client, a Node.js (Express) backend, PostgreSQL, and Render for hosting. PlantUML sources are in `docs/puml/`; a GitHub Actions workflow generates the images in `docs/assets/diagrams/` after changes are merged into `main`.
 
@@ -83,14 +83,14 @@ Short summary: [README – AI Usage](../#ai-usage). This section records which t
 | Render hosting | Guidance | Setup steps | We asked how to set up Render for the first time and did the setup ourselves | `render.yaml` |
 
 
-Pages and artifacts not listed above were written without generative AI assistance. [Optional: list any AI-assisted code or tests here as further rows.]
+Pages and artifacts not listed above were written without generative AI assistance. 
 
 ### Verification of Generated Content
 
 | Check | How it was performed | Evidence |
 | --- | --- | --- |
 | Factual accuracy | We compared each statement about features, behaviour and architecture with the running app and the code. | done for each new PR for a docs |
-| Consistency with other pages | We checked names, IDs and diagrams against Requirements, Use Cases, Architecture and Testing. | --- |
+| Consistency with other pages | We checked names, IDs and diagrams against Requirements, Use Cases, Architecture and Testing. | Section-by-section review of Docs 1 to 6; PR reviews |
 | Diagram sources | We rendered the generated PlantUML, corrected it and compared it with the implemented system. | `.puml` files in `docs/puml/` and rendered images |
 
 
