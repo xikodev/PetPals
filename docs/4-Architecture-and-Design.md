@@ -87,7 +87,7 @@ The diagram shows keys and the attributes needed to understand the relationships
 
 ![PetPals booking class diagram](./assets/diagrams/4-3-2-petpals-booking-CD.svg)  
 **PlantUML source:** [4-3-2-petpals-booking-CD.puml](./puml/4-3-2-petpals-booking-CD.puml)    
-**Code reference at the final review:** team to add the link to the implementation of the booking module
+**Code reference:** none yet (planned module). The implemented example of the same layering is the pets module: [backend/src/modules/pets/](../backend/src/modules/pets/).
 **Status:** Planned design for cycle 2. The booking module is not implemented yet, so there is no code to link. The implemented example of the same layering is the pets module, described below.
 
 The representative part is the booking lifecycle (requesting, the helper's decision and the two-sided confirmation of start and completion). It is the same flow as in 4.4.1 and 4.4.2 and lies in the Bookings & Confirmations module of 4.2.
@@ -108,7 +108,8 @@ The Sequence Diagram illustrates the communication between the React Progressive
 
 The State Diagram describes the lifecycle of a booking, including the conditions required for each state transition and the handling of incomplete or unsuccessful operations.
 
-The booking sequence diagram and the state diagram show the planned booking flow, which is part of cycle 2. The Google sign-in and registration flow (4.4.1) is implemented and shows the running system. The diagrams may be updated as implementation decisions are finalized.
+The booking sequence diagram (4.4.1) and the state diagram (4.4.2) show the planned booking flow, which is part of cycle 2. The Google sign-in and registration flow is implemented; it is described in Google sign-in. The diagrams may be updated as implementation decisions are finalized.
+
 
 ### 4.4.1 Representative UML Sequence Diagram
 
@@ -328,6 +329,7 @@ The following records document the architectural choices agreed for PetPals, inc
 | --- | --- | --- | --- | --- | --- |
 | ADR-01 | 2026-10-31 | Use a React web application with PWA capabilities. | Native mobile applications and a separate web client. | One frontend codebase supports mobile and desktop use and reduces development effort. Installation and device capabilities depend on browser and platform support. | Accepted |
 | ADR-02 | 2026-10-31 | Use PostgreSQL for relational data storage. | A document-oriented database such as MongoDB. | Relationships, constraints, and transactions support data integrity and consistent booking operations. Schema changes require migrations, and concurrent booking requests require explicit safeguards. | Accepted |
+| ADR-03 | 2026-11-8 | Use the Google OAuth 2.0 authorization code flow handled by the Node.js API, with sessions stored in PostgreSQL. | Sign-in in the browser, with tokens kept in the client. | The API checks the Google response and keeps the session on the server, so a session can be ended there and page scripts cannot read it. The trade-off is extra setup: a callback on the frontend address and an Origin and CSRF check on changing requests. | Accepted |
 
 ### ADR-01: Choosing React PWA over Native Mobile
 
@@ -349,13 +351,23 @@ The following records document the architectural choices agreed for PetPals, inc
 | Decision and rationale | Use PostgreSQL because the application's core entities have explicit relationships that can be represented using foreign keys and constraints. Transactions allow related changes to succeed or fail together. When accepting a booking, the backend must check availability and use appropriate database constraints or concurrency control to prevent conflicting bookings from being accepted simultaneously. The accepted trade-off is the need to design and maintain the schema, migrations, and concurrency safeguards. |
 | Status | Accepted. |
 
+### ADR-03: Choosing Server-Side Google Sign-In with Database Sessions
+
+| Field | Record of the decision |
+| --- | --- |
+| Context and goal | Users must sign in with an external account so that PetPals stores no passwords. Every protected request must be tied to a signed-in user, and a session must end after logout or inactivity. |
+| Decision criteria | Security of the session, control over ending a session, no password handling, and simple setup for a five-person team. |
+| Alternatives considered | Sign-in in the browser with Google's script, where the identity token is kept in the client (for example in localStorage); the server-side authorization code flow with sessions stored in PostgreSQL. |
+| Decision and rationale | Use the authorization code flow handled by the Node.js API. The API sends the user to Google with a state value, a nonce and a PKCE challenge, receives the code on its own callback, exchanges it and verifies the identity. It then creates a session and sends it in an HttpOnly cookie; only a hash of the session token is stored in the `auth_sessions` table. A new user first completes registration (role and name). A session ends on logout or after 30 minutes of inactivity (NF-04). Changing requests must carry a CSRF token and an Origin equal to the application address. This keeps tokens away from page scripts and lets the server end a session. The accepted trade-offs are that the callback address must be on the frontend address (nginx forwards `/api/` to the backend), every protected request needs a database lookup, and sign-in depends on the database being available. |
+| Status | Accepted. |
+
 ## 4.6 Crosscutting Concepts
 
 **Objective:** Identify an important mechanism or design rule that applies to several parts of the application, describe where it is planned to apply, and update the explanation as the implementation takes shape. Include only concepts that matter to this project.
 
 | Concern | Mechanism and where it applies | Evidence in the final implementation |
 | --- | --- | --- |
-| System rule: authentication and authorization | Users sign in with Google through the OAuth 2.0 authorization code flow: Google redirects to a callback of the Node.js API, which exchanges the code and creates the session (NF-04); a session expires after a period of inactivity. On every protected request the Node.js API checks the user's role (owner, helper or administrator), that the account is approved and not suspended, and that the user is a participant of the booking concerned. Administrator functions are available only to the administrator role. Hiding a button in the React PWA is not protection. | Implemented and tested: the checks `requireUser` (401), `requireRole` (403) and `requireBookingAccess` in `backend/src/modules/auth/auth.middleware.js`; automated tests in `backend/test/auth-flow.test.js`, `backend/test/auth-security.test.js` and `backend/test/pets.test.js`; test cases AUTH-01 to AUTH-05 in [5-Testing](./5-Testing.md). Planned for cycle 2: an unverified owner sending a booking request and a user reading the messages of a booking they do not take part in. |
+| System rule: authentication and authorization | Users sign in with Google through the OAuth 2.0 authorization code flow: Google redirects to a callback of the Node.js API, which exchanges the code and creates the session (NF-04, ADR-03); a session expires after a period of inactivity. On every protected request the Node.js API checks the user's role (owner, helper or administrator), that the account is approved and not suspended, and that the user is a participant of the booking concerned. Administrator functions are available only to the administrator role. Hiding a button in the React PWA is not protection. | Implemented and tested: the checks `requireUser` (401), `requireRole` (403) and `requireBookingAccess` in `backend/src/modules/auth/auth.middleware.js`; automated tests in `backend/test/auth-flow.test.js`, `backend/test/auth-security.test.js` and `backend/test/pets.test.js`; test cases AUTH-01 to AUTH-05 in [5-Testing](./5-Testing.md). Planned for cycle 2: an unverified owner sending a booking request and a user reading the messages of a booking they do not take part in. |
 | Shared rule: booking status changes | Only the Bookings & Confirmations module changes `bookings.status`, and only through the transitions of the state diagram (4.4.2): the helper's decision, and confirmation of both participants on the same unexpired attempt for the start and for the completion. Requests are validated at the API boundary before anything is saved (approved and unsuspended users, the pet belongs to the owner, start before end, available time). | Planned for cycle 2; at the final review, show the `Booking` transition operations and tests that an invalid transition is rejected (for example completing a booking that was never started) and that a one-sided or expired confirmation does not advance the booking. |
 | System rule: no overlapping reservations | When the helper accepts a request, the API checks and reserves the time slot in one database transaction, supported by a constraint or lock in PostgreSQL (ADR-02), so two simultaneous acceptances cannot both succeed for one listing. The same availability data is used by search and by the booking request. | Planned for cycle 2; at the final review, show the reservation code or constraint and a test with two concurrent acceptances of overlapping requests. |
 | Shared rule: access to external services | Google Calendar and the QR Code API are called only through the External Service Adapters (NF-08, C-04), and Google Maps is used only through one map component in the client. A failure of an external call does not break the booking: a failed Calendar call is retried three times and recorded as `failed` in `calendar_events` while the booking stays `accepted` (NF-06); if the QR image cannot be created, the helper can retry or use the button method (UC-010). | Planned for cycle 2; at the final review, show the adapters, the retry and the recorded status, and a test with a simulated failing Calendar call that leaves the booking accepted. |
@@ -381,6 +393,7 @@ The following records document the architectural choices agreed for PetPals, inc
 | Deleting an account must remove personal data while bookings, messages and reviews of other users keep their references (NF-07). | Rows cannot simply be deleted because other records refer to them. | Personal fields are anonymized instead of deleting the user row; the procedure is defined in the data model before implementation and checked with a test account. |
 | The free Render plan puts the services to sleep after a period of inactivity. | The first request after a pause takes about a minute, so the application can look broken at the start of a demonstration or evaluation, and a sign-in may time out. | Accepted for the course project. The team opens the application a few minutes before a demonstration; the behavior is listed under Limitations in the [README](../README.md#deployment) and in the [deployment guide](./6-Deployment-Installation-and-Configuration.md). |
 | Database migrations are applied manually; nothing runs them automatically on deploy. | A deployment can run against a database that lacks a table (for example `auth_sessions`), and sign-in then fails. | The SQL files in `backend/migrations/` are applied in order after the database is created, as described in the [deployment guide](./6-Deployment-Installation-and-Configuration.md). A migration tool or deploy step is future work. |
+| The free Render database expires in December 2026. | After that date the application can no longer sign users in or store data until a new database is created, and the existing data is lost unless it was exported. | The schema is rebuilt from the migrations in `backend/migrations/` on a new database (see the [deployment guide](./6-Deployment-Installation-and-Configuration.md)); a paid plan or a database export is not planned for the course project. |
 
 **Business or domain risks, if significant**
 

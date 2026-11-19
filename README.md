@@ -45,6 +45,7 @@ Sign-in works only for Google accounts.
 
 **Limitations:**
 - The free Render plan puts the services to sleep, so the first request after a pause can take about a minute.
+- The database runs on the free Render plan and expires in December 2026; it can be recreated from the migrations (see Section 6), but its data is not kept.
 - Administrator approval, listings, search and bookings are not implemented yet; "My listings" is an empty page.
 - Sessions expire after 30 minutes of inactivity.
 
