@@ -33,9 +33,17 @@ jobs:
           FILE_NAME="SE26_${{ github.event.inputs.group_number }}_${{ github.event.inputs.app_acronym }}_${{ github.event.inputs.version }}.pdf"
           cat docs/Home.md docs/1*.md docs/2*.md docs/3*.md docs/4*.md docs/5*.md \
               docs/6*.md docs/A*.md > docs/full-report.md
+          cat > docs/pdf-style.html <<'EOF'
+          <style>
+            img, svg { max-width: 100%; height: auto; }
+            table { width: 100%; table-layout: fixed; }
+            td, th { word-wrap: break-word; }
+            pre, code { white-space: pre-wrap; word-wrap: break-word; }
+          </style>
+          EOF
           cd docs
           pandoc full-report.md --from gfm --toc --toc-depth=3 --pdf-engine=wkhtmltopdf \
-            --pdf-engine-opt=--enable-local-file-access -o "deliverables/$FILE_NAME"
+            --pdf-engine-opt=--enable-local-file-access -H pdf-style.html -o "deliverables/$FILE_NAME"
       - name: Upload PDF
         uses: actions/upload-artifact@v4
         with:
