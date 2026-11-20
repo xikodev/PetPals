@@ -12,11 +12,11 @@
 ' The diagram covers the running environments only. Logical responsibilities
 ' are in the component diagram (4.2); the installation steps are in section 6.
 '
-' Author(s): <team member names>
+' Author(s): TM, MC
 ' Context: Software Engineering Course / Project Documentation
 '
 ' AI Usage Disclosure:
-' <tool> was used to <draft / revise this diagram>. The team reviewed and
+' Claude / Codex was used to revise this diagram. The team reviewed and
 ' corrected it and is responsible for the final content.
 '
 ' Traceability Note:
