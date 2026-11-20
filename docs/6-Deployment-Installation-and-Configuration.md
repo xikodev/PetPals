@@ -38,7 +38,7 @@ The procedure below uses a local Node.js backend and Vite frontend plus a Postgr
 
 ### 6.2.1 Prerequisites and source code
 
-Install Git, Node.js and npm compatible with the versioned lockfiles, PostgreSQL 15 or a compatible version, and a PostgreSQL command-line client (`psql`) or Docker Engine with Docker Compose. Use Node.js 20 or newer (the Dockerfiles use Node.js 20).
+Install Git, Node.js and npm compatible with the versioned lockfiles, PostgreSQL 15 or a compatible version, and a PostgreSQL command-line client (`psql`) or Docker Engine with Docker Compose. Use Node.js 20.19 or newer (the Dockerfiles use Node.js 20).
 
 For a real Google sign-in test, obtain a Google Cloud **Web application OAuth client** in an authorized team project. The team provides the client ID and secret privately; never commit them.
 
@@ -115,7 +115,7 @@ Edit `backend/.env` (never commit real credentials). These are the relevant vari
 | `GOOGLE_CLIENT_ID` | OAuth Web client identifier from Google Cloud |
 | `GOOGLE_CLIENT_SECRET` | OAuth Web client secret; **secret** |
 
- Avoid configuring conflicting `DATABASE_URL` and `DB_*` values; the backend code gives the connection string precedence. In Google Cloud, configure the OAuth consent screen, allow the relevant test accounts when consent is in testing mode, and add the authorized redirect URI:
+Avoid configuring conflicting `DATABASE_URL` and `DB_*` values; the backend code gives the connection string precedence. In Google Cloud, configure the OAuth consent screen (PetPals accepts any Google account) and add the authorized redirect URI:
 
 ```
 http://localhost:10000/api/auth/google/callback
@@ -222,4 +222,6 @@ Operational checks available from the versioned project include the backend `/he
 
 For a production update, review the PR and the test results, check whether the change needs a new migration (migrations are applied manually), deploy through the Render deploy hook or dashboard, and run the health check and a browser sign-in test. A backup, restore or rollback procedure beyond Render's own features is not defined yet. Authentication session expiry is implemented, while regular database cleanup of expired session rows is described as potential future housekeeping, not a confirmed scheduled job.
 
-**Known gaps:** no administrator provisioning, no defined backup and restore procedure, and no automated tests in CI (see [5.4](5-Testing.md#54-known-defects-and-testing-limits)).
+**Database lifetime:** The database app-db runs on a free Render plan that expires in December 2026 (the exact date is in the Render dashboard). To continue after that, create a new PostgreSQL database on Render, run 001_initial_schema.sql and then 002_auth_sessions.sql as described in this section, set DATABASE_URL of api-service to the new database and redeploy. The migrations recreate the tables; the data stored in the old database (users, pets, sessions) is not carried over unless a dump was taken before the expiry.
+
+**Known gaps:** no administrator provisioning, no backup procedure (the free database expires in December 2026 and is recreated from the migrations), and no automated tests in CI (see [5.4](5-Testing.md#54-known-defects-and-testing-limits)).

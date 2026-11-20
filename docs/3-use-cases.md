@@ -12,7 +12,7 @@
 
 The diagram shows the three roles that interact with PetPals. Pet Owner and Pet Helper use the PWA on mobile devices and both take part in the goals they share (signing in, confirming a service, messaging, rating, reporting a problem). The Administrator uses the administrator views of the PWA. External systems appear as secondary actors where they take part in a user goal: the OAuth 2.0 provider during sign-in, Google Maps during search, Google Calendar when a helper accepts a request, and the QR Code API when a service is confirmed by QR code. QR confirmation is modelled as an `<<extend>>` of the general confirmation use case because the helper chooses between QR code and button for each confirmation.
 
-**Consistency check:** The diagram shows the three roles that use PetPals and the four external systems that take part in a goal. Each main goal has an associated actor. Only the QR confirmation uses <<extend>>.
+**Consistency check:** The diagram shows the three roles that use PetPals and the four external systems that take part in a goal. Each main goal has an associated actor. Only the QR confirmation uses `<<extend>>`.
 
 ---
 
