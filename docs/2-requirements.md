@@ -1,6 +1,6 @@
 # 2. Requirement Analysis
 
-**Objective:** Derive identifiable, prioritized, and verifiable requirements project scope. The requirements may evolve; by the final submission, they must reflect the agreed application.
+**Objective:** Derive identifiable, prioritized, and verifiable requirements from the [Project Scope](1-Project-Scope.md). The requirements may evolve; by the final submission, they must reflect the agreed application.
 
 ---
 
