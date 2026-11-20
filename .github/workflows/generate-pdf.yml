@@ -18,7 +18,7 @@ on:
 
 jobs:
   build-pdf:
-    runs-on: ubuntu-latest
+     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - name: Install Tooling
@@ -32,6 +32,6 @@ jobs:
           mkdir -p docs/deliverables
           FILE_NAME="SE26_${{ github.event.inputs.group_number }}_${{ github.event.inputs.app_acronym }}_${{ github.event.inputs.version }}.pdf"
           cat docs/Home.md docs/1*.md docs/2*.md docs/3*.md docs/4*.md docs/5*.md \
-              docs/6*.md docs/7*.md docs/8*.md docs/9*.md docs/A*.md docs/B*.md > docs/full-report.md
+              docs/6*.md docs/A*.md > docs/full-report.md
           cd docs
           pandoc full-report.md --from gfm --toc --toc-depth=3 --pdf-engine=wkhtmltopdf -o "deliverables/$FILE_NAME"
